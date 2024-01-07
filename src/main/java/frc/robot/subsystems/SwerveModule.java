@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule {
@@ -188,5 +189,29 @@ public class SwerveModule {
   public void periodic() {
     setSpeed(desiredState.speedMetersPerSecond);
     setAngle(desiredState.angle);
+
+    updateTelemetry();
+  }
+
+  private void updateTelemetry() {
+    String telemetryKey = "Swerve/" + moduleName + "/";
+
+    SmartDashboard.putNumber(telemetryKey + "Velocity", getVelocity());
+    SmartDashboard.putNumber(telemetryKey + "Angle", getAngle().getDegrees());
+    SmartDashboard.putNumber(telemetryKey + "Absolute Angle", getAbsoluteAngle().getDegrees());
+    SmartDashboard.putNumber(telemetryKey + "Desired Velocity", desiredState.speedMetersPerSecond);
+    SmartDashboard.putNumber(telemetryKey + "Desired Angle", desiredState.angle.getDegrees());
+    SmartDashboard.putNumber(telemetryKey + "Velocity Error", desiredState.speedMetersPerSecond - getVelocity());
+    SmartDashboard.putNumber(telemetryKey + "Angle Error", desiredState.angle.minus(getAngle()).getDegrees());
+
+    SmartDashboard.putNumber(telemetryKey + "Drive Temperature", driveMotor.getMotorTemperature());
+    SmartDashboard.putNumber(telemetryKey + "Turn Temperature", turnMotor.getMotorTemperature());
+    SmartDashboard.putNumber(telemetryKey + "Drive Applied Output", driveMotor.getAppliedOutput());
+    SmartDashboard.putNumber(telemetryKey + "Turn Applied Output", turnMotor.getAppliedOutput());
+    SmartDashboard.putNumber(telemetryKey + "Drive Output Current", driveMotor.getOutputCurrent());
+    SmartDashboard.putNumber(telemetryKey + "Turn Output Current", turnMotor.getOutputCurrent());
+
+    SmartDashboard.putBoolean(telemetryKey + "Open Loop", isOpenLoop);
+    SmartDashboard.putBoolean(telemetryKey + "Allow Turn in Place", allowTurnInPlace);
   }
 }

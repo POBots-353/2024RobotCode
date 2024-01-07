@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -22,6 +25,11 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
   }
 
+  public static class FieldConstants {
+    public static final AprilTagFieldLayout aprilTagLayout =
+        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  }
+
   public static final class SwerveConstants {
     public static final double TRACK_WIDTH = Units.inchesToMeters(21.5);
     public static final double WHEEL_BASE = Units.inchesToMeters(21.5);
@@ -38,6 +46,8 @@ public final class Constants {
     public static final Translation2d[] wheelLocations = {
       frontLeft, frontRight, backLeft, backRight
     };
+
+    public static final double driveBaseRadius = frontLeft.getNorm();
 
     public static final double maxTranslationalSpeed = Units.feetToMeters(12.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
@@ -88,6 +98,11 @@ public final class Constants {
     public static final double maxModuleSpeed = Units.feetToMeters(14.5);
 
     public static final int odometryUpdateFrequency = 100; // 100 Hz (every 10 ms)
+  }
+
+  public static final class AutoConstants {
+    public static final PIDConstants translationConstants = new PIDConstants(6.0, 0.0, 0.0);
+    public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0.0, 0.0);
   }
 
   public static final class FrontLeftModule {

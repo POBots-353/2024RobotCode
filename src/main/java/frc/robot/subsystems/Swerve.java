@@ -7,6 +7,10 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,11 +30,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.BackLeftModule;
 import frc.robot.Constants.BackRightModule;
 import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.util.AllianceUtil;
 
 public class Swerve extends SubsystemBase {
   private SwerveDriveKinematics kinematics =
@@ -69,6 +75,7 @@ public class Swerve extends SubsystemBase {
           BackRightModule.angleOffset);
 
   private AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
+  private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
   private SwerveDrivePoseEstimator poseEstimator;
 
@@ -80,8 +87,8 @@ public class Swerve extends SubsystemBase {
                 frontLeftModule.setCharacterizationVolts(volts.in(Volts));
                 backLeftModule.setCharacterizationVolts(volts.in(Volts));
 
-                frontRightModule.setCharacterizationVolts(-volts.in(Volts));
-                backRightModule.setCharacterizationVolts(-volts.in(Volts));
+                frontRightModule.setCharacterizationVolts(volts.in(Volts));
+                backRightModule.setCharacterizationVolts(volts.in(Volts));
               },
               null,
               this));
@@ -92,6 +99,29 @@ public class Swerve extends SubsystemBase {
   public Swerve() {
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
+
+    AutoBuilder.configureHolonomic(
+        this::getPose,
+        this::resetPose,
+        this::getChassisSpeeds,
+        this::setChassisSpeeds,
+        new HolonomicPathFollowerConfig(
+            AutoConstants.translationConstants,
+            AutoConstants.rotationConstants,
+            SwerveConstants.maxModuleSpeed,
+            SwerveConstants.driveBaseRadius,
+            new ReplanningConfig(false, true)),
+        this);
+
+    PathPlannerLogging.setLogActivePathCallback(
+        path -> {
+          field.getObject("trajectory").setPoses(path);
+        });
+
+    PathPlannerLogging.setLogTargetPoseCallback(
+        pose -> {
+          field.getObject("Target Pose").setPose(pose);
+        });
 
     SmartDashboard.putData("Swerve/Field", field);
 
@@ -193,6 +223,10 @@ public class Swerve extends SubsystemBase {
     setChassisSpeeds(chassisSpeeds, fudgeFactor, isOpenLoop, allowTurnInPlace);
   }
 
+  public void setChassisSpeeds(ChassisSpeeds speeds) {
+    setChassisSpeeds(speeds, true, false, false);
+  }
+
   public void setChassisSpeeds(
       ChassisSpeeds speeds, boolean fudgeFactor, boolean isOpenLoop, boolean allowTurnInPlace) {
     speeds = ChassisSpeeds.discretize(speeds, 0.020);
@@ -233,16 +267,34 @@ public class Swerve extends SubsystemBase {
   public void zeroYaw() {
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
-    navx.zeroYaw();
+    setHeading(Rotation2d.fromDegrees(0.0));
 
     poseEstimator.resetPosition(
-        new Rotation2d(0.0),
+        getHeading(),
         getModulePositions(),
-        new Pose2d(originalOdometryPosition.getTranslation(), new Rotation2d(0.0)));
+        new Pose2d(originalOdometryPosition.getTranslation(), AllianceUtil.getZeroRotation()));
+  }
+
+  public void setHeading(Rotation2d rotation) {
+    angleOffset = navx.getRotation2d().minus(rotation);
   }
 
   public Rotation2d getHeading() {
-    return navx.getRotation2d();
+    return navx.getRotation2d().minus(angleOffset);
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  public Pose2d getPose() {
+    return poseEstimator.getEstimatedPosition();
+  }
+
+  public void resetPose(Pose2d pose) {
+    setHeading(pose.getRotation());
+
+    poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
   }
 
   public SwerveModulePosition[] getModulePositions() {

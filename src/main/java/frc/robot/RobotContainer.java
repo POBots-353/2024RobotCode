@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -83,7 +84,7 @@ public class RobotContainer {
   }
 
   private void configureAutoChooser() {
-    autoChooser = new SendableChooser<>();
+    autoChooser = AutoBuilder.buildAutoChooser();
 
     autoChooser.addOption("[SysID] Swerve Quasistatic Forward", swerve.quasistaticForward());
     autoChooser.addOption("[SysID] Swerve Quasistatic Backward", swerve.quasistaticBackward());
@@ -115,6 +116,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 }

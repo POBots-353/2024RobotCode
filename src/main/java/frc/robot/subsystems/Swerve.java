@@ -180,10 +180,16 @@ public class Swerve extends SubsystemBase {
     backRightModule.resetToAbsolute();
   }
 
-  public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds) {
-    return ChassisSpeeds.fromFieldRelativeSpeeds(
-        speeds,
-        new Rotation2d(speeds.omegaRadiansPerSecond * SwerveConstants.chassisSkewFudgeFactor));
+  public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
+    if (isOpenLoop) {
+      return ChassisSpeeds.fromFieldRelativeSpeeds(
+          speeds,
+          new Rotation2d(speeds.omegaRadiansPerSecond * SwerveConstants.skewOpenLoopFudgeFactor));
+    } else {
+      return ChassisSpeeds.fromFieldRelativeSpeeds(
+          speeds,
+          new Rotation2d(speeds.omegaRadiansPerSecond * SwerveConstants.skewClosedLoopFudgeFactor));
+    }
   }
 
   /**
@@ -232,7 +238,7 @@ public class Swerve extends SubsystemBase {
     speeds = ChassisSpeeds.discretize(speeds, 0.020);
 
     if (fudgeFactor) {
-      speeds = getFudgeFactoredSpeeds(speeds);
+      speeds = getFudgeFactoredSpeeds(speeds, isOpenLoop);
     }
 
     setModuleStates(kinematics.toSwerveModuleStates(speeds), isOpenLoop, allowTurnInPlace);

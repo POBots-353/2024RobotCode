@@ -68,7 +68,8 @@ public final class Constants {
     public static final boolean turnMotorInverted = true;
     public static final boolean canCoderInverted = false;
 
-    public static final double chassisSkewFudgeFactor = 0.120;
+    public static final double skewOpenLoopFudgeFactor = 0.120;
+    public static final double skewClosedLoopFudgeFactor = 0.080;
 
     public static final double driveP = 0.15;
 

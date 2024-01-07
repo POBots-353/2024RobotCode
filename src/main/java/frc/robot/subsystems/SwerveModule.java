@@ -12,6 +12,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 
@@ -53,8 +55,14 @@ public class SwerveModule {
     turnEncoder = turnMotor.getEncoder();
     turnPID = turnMotor.getPIDController();
 
+    Timer.delay(0.02);
+
     configureDriveMotor();
     configureTurnMotor();
+    configureAngleEncoder();
+
+    DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
+    DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
   }
 
   private void configureDriveMotor() {
@@ -122,6 +130,8 @@ public class SwerveModule {
 
     turnMotor.setCANTimeout(0);
   }
+
+  private void configureAngleEncoder() {}
 
   public void resetToAbsolute() {
     Rotation2d position =

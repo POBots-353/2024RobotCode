@@ -4,13 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.LogUtil;
+import frc.robot.util.PersistentSendableChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,10 +31,22 @@ public class RobotContainer {
   private final CommandXboxController driverController =
       new CommandXboxController(OperatorConstants.driverControllerPort);
 
+  private PowerDistribution powerDistribution = new PowerDistribution();
+
+  private PersistentSendableChooser<String> batteryChooser =
+      new PersistentSendableChooser<>("Battery Number");
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    configureBatteryChooser();
+
+    SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+    SmartDashboard.putData("Power Distribution Panel", powerDistribution);
+
+    LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
+    LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
 
     swerve.setDefaultCommand(
         new TeleopSwerve(
@@ -53,6 +70,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {}
+
+  private void configureBatteryChooser() {
+    batteryChooser.addOption("2019.5 #2", "Al");
+    batteryChooser.addOption("2019.5 #3", "Daniel");
+    batteryChooser.addOption("2020 #1", "2020 #1");
+    batteryChooser.addOption("2020 #2", "2020 #2");
+    batteryChooser.addOption("2021 #1", "Fred");
+    batteryChooser.addOption("2024 #1", "2024 #1");
+    batteryChooser.addOption("2024 #2", "2024 #2");
+
+    SmartDashboard.putData("Battery Chooser", batteryChooser);
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

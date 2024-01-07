@@ -199,6 +199,18 @@ public class Swerve extends SubsystemBase {
     backRightModule.setState(states[3], isOpenLoop, allowTurnInPlace);
   }
 
+  public void lockModules() {
+    setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45))
+        },
+        false,
+        true);
+  }
+
   public void zeroYaw() {
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 

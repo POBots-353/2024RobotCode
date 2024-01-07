@@ -67,9 +67,7 @@ public class Alert {
     groups.get(group).clear();
   }
 
-  /**
-   * Adds the alert to its group if it has been previously removed
-   */
+  /** Adds the alert to its group if it has been previously removed */
   private void addIfNotPresent() {
     if (!groups.get(group).alerts.contains(this)) {
       groups.get(group).alerts.add(this);
@@ -134,8 +132,11 @@ public class Alert {
 
     Alert otherAlert = (Alert) other;
 
-    return otherAlert.active == active && otherAlert.activeStartTime == activeStartTime
-        && otherAlert.group.equals(group) && otherAlert.text.equals(text) && otherAlert.type == type;
+    return otherAlert.active == active
+        && otherAlert.activeStartTime == activeStartTime
+        && otherAlert.group.equals(group)
+        && otherAlert.text.equals(text)
+        && otherAlert.type == type;
   }
 
   private static class SendableAlerts implements Sendable {

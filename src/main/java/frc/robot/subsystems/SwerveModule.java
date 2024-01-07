@@ -1,14 +1,13 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -28,8 +27,9 @@ public class SwerveModule {
   private SparkPIDController drivePID;
   private SparkPIDController turnPID;
 
-  private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(SwerveConstants.driveKs,
-      SwerveConstants.driveKv, SwerveConstants.driveKa);
+  private SimpleMotorFeedforward driveFeedforward =
+      new SimpleMotorFeedforward(
+          SwerveConstants.driveKs, SwerveConstants.driveKv, SwerveConstants.driveKa);
 
   private Rotation2d angleOffset;
 
@@ -39,7 +39,8 @@ public class SwerveModule {
   private SwerveModuleState desiredState = new SwerveModuleState();
   private SwerveModuleState previousState = new SwerveModuleState();
 
-  public SwerveModule(String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
+  public SwerveModule(
+      String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
     this.angleOffset = angleOffset;
 
@@ -72,7 +73,8 @@ public class SwerveModule {
     driveMotor.setIdleMode(IdleMode.kBrake);
 
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    driveMotor.setPeriodicFramePeriod(
+        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 500);
@@ -101,7 +103,8 @@ public class SwerveModule {
 
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    turnMotor.setPeriodicFramePeriod(
+        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 500);
@@ -121,8 +124,8 @@ public class SwerveModule {
   }
 
   public void resetToAbsolute() {
-    Rotation2d position = Rotation2d
-        .fromDegrees(getAbsoluteAngle().getDegrees() - angleOffset.getDegrees());
+    Rotation2d position =
+        Rotation2d.fromDegrees(getAbsoluteAngle().getDegrees() - angleOffset.getDegrees());
 
     turnMotor.setCANTimeout(250);
 
@@ -175,10 +178,13 @@ public class SwerveModule {
     if (isOpenLoop) {
       driveMotor.set(speedMetersPerSecond / SwerveConstants.maxModuleSpeed);
     } else {
-      double feedForward = driveFeedforward.calculate(speedMetersPerSecond,
-          (speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
+      double feedForward =
+          driveFeedforward.calculate(
+              speedMetersPerSecond,
+              (speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
 
-      drivePID.setReference(speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+      drivePID.setReference(
+          speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
     }
   }
 
@@ -201,8 +207,10 @@ public class SwerveModule {
     SmartDashboard.putNumber(telemetryKey + "Absolute Angle", getAbsoluteAngle().getDegrees());
     SmartDashboard.putNumber(telemetryKey + "Desired Velocity", desiredState.speedMetersPerSecond);
     SmartDashboard.putNumber(telemetryKey + "Desired Angle", desiredState.angle.getDegrees());
-    SmartDashboard.putNumber(telemetryKey + "Velocity Error", desiredState.speedMetersPerSecond - getVelocity());
-    SmartDashboard.putNumber(telemetryKey + "Angle Error", desiredState.angle.minus(getAngle()).getDegrees());
+    SmartDashboard.putNumber(
+        telemetryKey + "Velocity Error", desiredState.speedMetersPerSecond - getVelocity());
+    SmartDashboard.putNumber(
+        telemetryKey + "Angle Error", desiredState.angle.minus(getAngle()).getDegrees());
 
     SmartDashboard.putNumber(telemetryKey + "Drive Temperature", driveMotor.getMotorTemperature());
     SmartDashboard.putNumber(telemetryKey + "Turn Temperature", turnMotor.getMotorTemperature());

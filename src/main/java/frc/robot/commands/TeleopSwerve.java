@@ -4,9 +4,6 @@
 
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -15,6 +12,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Swerve;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class TeleopSwerve extends Command {
   private DoubleSupplier forwardSpeed;
@@ -26,21 +25,30 @@ public class TeleopSwerve extends Command {
   private double maxTranslationalSpeed;
   private double maxAngularSpeed;
 
-  private SlewRateLimiter forwardRateLimiter = new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
-  private SlewRateLimiter strafeRateLimiter = new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
-  private SlewRateLimiter angularRateLimiter = new SlewRateLimiter(SwerveConstants.maxAngularAcceleration);
+  private SlewRateLimiter forwardRateLimiter =
+      new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
+  private SlewRateLimiter strafeRateLimiter =
+      new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
+  private SlewRateLimiter angularRateLimiter =
+      new SlewRateLimiter(SwerveConstants.maxAngularAcceleration);
 
   private Swerve swerve;
 
-  private PIDController turnToAngleController = new PIDController(SwerveConstants.headingP, 0,
-      SwerveConstants.headingD);
+  private PIDController turnToAngleController =
+      new PIDController(SwerveConstants.headingP, 0, SwerveConstants.headingD);
 
   private final boolean isOpenLoop = true;
 
   /** Creates a new TeleopSwerve. */
-  public TeleopSwerve(DoubleSupplier forwardSpeed, DoubleSupplier strafeSpeed,
-      DoubleSupplier angleX, DoubleSupplier angleY, BooleanSupplier turnToAngle,
-      double maxTranslationalSpeed, double maxAngularSpeed, Swerve swerve) {
+  public TeleopSwerve(
+      DoubleSupplier forwardSpeed,
+      DoubleSupplier strafeSpeed,
+      DoubleSupplier angleX,
+      DoubleSupplier angleY,
+      BooleanSupplier turnToAngle,
+      double maxTranslationalSpeed,
+      double maxAngularSpeed,
+      Swerve swerve) {
     this.forwardSpeed = forwardSpeed;
     this.strafeSpeed = strafeSpeed;
     this.angleX = angleX;
@@ -61,8 +69,7 @@ public class TeleopSwerve extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -94,31 +101,42 @@ public class TeleopSwerve extends Command {
         angularRateLimiter.reset(0.0);
       }
 
-      swerve.driveFieldOriented(forwardMetersPerSecond, strafeMetersPerSecond, angleXComponent * maxAngularSpeed,
-          true, isOpenLoop, false);
+      swerve.driveFieldOriented(
+          forwardMetersPerSecond,
+          strafeMetersPerSecond,
+          angleXComponent * maxAngularSpeed,
+          true,
+          isOpenLoop,
+          false);
     } else {
       angularRateLimiter.reset(0.0);
 
       if (Math.abs(angleXComponent) > 0.05 || Math.abs(angleYComponent) > 0.05) {
         Rotation2d desiredAngle = new Rotation2d(-angleXComponent, -angleYComponent);
 
-        double angularSpeed = turnToAngleController.calculate(swerve.getHeading().getRadians(),
-            -desiredAngle.getRadians() - (Math.PI / 2));
+        double angularSpeed =
+            turnToAngleController.calculate(
+                swerve.getHeading().getRadians(), -desiredAngle.getRadians() - (Math.PI / 2));
 
         angularSpeed = MathUtil.clamp(angularSpeed, -0.75, 0.75);
 
-        swerve.driveFieldOriented(forwardMetersPerSecond, strafeMetersPerSecond,
-            angularSpeed * SwerveConstants.turnToAngleMaxVelocity, true, isOpenLoop, false);
+        swerve.driveFieldOriented(
+            forwardMetersPerSecond,
+            strafeMetersPerSecond,
+            angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
+            true,
+            isOpenLoop,
+            false);
       } else {
-        swerve.driveFieldOriented(forwardMetersPerSecond, strafeMetersPerSecond, 0.0, true, isOpenLoop, false);
+        swerve.driveFieldOriented(
+            forwardMetersPerSecond, strafeMetersPerSecond, 0.0, true, isOpenLoop, false);
       }
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

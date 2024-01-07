@@ -26,12 +26,18 @@ public final class Constants {
     public static final double TRACK_WIDTH = Units.inchesToMeters(21.5);
     public static final double WHEEL_BASE = Units.inchesToMeters(21.5);
 
-    public static final Translation2d frontLeft = new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);
-    public static final Translation2d frontRight = new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
-    public static final Translation2d backLeft = new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
-    public static final Translation2d backRight = new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
+    public static final Translation2d frontLeft =
+        new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);
+    public static final Translation2d frontRight =
+        new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
+    public static final Translation2d backLeft =
+        new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
+    public static final Translation2d backRight =
+        new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
 
-    public static final Translation2d[] wheelLocations = { frontLeft, frontRight, backLeft, backRight };
+    public static final Translation2d[] wheelLocations = {
+      frontLeft, frontRight, backLeft, backRight
+    };
 
     public static final double maxTranslationalSpeed = Units.feetToMeters(12.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);

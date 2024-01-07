@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import org.littletonrobotics.urcl.URCL;
-
 import com.revrobotics.CANSparkBase;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,6 +17,7 @@ import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.LogUtil;
+import org.littletonrobotics.urcl.URCL;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -46,8 +44,13 @@ public class Robot extends TimedRobot {
       LogUtil.recordMetadata("Java Version", System.getProperty("java.version"));
       LogUtil.recordMetadata("WPILib Version", WPILibVersion.Version);
 
-      LogUtil.recordMetadata("REVLib Version",
-          CANSparkBase.kAPIMajorVersion + "." + CANSparkBase.kAPIMinorVersion + "." + CANSparkBase.kAPIBuildVersion);
+      LogUtil.recordMetadata(
+          "REVLib Version",
+          CANSparkBase.kAPIMajorVersion
+              + "."
+              + CANSparkBase.kAPIMinorVersion
+              + "."
+              + CANSparkBase.kAPIBuildVersion);
       LogUtil.recordMetadata("Runtime Type", getRuntimeType().toString());
 
       // Git and build information
@@ -77,7 +80,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     double startTime = Timer.getFPGATimestamp();
-    
+
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -85,7 +88,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putNumber("Code Runtime (ms)", (Timer.getFPGATimestamp() - startTime) * 1000.0);
-    SmartDashboard.putNumber("CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
+    SmartDashboard.putNumber(
+        "CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
   }

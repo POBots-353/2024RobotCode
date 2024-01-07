@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -36,11 +37,13 @@ public class RobotContainer {
 
   private PersistentSendableChooser<String> batteryChooser =
       new PersistentSendableChooser<>("Battery Number");
+  private SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    configureAutoChooser();
     configureBatteryChooser();
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
@@ -77,6 +80,17 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
+  }
+
+  private void configureAutoChooser() {
+    autoChooser = new SendableChooser<>();
+
+    autoChooser.addOption("[SysID] Swerve Quasistatic Forward", swerve.quasistaticForward());
+    autoChooser.addOption("[SysID] Swerve Quasistatic Backward", swerve.quasistaticBackward());
+    autoChooser.addOption("[SysID] Swerve Dynamic Forward", swerve.dynamicForward());
+    autoChooser.addOption("[SysID] Swerve Dynamic Backward", swerve.dynamicBackward());
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configureBatteryChooser() {

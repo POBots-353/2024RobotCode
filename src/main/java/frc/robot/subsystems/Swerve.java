@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,7 +22,10 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.BackLeftModule;
 import frc.robot.Constants.BackRightModule;
 import frc.robot.Constants.FrontLeftModule;
@@ -66,6 +71,20 @@ public class Swerve extends SubsystemBase {
   private AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
 
   private SwerveDrivePoseEstimator poseEstimator;
+
+  private final SysIdRoutine sysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              (volts) -> {
+                frontLeftModule.setCharacterizationVolts(volts.in(Volts));
+                backLeftModule.setCharacterizationVolts(volts.in(Volts));
+
+                frontRightModule.setCharacterizationVolts(-volts.in(Volts));
+                backRightModule.setCharacterizationVolts(-volts.in(Volts));
+              },
+              null,
+              this));
 
   private Field2d field = new Field2d();
 
@@ -257,5 +276,21 @@ public class Swerve extends SubsystemBase {
     backRightModule.periodic();
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
+  }
+
+  public Command quasistaticForward() {
+    return sysIdRoutine.quasistatic(Direction.kForward);
+  }
+
+  public Command quasistaticBackward() {
+    return sysIdRoutine.quasistatic(Direction.kReverse);
+  }
+
+  public Command dynamicForward() {
+    return sysIdRoutine.dynamic(Direction.kForward);
+  }
+
+  public Command dynamicBackward() {
+    return sysIdRoutine.dynamic(Direction.kReverse);
   }
 }

@@ -41,6 +41,9 @@ public class SwerveModule {
   private SwerveModuleState desiredState = new SwerveModuleState();
   private SwerveModuleState previousState = new SwerveModuleState();
 
+  private double characterizationVolts = 0.0;
+  private boolean characterizing = false;
+
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
@@ -159,6 +162,16 @@ public class SwerveModule {
     this.allowTurnInPlace = allowTurnInPlace;
   }
 
+  public void setCharacterizationVolts(double volts) {
+    characterizationVolts = volts;
+    characterizing = true;
+  }
+
+  public void stopCharacterizing() {
+    characterizationVolts = 0.0;
+    characterizing = false;
+  }
+
   public SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
   }
@@ -198,13 +211,22 @@ public class SwerveModule {
     }
   }
 
+  private void setVoltage(double voltage) {
+    driveMotor.setVoltage(voltage);
+  }
+
   private void setAngle(Rotation2d angle) {
     turnPID.setReference(angle.getRadians(), ControlType.kPosition);
   }
 
   public void periodic() {
-    setSpeed(desiredState.speedMetersPerSecond);
-    setAngle(desiredState.angle);
+    if (!characterizing) {
+      setSpeed(desiredState.speedMetersPerSecond);
+      setAngle(desiredState.angle);
+    } else {
+      setVoltage(characterizationVolts);
+      setAngle(Rotation2d.fromDegrees(0.0));
+    }
 
     updateTelemetry();
   }
@@ -231,5 +253,7 @@ public class SwerveModule {
 
     SmartDashboard.putBoolean(telemetryKey + "Open Loop", isOpenLoop);
     SmartDashboard.putBoolean(telemetryKey + "Allow Turn in Place", allowTurnInPlace);
+    SmartDashboard.putBoolean(telemetryKey + "Characterizing", characterizing);
+    SmartDashboard.putNumber(telemetryKey + "Characterization Volts", characterizationVolts);
   }
 }

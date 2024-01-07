@@ -45,10 +45,17 @@ public class Robot extends TimedRobot {
       LogUtil.recordMetadata("Java Vendor", System.getProperty("java.vendor"));
       LogUtil.recordMetadata("Java Version", System.getProperty("java.version"));
       LogUtil.recordMetadata("WPILib Version", WPILibVersion.Version);
-      
+
       LogUtil.recordMetadata("REVLib Version",
           CANSparkBase.kAPIMajorVersion + "." + CANSparkBase.kAPIMinorVersion + "." + CANSparkBase.kAPIBuildVersion);
       LogUtil.recordMetadata("Runtime Type", getRuntimeType().toString());
+
+      // Git and build information
+      LogUtil.recordMetadata("Project Name", BuildConstants.MAVEN_NAME);
+      LogUtil.recordMetadata("Build Date", BuildConstants.BUILD_DATE);
+      LogUtil.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
+      LogUtil.recordMetadata("Git Date", BuildConstants.GIT_DATE);
+      LogUtil.recordMetadata("Git Revision", BuildConstants.GIT_REVISION);
 
       URCL.start();
     }
@@ -78,6 +85,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putNumber("Code Runtime (ms)", (Timer.getFPGATimestamp() - startTime) * 1000.0);
+    SmartDashboard.putNumber("CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
+    SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
   }
 

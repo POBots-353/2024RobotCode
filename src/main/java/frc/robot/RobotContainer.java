@@ -83,6 +83,10 @@ public class RobotContainer {
     SmartDashboard.putData("Battery Chooser", batteryChooser);
   }
 
+  public void updateSwerveOdometry() {
+    swerve.updateOdometry();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

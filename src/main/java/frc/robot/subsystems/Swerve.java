@@ -5,11 +5,11 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
@@ -65,13 +65,14 @@ public class Swerve extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
 
-  private SwerveDriveOdometry swerveOdometry;
+  private SwerveDrivePoseEstimator poseEstimator;
 
   private Field2d field = new Field2d();
 
   /** Creates a new Swerve. */
   public Swerve() {
-    swerveOdometry = new SwerveDriveOdometry(kinematics, getHeading(), getModulePositions());
+    poseEstimator =
+        new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
 
     SmartDashboard.putData("Swerve/Field", field);
 
@@ -199,11 +200,11 @@ public class Swerve extends SubsystemBase {
   }
 
   public void zeroYaw() {
-    Pose2d originalOdometryPosition = swerveOdometry.getPoseMeters();
+    Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
     navx.zeroYaw();
 
-    swerveOdometry.resetPosition(
+    poseEstimator.resetPosition(
         new Rotation2d(0.0),
         getModulePositions(),
         new Pose2d(originalOdometryPosition.getTranslation(), new Rotation2d(0.0)));
@@ -231,6 +232,10 @@ public class Swerve extends SubsystemBase {
     };
   }
 
+  public void updateOdometry() {
+    poseEstimator.update(getHeading(), getModulePositions());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -238,5 +243,7 @@ public class Swerve extends SubsystemBase {
     frontRightModule.periodic();
     backLeftModule.periodic();
     backRightModule.periodic();
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 }

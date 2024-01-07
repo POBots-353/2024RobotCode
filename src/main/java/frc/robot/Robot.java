@@ -95,7 +95,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber(
         "CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("CPU Temperature", RobotController.getCPUTemp());
     SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

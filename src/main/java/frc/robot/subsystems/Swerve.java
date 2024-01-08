@@ -128,6 +128,7 @@ public class Swerve extends SubsystemBase {
             SwerveConstants.maxModuleSpeed,
             SwerveConstants.driveBaseRadius,
             new ReplanningConfig(false, true)),
+        AllianceUtil::isRedAlliance,
         this);
 
     PathPlannerLogging.setLogActivePathCallback(

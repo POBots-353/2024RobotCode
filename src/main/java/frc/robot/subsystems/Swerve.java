@@ -4,20 +4,26 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -33,10 +39,17 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.BackLeftModule;
 import frc.robot.Constants.BackRightModule;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.LimelightHelpers;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Swerve extends SubsystemBase {
   private SwerveDriveKinematics kinematics =
@@ -78,6 +91,8 @@ public class Swerve extends SubsystemBase {
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
   private SwerveDrivePoseEstimator poseEstimator;
+
+  private double limelightLastDetectedTime = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -325,6 +340,86 @@ public class Swerve extends SubsystemBase {
     poseEstimator.update(getHeading(), getModulePositions());
   }
 
+  private Vector<N3> getLLStandardDeviations(
+      Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
+    return VecBuilder.fill(0.3, 0.3, Units.degreesToRadians(10.0));
+  }
+
+  private boolean isValidPose(Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
+    if (targetPose.getTranslation().getNorm() > 3.0) {
+      return false;
+    }
+
+    // If it thinks the robot is out of field bounds
+    if (visionPose.getX() < 0.0
+        || visionPose.getX() > FieldConstants.aprilTagLayout.getFieldLength()
+        || visionPose.getY() < 0.0
+        || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()) {
+      return false;
+    }
+
+    Rotation2d angleDifference = getHeading().minus(visionPose.getRotation().toRotation2d());
+
+    // If the angle is too different from our gyro angle
+    if (Math.abs(MathUtil.inputModulus(angleDifference.getDegrees(), -180.0, 180.0)) > 20.0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private void updateLimelightPoses(List<Pose2d> poses) {
+    LimelightHelpers.Results results =
+        LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
+
+    if (!results.valid) {
+      return;
+    }
+
+    // Old data
+    if (limelightLastDetectedTime == results.timestamp_LIMELIGHT_publish) {
+      return;
+    }
+    limelightLastDetectedTime = results.timestamp_LIMELIGHT_publish;
+
+    LimelightTarget_Fiducial[] detectedTags = results.targets_Fiducials;
+
+    if (detectedTags.length == 0) {
+      return;
+    }
+
+    LimelightTarget_Fiducial closestTag = detectedTags[0];
+    Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
+    Pose3d visionPose = results.getBotPose3d_wpiBlue();
+
+    if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
+      return;
+    }
+
+    Vector<N3> standardDevs =
+        getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
+    poseEstimator.addVisionMeasurement(
+        visionPose.toPose2d(), limelightLastDetectedTime, standardDevs);
+
+    for (LimelightTarget_Fiducial target : detectedTags) {
+      int tagID = (int) target.fiducialID;
+
+      Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(tagID);
+
+      if (tagPose.isPresent()) {
+        poses.add(tagPose.get().toPose2d());
+      }
+    }
+  }
+
+  public void updateVisionPoseEstimates() {
+    List<Pose2d> detectedTargets = new ArrayList<>();
+
+    updateLimelightPoses(detectedTargets);
+
+    field.getObject("Detected Targets").setPoses(detectedTargets);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -332,6 +427,8 @@ public class Swerve extends SubsystemBase {
     frontRightModule.periodic();
     backLeftModule.periodic();
     backRightModule.periodic();
+
+    updateVisionPoseEstimates();
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
   }

@@ -25,9 +25,13 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
   }
 
-  public static class FieldConstants {
+  public static final class FieldConstants {
     public static final AprilTagFieldLayout aprilTagLayout =
         AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  }
+
+  public static final class VisionConstants {
+    public static final String limelightName = "limelight";
   }
 
   public static final class SwerveConstants {

@@ -14,6 +14,8 @@
     "**/.factorypath": true,
     "**/*~": true
   },
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": null,
   "java.test.config": [
     {
       "name": "WPIlibUnitTests",

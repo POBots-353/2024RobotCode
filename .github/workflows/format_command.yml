@@ -1,0 +1,55 @@
+name: Format Command
+
+on:
+  issue_comment:
+    types: [ created ]
+
+jobs:
+  format:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/format')
+    runs-on: ubuntu-latest
+    steps:
+      - name: React Rocket
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {owner, repo} = context.issue
+            github.rest.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: context.payload.comment.id,
+              content: "rocket",
+            });
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.COMMENT_COMMAND_PAT_TOKEN }}
+      - name: Fetch all history and metadata
+        run: |
+          git fetch --prune --unshallow
+          git checkout -b pr
+          git branch -f main origin/main
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - name: Checkout PR
+        run: |
+          gh pr checkout $NUMBER
+        env:
+          GITHUB_TOKEN: "${{ secrets.COMMENT_COMMAND_PAT_TOKEN }}"
+          NUMBER: ${{ github.event.issue.number }}
+      - name: Set execution flag on gradlew
+        run: chmod +x gradlew
+      - name: Spotless Apply
+        run: ./gradlew spotlessApply
+      - name: Commit changes
+        run: |
+          # Set credentials
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Commit
+          git commit -am "Run spotless apply"
+          git push

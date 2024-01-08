@@ -10,6 +10,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.util.PolynomialRegression;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -32,6 +33,31 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final String limelightName = "limelight";
+
+    public static final class LimelightConstants {
+      public static final double[] distances =
+          new double[] {
+            0.50, 1.00, 1.50,
+          };
+      public static final double[] xyStandardDeviations =
+          new double[] {
+            0.014, // 0.50
+            0.020, // 1.00
+            0.150, // 1.50
+          };
+      public static final double[] thetaStandardDeviations =
+          new double[] {
+            0.115, // 0.50
+            0.149, // 1.00
+            0.190, // 1.50
+          };
+
+      public static PolynomialRegression xyPolynomialRegression =
+          new PolynomialRegression(distances, xyStandardDeviations, 3);
+
+      public static PolynomialRegression thetaPolynomialRegression =
+          new PolynomialRegression(distances, thetaStandardDeviations, 3);
+    }
   }
 
   public static final class SwerveConstants {

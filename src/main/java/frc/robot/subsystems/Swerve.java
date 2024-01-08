@@ -44,6 +44,7 @@ import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.VisionConstants.LimelightConstants;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
@@ -342,7 +343,15 @@ public class Swerve extends SubsystemBase {
 
   private Vector<N3> getLLStandardDeviations(
       Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
-    return VecBuilder.fill(0.3, 0.3, Units.degreesToRadians(10.0));
+    double distance = targetPose.getTranslation().toTranslation2d().getNorm();
+    if (detectedTargets > 1) {
+      return VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10.0));
+    } else {
+      double xyStandardDev = LimelightConstants.xyPolynomialRegression.predict(distance);
+      double thetaStandardDev = LimelightConstants.thetaPolynomialRegression.predict(distance);
+
+      return VecBuilder.fill(xyStandardDev, xyStandardDev, thetaStandardDev * 4);
+    }
   }
 
   private boolean isValidPose(Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
@@ -354,7 +363,10 @@ public class Swerve extends SubsystemBase {
     if (visionPose.getX() < 0.0
         || visionPose.getX() > FieldConstants.aprilTagLayout.getFieldLength()
         || visionPose.getY() < 0.0
-        || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()) {
+        || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()
+        || visionPose.getZ()
+            < -0.15 // To account for minor inaccuracies in the LL location on the robot
+    ) {
       return false;
     }
 

@@ -1,4 +1,4 @@
-name: Spotless Formatting
+name: Spotless Check
 
 on: [push]
 

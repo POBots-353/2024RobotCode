@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -446,18 +447,82 @@ public class Swerve extends SubsystemBase {
   }
 
   public Command quasistaticForward() {
-    return sysIdRoutine.quasistatic(Direction.kForward);
+    return Commands.sequence(
+            runOnce(
+                () -> {
+                  frontLeftModule.setCharacterizationVolts(0.0);
+                  frontRightModule.setCharacterizationVolts(0.0);
+                  backLeftModule.setCharacterizationVolts(0.0);
+                  backRightModule.setCharacterizationVolts(0.0);
+                }),
+            Commands.waitSeconds(0.50),
+            sysIdRoutine.quasistatic(Direction.kForward))
+        .finallyDo(
+            () -> {
+              frontLeftModule.stopCharacterizing();
+              frontRightModule.stopCharacterizing();
+              backLeftModule.stopCharacterizing();
+              backRightModule.stopCharacterizing();
+            });
   }
 
   public Command quasistaticBackward() {
-    return sysIdRoutine.quasistatic(Direction.kReverse);
+    return Commands.sequence(
+            runOnce(
+                () -> {
+                  frontLeftModule.setCharacterizationVolts(0.0);
+                  frontRightModule.setCharacterizationVolts(0.0);
+                  backLeftModule.setCharacterizationVolts(0.0);
+                  backRightModule.setCharacterizationVolts(0.0);
+                }),
+            Commands.waitSeconds(0.50),
+            sysIdRoutine.quasistatic(Direction.kReverse))
+        .finallyDo(
+            () -> {
+              frontLeftModule.stopCharacterizing();
+              frontRightModule.stopCharacterizing();
+              backLeftModule.stopCharacterizing();
+              backRightModule.stopCharacterizing();
+            });
   }
 
   public Command dynamicForward() {
-    return sysIdRoutine.dynamic(Direction.kForward);
+    return Commands.sequence(
+            runOnce(
+                () -> {
+                  frontLeftModule.setCharacterizationVolts(0.0);
+                  frontRightModule.setCharacterizationVolts(0.0);
+                  backLeftModule.setCharacterizationVolts(0.0);
+                  backRightModule.setCharacterizationVolts(0.0);
+                }),
+            Commands.waitSeconds(0.50),
+            sysIdRoutine.dynamic(Direction.kForward))
+        .finallyDo(
+            () -> {
+              frontLeftModule.stopCharacterizing();
+              frontRightModule.stopCharacterizing();
+              backLeftModule.stopCharacterizing();
+              backRightModule.stopCharacterizing();
+            });
   }
 
   public Command dynamicBackward() {
-    return sysIdRoutine.dynamic(Direction.kReverse);
+    return Commands.sequence(
+            runOnce(
+                () -> {
+                  frontLeftModule.setCharacterizationVolts(0.0);
+                  frontRightModule.setCharacterizationVolts(0.0);
+                  backLeftModule.setCharacterizationVolts(0.0);
+                  backRightModule.setCharacterizationVolts(0.0);
+                }),
+            Commands.waitSeconds(0.50),
+            sysIdRoutine.dynamic(Direction.kReverse))
+        .finallyDo(
+            () -> {
+              frontLeftModule.stopCharacterizing();
+              frontRightModule.stopCharacterizing();
+              backLeftModule.stopCharacterizing();
+              backRightModule.stopCharacterizing();
+            });
   }
 }

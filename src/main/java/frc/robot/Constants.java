@@ -132,7 +132,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final PIDConstants translationConstants = new PIDConstants(6.0, 0.0, 0.0);
+    public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
     public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0.0, 0.0);
   }
 

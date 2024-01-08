@@ -338,6 +338,15 @@ public class Swerve extends SubsystemBase {
     };
   }
 
+  public SwerveModuleState[] getDesiredStates() {
+    return new SwerveModuleState[] {
+      frontLeftModule.getDesiredState(),
+      frontRightModule.getDesiredState(),
+      backLeftModule.getDesiredState(),
+      backRightModule.getDesiredState()
+    };
+  }
+
   public void updateOdometry() {
     poseEstimator.update(getHeading(), getModulePositions());
   }
@@ -367,7 +376,7 @@ public class Swerve extends SubsystemBase {
         || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()
         || visionPose.getZ()
             < -0.15 // To account for minor inaccuracies in the LL location on the robot
-    ) {
+        || visionPose.getZ() > 1.6) {
       return false;
     }
 

@@ -1,10 +1,16 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
@@ -22,6 +28,7 @@ public class SwerveModule {
 
   private CANSparkMax driveMotor;
   private CANSparkMax turnMotor;
+  private CANcoder canCoder;
 
   private RelativeEncoder driveEncoder;
   private RelativeEncoder turnEncoder;
@@ -51,6 +58,7 @@ public class SwerveModule {
 
     driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
     turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);
+    canCoder = new CANcoder(canCoderID);
 
     driveEncoder = driveMotor.getEncoder();
     drivePID = driveMotor.getPIDController();
@@ -58,7 +66,7 @@ public class SwerveModule {
     turnEncoder = turnMotor.getEncoder();
     turnPID = turnMotor.getPIDController();
 
-    Timer.delay(0.02);
+    Timer.delay(0.10);
 
     configureDriveMotor();
     configureTurnMotor();
@@ -134,15 +142,33 @@ public class SwerveModule {
     turnMotor.setCANTimeout(0);
   }
 
-  private void configureAngleEncoder() {}
+  private void configureAngleEncoder() {
+    CANcoderConfiguration configuration = new CANcoderConfiguration();
+    MagnetSensorConfigs magnetSensorConfigs =
+        new MagnetSensorConfigs()
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
+            .withSensorDirection(
+                (!SwerveConstants.canCoderInverted)
+                    ? SensorDirectionValue.CounterClockwise_Positive
+                    : SensorDirectionValue.Clockwise_Positive);
+
+    configuration.MagnetSensor = magnetSensorConfigs;
+    configuration.FutureProofConfigs = true;
+
+    canCoder.getConfigurator().apply(configuration, 0.100);
+  }
 
   public void resetToAbsolute() {
-    Rotation2d position =
-        Rotation2d.fromDegrees(getAbsoluteAngle().getDegrees() - angleOffset.getDegrees());
+    Rotation2d position = getAbsoluteAngle().minus(angleOffset);
 
     turnMotor.setCANTimeout(250);
 
-    turnEncoder.setPosition(position.getRadians());
+    for (int i = 0; i < 5; i++) {
+      if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
+        break;
+      }
+      Timer.delay(0.020);
+    }
 
     turnMotor.setCANTimeout(0);
   }
@@ -190,11 +216,11 @@ public class SwerveModule {
 
   // Temporarily stubbed
   public Rotation2d getAngle() {
-    return Rotation2d.fromDegrees(0.0);
+    return Rotation2d.fromRadians(turnEncoder.getPosition());
   }
 
   public Rotation2d getAbsoluteAngle() {
-    return Rotation2d.fromDegrees(0.0);
+    return Rotation2d.fromRotations(canCoder.getAbsolutePosition().getValueAsDouble());
   }
 
   private void setSpeed(double speedMetersPerSecond) {

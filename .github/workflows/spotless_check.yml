@@ -2,7 +2,9 @@ name: Spotless Check
 
 on:
   push:
+    branches: ["main"]
   pull_request:
+    branches: ["main"]
 
 jobs:
   spotless:

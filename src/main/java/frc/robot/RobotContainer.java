@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -36,6 +37,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
 
+  PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
       new VirtualXboxController(OperatorConstants.driverControllerPort);
@@ -57,6 +60,8 @@ public class RobotContainer {
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
+
+    PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
@@ -95,8 +100,15 @@ public class RobotContainer {
         .and(driverController.rightTrigger())
         .whileTrue(
             AutoBuilder.pathfindToPose(
-                new Pose2d(7.4, 4.3, Rotation2d.fromDegrees(0.0)),
+                new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
+
+    driverController
+        .leftTrigger()
+        .and(driverController.x())
+        .whileTrue(
+            AutoBuilder.pathfindThenFollowPath(
+                pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 
   private void configureAutoChooser() {

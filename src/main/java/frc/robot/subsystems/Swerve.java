@@ -205,7 +205,8 @@ public class Swerve extends SubsystemBase {
     if (isOpenLoop) {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
           speeds,
-          new Rotation2d(speeds.omegaRadiansPerSecond * SwerveConstants.skewOpenLoopFudgeFactor));
+          new Rotation2d(
+              getChassisSpeeds().omegaRadiansPerSecond * SwerveConstants.skewOpenLoopFudgeFactor));
     } else {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
           speeds,

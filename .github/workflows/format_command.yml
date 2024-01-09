@@ -20,6 +20,7 @@ jobs:
               comment_id: context.payload.comment.id,
               content: "rocket",
             });
+          github-token: ${{ secrets.COMMENT_COMMAND_PAT_TOKEN }}
       - name: Checkout repo
         uses: actions/checkout@v4
         with:

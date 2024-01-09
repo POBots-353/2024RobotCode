@@ -28,7 +28,6 @@ jobs:
           token: ${{ secrets.COMMENT_COMMAND_PAT_TOKEN }}
       - name: Fetch all history and metadata
         run: |
-          git fetch --prune --unshallow
           git checkout -b pr
           git branch -f main origin/main
       - name: Setup Java

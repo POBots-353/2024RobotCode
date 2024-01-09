@@ -5,6 +5,10 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,6 +85,14 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
+
+    driverController
+        .leftTrigger()
+        .and(driverController.rightTrigger())
+        .whileTrue(
+            AutoBuilder.pathfindToPose(
+                new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
+                new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 
   private void configureAutoChooser() {

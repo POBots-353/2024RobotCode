@@ -1,0 +1,71 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.248860711701451,
+        "y": 3.2673233962730404
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.3002829514931475,
+        "y": 3.560094309917578
+      },
+      "isLocked": false,
+      "linkedName": "Test Linked Waypoint"
+    },
+    {
+      "anchor": {
+        "x": 3.866981999299233,
+        "y": 3.3727209251850745
+      },
+      "prevControl": {
+        "x": 5.019502872032538,
+        "y": 4.192291323573202
+      },
+      "nextControl": {
+        "x": 3.339994354739065,
+        "y": 2.9979741557200663
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.044670391765889,
+        "y": 3.3727209251850745
+      },
+      "prevControl": {
+        "x": 2.379705757984981,
+        "y": 4.04023860829462
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Test Start Point"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": -87.67784248680951,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

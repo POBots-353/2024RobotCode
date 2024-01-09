@@ -165,11 +165,13 @@ public class SwerveModule {
 
     for (int i = 0; i < 5; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
-        break;
+        turnMotor.setCANTimeout(0);
+        return;
       }
       Timer.delay(0.020);
     }
 
+    DataLogManager.log("Failed to set angle of " + moduleName);
     turnMotor.setCANTimeout(0);
   }
 

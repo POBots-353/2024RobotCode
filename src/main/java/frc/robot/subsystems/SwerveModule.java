@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
@@ -41,6 +43,8 @@ public class SwerveModule {
           SwerveConstants.driveKs, SwerveConstants.driveKv, SwerveConstants.driveKa);
 
   private Rotation2d angleOffset;
+
+  private StatusSignal<Double> absoluteAngleSignal;
 
   private boolean isOpenLoop;
   private boolean allowTurnInPlace;
@@ -66,11 +70,13 @@ public class SwerveModule {
     turnEncoder = turnMotor.getEncoder();
     turnPID = turnMotor.getPIDController();
 
-    Timer.delay(1.00);
+    Timer.delay(0.10);
 
     configureDriveMotor();
     configureTurnMotor();
     configureAngleEncoder();
+
+    absoluteAngleSignal = canCoder.getAbsolutePosition();
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
@@ -156,23 +162,51 @@ public class SwerveModule {
     configuration.FutureProofConfigs = true;
 
     canCoder.getConfigurator().apply(configuration, 0.100);
+    canCoder.optimizeBusUtilization(0.100);
   }
 
   public void resetToAbsolute() {
+    if (!waitForCANCoder()) {
+      return;
+    }
+
     Rotation2d position = getAbsoluteAngle().minus(angleOffset);
+
+    boolean failed = true;
 
     turnMotor.setCANTimeout(250);
 
     for (int i = 0; i < 5; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
-        turnMotor.setCANTimeout(0);
-        return;
+        failed = false;
+        break;
       }
       Timer.delay(0.020);
     }
 
-    DataLogManager.log("Failed to set angle of " + moduleName);
+    if (failed) {
+      DataLogManager.log("Failed to set absolute angle of " + moduleName + " module!");
+      DriverStation.reportError(
+          "Failed to set absolute angle of " + moduleName + " module!", false);
+    }
     turnMotor.setCANTimeout(0);
+  }
+
+  private boolean waitForCANCoder() {
+    for (int i = 0; i < 100; i++) {
+      absoluteAngleSignal.waitForUpdate(0.02);
+
+      if (absoluteAngleSignal.getStatus().isOK()) {
+        return true;
+      }
+    }
+
+    DataLogManager.log(
+        "Failed to receive absolute position from CANCoder on " + moduleName + " Module");
+    DriverStation.reportError(
+        "Failed to receive absolute position from CANCoder on " + moduleName + " Module", false);
+
+    return false;
   }
 
   public void setState(SwerveModuleState state, boolean isOpenLoop, boolean allowTurnInPlace) {
@@ -222,7 +256,7 @@ public class SwerveModule {
   }
 
   public Rotation2d getAbsoluteAngle() {
-    return Rotation2d.fromRotations(canCoder.getAbsolutePosition().getValueAsDouble());
+    return Rotation2d.fromRotations(absoluteAngleSignal.getValue());
   }
 
   private void setSpeed(double speedMetersPerSecond) {
@@ -248,6 +282,8 @@ public class SwerveModule {
   }
 
   public void periodic() {
+    absoluteAngleSignal.refresh(false);
+
     if (!characterizing) {
       setSpeed(desiredState.speedMetersPerSecond);
       setAngle(desiredState.angle);

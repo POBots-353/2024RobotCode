@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.controllers.VirtualJoystick;
+import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
@@ -35,8 +37,10 @@ public class RobotContainer {
   private Swerve swerve = new Swerve();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController driverController =
-      new CommandXboxController(OperatorConstants.driverControllerPort);
+  private final VirtualXboxController driverController =
+      new VirtualXboxController(OperatorConstants.driverControllerPort);
+  private final VirtualJoystick operatorStick =
+      new VirtualJoystick(OperatorConstants.operatorControllerPort);
 
   private PowerDistribution powerDistribution = new PowerDistribution();
 
@@ -63,7 +67,7 @@ public class RobotContainer {
             driverController::getLeftX,
             driverController::getRightX,
             driverController::getRightY,
-            () -> driverController.getHID().getLeftBumper(),
+            driverController::getLeftBumper,
             SwerveConstants.maxTranslationalSpeed,
             SwerveConstants.maxAngularSpeed,
             swerve));
@@ -91,7 +95,7 @@ public class RobotContainer {
         .and(driverController.rightTrigger())
         .whileTrue(
             AutoBuilder.pathfindToPose(
-                new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
+                new Pose2d(7.4, 4.3, Rotation2d.fromDegrees(0.0)),
                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 

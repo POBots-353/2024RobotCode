@@ -137,6 +137,10 @@ public class Swerve extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(
         path -> {
           field.getObject("trajectory").setPoses(path);
+          if (path.size() == 0) {
+            field.getObject("Target Pose").setPoses(path);
+            setChassisSpeeds(new ChassisSpeeds(), false, false, false);
+          }
         });
 
     PathPlannerLogging.setLogTargetPoseCallback(

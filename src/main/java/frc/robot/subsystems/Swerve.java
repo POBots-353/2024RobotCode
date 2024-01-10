@@ -432,6 +432,11 @@ public class Swerve extends VirtualSubsystem {
       return;
     }
 
+    int closestTagID = (int) closestTag.fiducialID;
+    if (FieldConstants.aprilTagLayout.getTagPose(closestTagID).isEmpty()) {
+      return;
+    }
+
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
     poseEstimator.addVisionMeasurement(
@@ -465,6 +470,9 @@ public class Swerve extends VirtualSubsystem {
     backRightModule.periodic();
 
     updateVisionPoseEstimates();
+
+    SmartDashboard.putNumber("Pose X", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Pose Y", poseEstimator.getEstimatedPosition().getY());
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
   }

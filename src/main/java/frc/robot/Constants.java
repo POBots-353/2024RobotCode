@@ -84,6 +84,7 @@ public final class Constants {
 
     public static final double maxTranslationalAcceleration = Units.feetToMeters(25.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
+    public static final double slowMotionMaxTranslationalAcceleration = Units.feetToMeters(10.0);
 
     public static final double wheelCircumference = Units.inchesToMeters(4) * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;

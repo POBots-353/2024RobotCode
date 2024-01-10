@@ -110,6 +110,19 @@ public class RobotContainer {
               pathDeux, 
               new PathConstraints(3.0, 3.0, 
               Units.degreesToRadians(180.0), 180.0)));
+
+    driverController
+        .leftTrigger()
+        .whileTrue(
+            new TeleopSwerve(
+                driverController::getLeftY, 
+                driverController::getLeftX, 
+                driverController::getRightX, 
+                driverController::getRightY, 
+                () -> driverController.getHID().getLeftBumper(),
+                SwerveConstants.slowMotionMaxTranslationalAcceleration, 
+                SwerveConstants.maxAngularSpeed, 
+                swerve));
   }
 
   private void configureAutoChooser() {

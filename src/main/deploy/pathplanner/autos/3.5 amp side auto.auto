@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4642586550130365,
+      "y": 6.770915422172725
+    },
+    "rotation": 179.9999999995223
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot from start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "To 2nd Piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot 2nd Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot from Podium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "To 3rd piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot 3rd Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot from Podium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "To 4th Piece"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

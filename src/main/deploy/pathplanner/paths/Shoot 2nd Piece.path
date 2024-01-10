@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.6153838917364425,
+        "y": 7.414093916506922
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.983899551849991,
+        "y": 7.156822518767367
+      },
+      "isLocked": false,
+      "linkedName": "piece 1"
+    },
+    {
+      "anchor": {
+        "x": 5.8261782620431335,
+        "y": 6.291455090032687
+      },
+      "prevControl": {
+        "x": 6.58045122358051,
+        "y": 6.642279723305886
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shooting point"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Stop Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -177.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Amp Side",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

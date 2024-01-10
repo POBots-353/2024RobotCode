@@ -162,7 +162,6 @@ public class SwerveModule {
     configuration.FutureProofConfigs = true;
 
     canCoder.getConfigurator().apply(configuration, 0.100);
-    canCoder.optimizeBusUtilization(0.100);
   }
 
   public void resetToAbsolute() {
@@ -194,7 +193,7 @@ public class SwerveModule {
 
   private boolean waitForCANCoder() {
     for (int i = 0; i < 100; i++) {
-      absoluteAngleSignal.waitForUpdate(0.02);
+      absoluteAngleSignal.waitForUpdate(0.05);
 
       if (absoluteAngleSignal.getStatus().isOK()) {
         return true;
@@ -250,7 +249,6 @@ public class SwerveModule {
     return driveEncoder.getVelocity();
   }
 
-  // Temporarily stubbed
   public Rotation2d getAngle() {
     return Rotation2d.fromRadians(turnEncoder.getPosition());
   }

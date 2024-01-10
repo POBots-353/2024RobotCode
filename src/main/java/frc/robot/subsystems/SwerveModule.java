@@ -178,7 +178,7 @@ public class SwerveModule {
 
     turnMotor.setCANTimeout(250);
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 100; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
         failed = false;
         break;

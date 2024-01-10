@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4642586550130365,
-      "y": 6.770915422172725
+      "x": 1.0563812283116707,
+      "y": 6.616622648366552
     },
-    "rotation": 179.9999999995223
+    "rotation": -131.51873397545788
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot from start"
+            "name": "shootFromStart"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot from Podium"
+            "name": "shootFromPodium"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot from Podium"
+            "name": "shootFromPodium"
           }
         },
         {

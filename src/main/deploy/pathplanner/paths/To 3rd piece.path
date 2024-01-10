@@ -12,7 +12,7 @@
         "y": 6.127736927838528
       },
       "isLocked": false,
-      "linkedName": "shooting point"
+      "linkedName": "Amp side shooting point"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake"
+                "name": "intake"
               }
             }
           ]
@@ -50,10 +50,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 360.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -66,5 +66,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

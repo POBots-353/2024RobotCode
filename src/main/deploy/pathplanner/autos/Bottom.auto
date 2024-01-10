@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.95,
+      "y": 3.97
+    },
+    "rotation": 116.33507671140022
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootFromClose"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom To Piece 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Shoot Piece 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootFromStadium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom To Piece 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Shoot Piece 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootFromStadium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom To Piece 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Shoot Piece 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootFromStadium"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

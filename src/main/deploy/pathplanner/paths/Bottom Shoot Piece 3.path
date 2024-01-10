@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.670551444998995,
+        "y": 2.505434621258852
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.937578550481777,
+        "y": 2.2655525830532173
+      },
+      "isLocked": false,
+      "linkedName": "Piece 3 Position"
+    },
+    {
+      "anchor": {
+        "x": 5.524939881048594,
+        "y": 1.7724617267416347
+      },
+      "prevControl": {
+        "x": 6.95090533038209,
+        "y": 2.2522258031529048
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ShootingPoint"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIntake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Bottom",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

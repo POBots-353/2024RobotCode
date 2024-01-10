@@ -23,7 +23,10 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
+import java.util.function.Consumer;
 
 public class SwerveModule {
   private String moduleName;
@@ -319,5 +322,98 @@ public class SwerveModule {
     SmartDashboard.putBoolean(telemetryKey + "Allow Turn in Place", allowTurnInPlace);
     SmartDashboard.putBoolean(telemetryKey + "Characterizing", characterizing);
     SmartDashboard.putNumber(telemetryKey + "Characterization Volts", characterizationVolts);
+  }
+
+  public Command getPrematchCommand(
+      Consumer<String> onInfoAlert,
+      Consumer<String> onWarningAlert,
+      Consumer<String> onErrorAlert) {
+    return Commands.sequence(
+        // Check for errors in drive motor
+        Commands.runOnce(
+            () -> {
+              REVLibError error = driveMotor.getLastError();
+
+              if (error != REVLibError.kOk) {
+                onErrorAlert.accept(moduleName + " Drive Motor error: " + error.name());
+              } else {
+                onInfoAlert.accept(moduleName + " Drive Motor contains no errors");
+              }
+            }),
+        // Check for errors in turn motor
+        Commands.runOnce(
+            () -> {
+              REVLibError error = turnMotor.getLastError();
+
+              if (error != REVLibError.kOk) {
+                onErrorAlert.accept(moduleName + " Turn Motor error: " + error.name());
+              } else {
+                onInfoAlert.accept(moduleName + " Turn Motor contains no errors");
+              }
+            }),
+        // Check for errors in CANCoder
+        Commands.runOnce(
+            () -> {
+              boolean errorDetected = false;
+
+              if (canCoder.getFault_BadMagnet().getValue()) {
+                onErrorAlert.accept(moduleName + " CANCoder bad magnet");
+                errorDetected = true;
+              }
+              if (canCoder.getFault_BootDuringEnable().getValue()) {
+                onErrorAlert.accept(moduleName + " CANCoder booted while enabled");
+                errorDetected = true;
+              }
+              if (canCoder.getFault_Hardware().getValue()) {
+                onErrorAlert.accept(moduleName + " CANCoder hardware fault detected");
+                errorDetected = true;
+              }
+              if (canCoder.getFault_Undervoltage().getValue()) {
+                onErrorAlert.accept(moduleName + " CANCoder under voltage");
+                errorDetected = true;
+              }
+              if (canCoder.getFault_UnlicensedFeatureInUse().getValue()) {
+                onErrorAlert.accept(moduleName + " CANCoder unlicensed feature in use");
+                errorDetected = true;
+              }
+
+              if (!errorDetected) {
+                onInfoAlert.accept(moduleName + " CANCoder has no errors");
+              }
+            }),
+        // Check if drive motor is in brake mode
+        Commands.runOnce(
+            () -> {
+              if (driveMotor.getIdleMode() != IdleMode.kBrake) {
+                onWarningAlert.accept(
+                    moduleName
+                        + " Drive Motor (Motor ID: "
+                        + driveMotor.getDeviceId()
+                        + ") is not in brake mode");
+              } else {
+                onInfoAlert.accept(
+                    moduleName
+                        + " Drive Motor (Motor ID: "
+                        + driveMotor.getDeviceId()
+                        + ") is in brake mode");
+              }
+            }),
+        // Check if turn motor is in coast mode
+        Commands.runOnce(
+            () -> {
+              if (turnMotor.getIdleMode() != IdleMode.kCoast) {
+                onWarningAlert.accept(
+                    moduleName
+                        + " Turn Motor (Motor ID: "
+                        + turnMotor.getDeviceId()
+                        + ") is not in coast mode");
+              } else {
+                onInfoAlert.accept(
+                    moduleName
+                        + " Turn Motor (Motor ID: "
+                        + turnMotor.getDeviceId()
+                        + ") is in coast mode");
+              }
+            }));
   }
 }

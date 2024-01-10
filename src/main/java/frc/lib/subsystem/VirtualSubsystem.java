@@ -27,7 +27,7 @@ public abstract class VirtualSubsystem extends SubsystemBase {
     }
   }
 
-  public String getAlertGroup() {
+  public final String getAlertGroup() {
     return getName() + "/Alerts";
   }
 
@@ -67,7 +67,8 @@ public abstract class VirtualSubsystem extends SubsystemBase {
     return false;
   }
 
-  public Command getPrematchCheckCommand(VirtualXboxController controller) {
+  public Command getPrematchCheckCommand(
+      VirtualXboxController controller, VirtualJoystick joystick) {
     return Commands.none();
   }
 
@@ -76,10 +77,10 @@ public abstract class VirtualSubsystem extends SubsystemBase {
             Commands.runOnce(
                 () -> {
                   cancelCurrentCommand();
-                  Alert.clearGroup(getName());
+                  Alert.clearGroup(getAlertGroup());
                   setSystemStatus("Running Pre-Match Check");
                 }),
-            getPrematchCheckCommand(controller))
+            getPrematchCheckCommand(controller, joystick))
         .until(this::containsErrors)
         .finallyDo(
             (interrupted) -> {
@@ -93,6 +94,9 @@ public abstract class VirtualSubsystem extends SubsystemBase {
 
               controller.clearVirtualAxes();
               controller.clearVirtualButtons();
+
+              joystick.clearVirtualAxes();
+              joystick.clearVirtualButtons();
             });
   }
 }

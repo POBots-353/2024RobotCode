@@ -98,8 +98,8 @@ public final class Constants {
     public static final boolean turnMotorInverted = true;
     public static final boolean canCoderInverted = false;
 
-    public static final double skewOpenLoopFudgeFactor = 0.120;
-    public static final double skewClosedLoopFudgeFactor = 0.080;
+    public static final double skewOpenLoopFudgeFactor = 0.100;
+    public static final double skewClosedLoopFudgeFactor = 0.060;
 
     public static final double driveP = 0.15;
 
@@ -107,7 +107,7 @@ public final class Constants {
     public static final double driveKv = 2.3939;
     public static final double driveKa = 0.15385;
 
-    public static final double turnP = 0.65;
+    public static final double turnP = 0.85;
     public static final double turnD = 0;
 
     public static final double headingP = 0.55;

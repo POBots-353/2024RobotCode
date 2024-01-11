@@ -205,7 +205,7 @@ public class Swerve extends VirtualSubsystem {
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
-    Timer.delay(1.00);
+    Timer.delay(1.50);
 
     frontLeftModule.resetToAbsolute();
     frontRightModule.resetToAbsolute();

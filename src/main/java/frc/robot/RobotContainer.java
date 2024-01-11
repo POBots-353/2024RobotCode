@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -42,7 +41,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
 
-  PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
+  // PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -111,12 +110,12 @@ public class RobotContainer {
                 new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
 
-    driverController
-        .leftTrigger()
-        .and(driverController.x())
-        .whileTrue(
-            AutoBuilder.pathfindThenFollowPath(
-                pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
+    // driverController
+    //     .leftTrigger()
+    //     .and(driverController.x())
+    //     .whileTrue(
+    //         AutoBuilder.pathfindThenFollowPath(
+    //             pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 
   private void configureAutoChooser() {

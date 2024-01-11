@@ -55,6 +55,8 @@ import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Swerve extends VirtualSubsystem {
   private SwerveDriveKinematics kinematics =
@@ -97,6 +99,7 @@ public class Swerve extends VirtualSubsystem {
           Port.kUSB, SerialDataType.kProcessedData, (byte) SwerveConstants.odometryUpdateFrequency);
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
+  public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
 
   private double limelightLastDetectedTime = 0.0;
@@ -302,6 +305,7 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public void zeroYaw() {
+    odometryLock.lock();
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
     setHeading(Rotation2d.fromDegrees(0.0));
@@ -310,6 +314,7 @@ public class Swerve extends VirtualSubsystem {
         getHeading(),
         getModulePositions(),
         new Pose2d(originalOdometryPosition.getTranslation(), AllianceUtil.getZeroRotation()));
+    odometryLock.unlock();
   }
 
   public void setHeading(Rotation2d rotation) {
@@ -325,13 +330,18 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    odometryLock.lock();
+    Pose2d pose = poseEstimator.getEstimatedPosition();
+    odometryLock.unlock();
+    return pose;
   }
 
   public void resetPose(Pose2d pose) {
     setHeading(pose.getRotation());
 
+    odometryLock.lock();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
+    odometryLock.unlock();
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -362,7 +372,9 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public void updateOdometry() {
+    odometryLock.lock();
     poseEstimator.update(getHeading(), getModulePositions());
+    odometryLock.unlock();
   }
 
   private Vector<N3> getLLStandardDeviations(
@@ -439,6 +451,7 @@ public class Swerve extends VirtualSubsystem {
 
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
+
     poseEstimator.addVisionMeasurement(
         visionPose.toPose2d(), limelightLastDetectedTime, standardDevs);
 
@@ -469,12 +482,11 @@ public class Swerve extends VirtualSubsystem {
     backLeftModule.periodic();
     backRightModule.periodic();
 
+    odometryLock.lock();
     updateVisionPoseEstimates();
 
-    SmartDashboard.putNumber("Pose X", poseEstimator.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("Pose Y", poseEstimator.getEstimatedPosition().getY());
-
     field.setRobotPose(poseEstimator.getEstimatedPosition());
+    odometryLock.unlock();
   }
 
   @Override

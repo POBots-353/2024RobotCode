@@ -262,7 +262,7 @@ public class RobotContainer {
   }
 
   public void updateSwerveOdometry() {
-    swerve.updateOdometryQueue();
+    swerve.updateOdometry();
   }
 
   /**

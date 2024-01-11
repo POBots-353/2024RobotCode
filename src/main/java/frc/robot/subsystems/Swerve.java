@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
@@ -54,7 +53,6 @@ import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -103,11 +101,6 @@ public class Swerve extends VirtualSubsystem {
 
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
-
-  private List<SwerveDriveWheelPositions> wheelPositionsQueue =
-      Collections.synchronizedList(new ArrayList<>(4));
-  private List<Rotation2d> gyroAnglesQueue = Collections.synchronizedList(new ArrayList<>(4));
-  private List<Double> timestampsQueue = Collections.synchronizedList(new ArrayList<>(4));
 
   private double limelightLastDetectedTime = 0.0;
 
@@ -335,7 +328,10 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    odometryLock.lock();
+    Pose2d pose = poseEstimator.getEstimatedPosition();
+    odometryLock.unlock();
+    return pose;
   }
 
   public void resetPose(Pose2d pose) {
@@ -373,30 +369,16 @@ public class Swerve extends VirtualSubsystem {
     };
   }
 
-  public void updateOdometryQueue() {
-    odometryLock.lock();
-    try {
-      wheelPositionsQueue.add(new SwerveDriveWheelPositions(getModulePositions()));
-      gyroAnglesQueue.add(getHeading());
-      timestampsQueue.add(Timer.getFPGATimestamp());
-    } finally {
-      odometryLock.unlock();
-    }
-  }
-
   public void updateOdometry() {
-    int newEntries =
-        Math.min(
-            wheelPositionsQueue.size(), Math.min(gyroAnglesQueue.size(), timestampsQueue.size()));
-
-    for (int i = 0; i < newEntries; i++) {
-      poseEstimator.updateWithTime(
-          timestampsQueue.get(i), gyroAnglesQueue.get(i), wheelPositionsQueue.get(i));
+    if (!frontLeftModule.motorsValid()
+        || !frontRightModule.motorsValid()
+        || !backLeftModule.motorsValid()
+        || !backRightModule.motorsValid()) {
+      return;
     }
-
-    wheelPositionsQueue.clear();
-    gyroAnglesQueue.clear();
-    timestampsQueue.clear();
+    odometryLock.lock();
+    poseEstimator.update(getHeading(), getModulePositions());
+    odometryLock.unlock();
   }
 
   private Vector<N3> getLLStandardDeviations(
@@ -499,21 +481,16 @@ public class Swerve extends VirtualSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
     backRightModule.periodic();
 
-    odometryLock.lock();
-    try {
-      updateOdometry();
-    } finally {
-      odometryLock.unlock();
-    }
-
     updateVisionPoseEstimates();
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
+    odometryLock.unlock();
   }
 
   @Override

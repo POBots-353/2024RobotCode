@@ -5,7 +5,7 @@
       "x": 0.95,
       "y": 3.97
     },
-    "rotation": 116.33507671140022
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 2"
+            "pathName": "Bottom To Piece 6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 2"
+            "pathName": "Bottom Shoot Piece 6"
           }
         },
         {
@@ -38,37 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 3"
+            "pathName": "Bottom To Piece 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootFromStadium"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Bottom To Piece 4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Bottom Shoot Piece 4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootFromStadium"
+            "pathName": "Bottom Shoot Piece 5"
           }
         }
       ]

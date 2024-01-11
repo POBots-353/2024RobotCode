@@ -12,7 +12,7 @@
         "y": 2.2655525830532173
       },
       "isLocked": false,
-      "linkedName": "Piece 3 Position"
+      "linkedName": "Piece 5 Position"
     },
     {
       "anchor": {
@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Bottom",
+  "folder": "Bottom Auto Paths",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

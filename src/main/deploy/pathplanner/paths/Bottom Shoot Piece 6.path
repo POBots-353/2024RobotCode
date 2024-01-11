@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.95,
-        "y": 3.97
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 1.975930146957081,
-        "y": 3.4504161919722462
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 7.491915377390684,
         "y": 0.7930268454454622
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.906389672428468,
+        "y": 1.0432023671064878
+      },
+      "isLocked": false,
+      "linkedName": "Piece 6 Position"
+    },
+    {
+      "anchor": {
+        "x": 5.524939881048594,
+        "y": 1.7724617267416347
+      },
       "prevControl": {
-        "x": 5.606520582039535,
-        "y": 1.5720560269674388
+        "x": 6.267983904388862,
+        "y": 1.3043683631226912
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Piece 2 Position"
+      "linkedName": "ShootingPoint"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "StartIntake",
-      "waypointRelativePos": 0.9,
+      "name": "StopIntake",
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "StartIntake"
+                "name": "StopIntake"
               }
             }
           ]
@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Bottom",
+  "folder": "Bottom Auto Paths",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

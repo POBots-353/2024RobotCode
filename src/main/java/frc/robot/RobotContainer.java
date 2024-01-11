@@ -110,12 +110,34 @@ public class RobotContainer {
                 new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
 
-    // driverController
-    //     .leftTrigger()
-    //     .and(driverController.x())
-    //     .whileTrue(
-    //         AutoBuilder.pathfindThenFollowPath(
-    //             pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
+    driverController
+        .leftTrigger()
+        .and(driverController.x())
+        .whileTrue(
+            AutoBuilder.pathfindThenFollowPath(
+              pathDeux, 
+              new PathConstraints(3.0, 3.0, 
+              Units.degreesToRadians(180.0), 180.0)));
+
+    driverController
+        .leftTrigger()
+        .whileTrue(
+            new TeleopSwerve(
+                driverController::getLeftY, 
+                driverController::getLeftX, 
+                driverController::getRightX, 
+                driverController::getRightY, 
+                () -> driverController.getHID().getLeftBumper(),
+                SwerveConstants.slowMotionMaxTranslationalSpeed, 
+                SwerveConstants.maxAngularSpeed, 
+                swerve));
+
+    driverController
+         .leftTrigger()
+         .and(driverController.x())
+         .whileTrue(
+             AutoBuilder.pathfindThenFollowPath(
+                 pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 
   private void configureAutoChooser() {

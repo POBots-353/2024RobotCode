@@ -3,6 +3,8 @@
   "robotLength": 0.85,
   "holonomicMode": true,
   "pathFolders": [
+    "Bottom Auto Paths",
+    "Test Folder"
     "Amp Side"
   ],
   "autoFolders": [],

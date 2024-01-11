@@ -120,7 +120,7 @@ public class RobotContainer {
                 driverController::getRightX, 
                 driverController::getRightY, 
                 () -> driverController.getHID().getLeftBumper(),
-                SwerveConstants.slowMotionMaxTranslationalAcceleration, 
+                SwerveConstants.slowMotionMaxTranslationalSpeed, 
                 SwerveConstants.maxAngularSpeed, 
                 swerve));
   }

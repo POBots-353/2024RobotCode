@@ -6,11 +6,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,12 +18,18 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.controllers.VirtualJoystick;
+import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,11 +41,13 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
 
-  PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
+  // PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController driverController =
-      new CommandXboxController(OperatorConstants.driverControllerPort);
+  private final VirtualXboxController driverController =
+      new VirtualXboxController(OperatorConstants.driverControllerPort);
+  private final VirtualJoystick operatorStick =
+      new VirtualJoystick(OperatorConstants.operatorControllerPort);
 
   private PowerDistribution powerDistribution = new PowerDistribution();
 
@@ -48,18 +55,20 @@ public class RobotContainer {
       new PersistentSendableChooser<>("Battery Number");
   private SendableChooser<Command> autoChooser;
 
+  private List<Alert> alerts = new ArrayList<Alert>();
+  private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
+  private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
     configureAutoChooser();
     configureBatteryChooser();
+    configurePrematchChecklist();
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
-
-    PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
-
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
@@ -70,7 +79,7 @@ public class RobotContainer {
             driverController::getLeftX,
             driverController::getRightX,
             driverController::getRightY,
-            () -> driverController.getHID().getLeftBumper(),
+            driverController::getLeftBumper,
             SwerveConstants.maxTranslationalSpeed,
             SwerveConstants.maxAngularSpeed,
             swerve));
@@ -99,8 +108,7 @@ public class RobotContainer {
         .whileTrue(
             AutoBuilder.pathfindToPose(
                 new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
-                new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 
-                180.0)));
+                new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
 
     driverController
         .leftTrigger()
@@ -123,6 +131,13 @@ public class RobotContainer {
                 SwerveConstants.slowMotionMaxTranslationalSpeed, 
                 SwerveConstants.maxAngularSpeed, 
                 swerve));
+
+    driverController
+         .leftTrigger()
+         .and(driverController.x())
+         .whileTrue(
+             AutoBuilder.pathfindThenFollowPath(
+                 pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
   }
 
   private void configureAutoChooser() {
@@ -146,6 +161,126 @@ public class RobotContainer {
     batteryChooser.addOption("2024 #2", "2024 #2");
 
     SmartDashboard.putData("Battery Chooser", batteryChooser);
+  }
+
+  private void configurePrematchChecklist() {
+    Command generalPreMatch =
+        Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      alerts.clear();
+                      Alert.clearGroup("Alerts");
+                    }),
+                Commands.runOnce(
+                    () -> {
+                      if (!driverController.getHID().isConnected()) {
+                        addError("Driver controller is not connected");
+                      } else {
+                        addInfo("Driver controller is connected");
+                      }
+                      if (!operatorStick.getHID().isConnected()) {
+                        addError("Operator joystick is not connected");
+                      } else {
+                        addInfo("Operator joystick is connected");
+                      }
+                    }),
+                Commands.runOnce(
+                    () -> {
+                      if (!DriverStation.getJoystickIsXbox(
+                          OperatorConstants.driverControllerPort)) {
+                        addError("Controller port 0 is not an Xbox controller");
+                      } else {
+                        addInfo("Controller port 0 is the correct joystick type (Xbox Controller)");
+                      }
+
+                      if (DriverStation.getJoystickIsXbox(
+                          OperatorConstants.operatorControllerPort)) {
+                        addError("Controller port 1 is not a generic joystick");
+                      } else {
+                        addInfo("Controller port 1 is the correct joystick type");
+                      }
+                    }))
+            .until(this::errorsPresent)
+            .andThen(
+                () -> {
+                  generalPrematchAlert.removeFromGroup();
+                  alerts.remove(generalPrematchAlert);
+                  if (errorsPresent()) {
+                    generalPrematchAlert = new Alert("General Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    generalPrematchAlert =
+                        new Alert("General Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(generalPrematchAlert);
+                })
+            .unless(DriverStation::isFMSAttached)
+            .withName("General Pre-Match");
+
+    Command swervePreMatch =
+        swerve
+            .buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  swervePrematchAlert.removeFromGroup();
+                  alerts.remove(swervePrematchAlert);
+
+                  if (swerve.containsErrors()) {
+                    swervePrematchAlert = new Alert("Swerve Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    swervePrematchAlert = new Alert("Swerve Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(swervePrematchAlert);
+                })
+            .unless(DriverStation::isFMSAttached)
+            .withName("Swerve Pre-Match");
+
+    SmartDashboard.putData(
+        "Full Pre-Match",
+        Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      alerts.clear();
+                      Alert.clearGroup("Alerts");
+                    }),
+                generalPreMatch.asProxy(),
+                swervePreMatch.asProxy(),
+                Commands.runOnce(
+                    () -> {
+                      if (!errorsPresent()) {
+                        addInfo(
+                            "Pre-Match Successful! Good luck in the next match! Let's kick bot!");
+                      } else {
+                        addError("Pre-Match Failed!");
+                      }
+                    }))
+            .unless(DriverStation::isFMSAttached)
+            .withName("Full Pre-Match"));
+
+    SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
+    SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
+  }
+
+  private void addAlert(Alert alert) {
+    alert.set(true);
+    alerts.add(alert);
+  }
+
+  private void addInfo(String message) {
+    addAlert(new Alert(message, AlertType.INFO));
+  }
+
+  private void addError(String message) {
+    addAlert(new Alert(message, AlertType.ERROR));
+  }
+
+  private boolean errorsPresent() {
+    for (Alert alert : alerts) {
+      if (alert.getType() == AlertType.ERROR) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public void updateSwerveOdometry() {

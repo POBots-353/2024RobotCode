@@ -83,12 +83,12 @@ public class TeleopSwerve extends Command {
     forwardMetersPerSecond = forwardRateLimiter.calculate(forwardMetersPerSecond);
     strafeMetersPerSecond = strafeRateLimiter.calculate(strafeMetersPerSecond);
 
-    if (Math.abs(forwardMetersPerSecond) < 0.025) {
+    if (Math.abs(forwardMetersPerSecond) < Units.inchesToMeters(0.5)) {
       forwardMetersPerSecond = 0.0;
       forwardRateLimiter.reset(0.0);
     }
 
-    if (Math.abs(strafeMetersPerSecond) < 0.025) {
+    if (Math.abs(strafeMetersPerSecond) < Units.inchesToMeters(0.5)) {
       strafeMetersPerSecond = 0.0;
       strafeRateLimiter.reset(0.0);
     }

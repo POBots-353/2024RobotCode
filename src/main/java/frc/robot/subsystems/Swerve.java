@@ -35,9 +35,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.controllers.VirtualJoystick;
+import frc.lib.controllers.VirtualXboxController;
+import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.BackLeftModule;
 import frc.robot.Constants.BackRightModule;
@@ -53,8 +55,10 @@ import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Swerve extends SubsystemBase {
+public class Swerve extends VirtualSubsystem {
   private SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(SwerveConstants.wheelLocations);
 
@@ -95,6 +99,7 @@ public class Swerve extends SubsystemBase {
           Port.kUSB, SerialDataType.kProcessedData, (byte) SwerveConstants.odometryUpdateFrequency);
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
+  public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
 
   private double limelightLastDetectedTime = 0.0;
@@ -114,6 +119,9 @@ public class Swerve extends SubsystemBase {
               this));
 
   private Field2d field = new Field2d();
+
+  private final double prematchDriveDelay = 1.0;
+  private final double prematchTranslationalTolerance = 0.1;
 
   /** Creates a new Swerve. */
   public Swerve() {
@@ -137,6 +145,10 @@ public class Swerve extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(
         path -> {
           field.getObject("trajectory").setPoses(path);
+          if (path.size() == 0) {
+            field.getObject("Target Pose").setPoses(path);
+            setChassisSpeeds(new ChassisSpeeds(), false, false, false);
+          }
         });
 
     PathPlannerLogging.setLogTargetPoseCallback(
@@ -193,7 +205,7 @@ public class Swerve extends SubsystemBase {
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
-    Timer.delay(1.00);
+    Timer.delay(1.50);
 
     frontLeftModule.resetToAbsolute();
     frontRightModule.resetToAbsolute();
@@ -205,7 +217,8 @@ public class Swerve extends SubsystemBase {
     if (isOpenLoop) {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
           speeds,
-          new Rotation2d(speeds.omegaRadiansPerSecond * SwerveConstants.skewOpenLoopFudgeFactor));
+          new Rotation2d(
+              getChassisSpeeds().omegaRadiansPerSecond * SwerveConstants.skewOpenLoopFudgeFactor));
     } else {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
           speeds,
@@ -315,13 +328,18 @@ public class Swerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    odometryLock.lock();
+    Pose2d pose = poseEstimator.getEstimatedPosition();
+    odometryLock.unlock();
+    return pose;
   }
 
   public void resetPose(Pose2d pose) {
     setHeading(pose.getRotation());
 
+    odometryLock.lock();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
+    odometryLock.unlock();
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -352,7 +370,15 @@ public class Swerve extends SubsystemBase {
   }
 
   public void updateOdometry() {
+    if (!frontLeftModule.motorsValid()
+        || !frontRightModule.motorsValid()
+        || !backLeftModule.motorsValid()
+        || !backRightModule.motorsValid()) {
+      return;
+    }
+    odometryLock.lock();
     poseEstimator.update(getHeading(), getModulePositions());
+    odometryLock.unlock();
   }
 
   private Vector<N3> getLLStandardDeviations(
@@ -422,8 +448,14 @@ public class Swerve extends SubsystemBase {
       return;
     }
 
+    int closestTagID = (int) closestTag.fiducialID;
+    if (FieldConstants.aprilTagLayout.getTagPose(closestTagID).isEmpty()) {
+      return;
+    }
+
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
+
     poseEstimator.addVisionMeasurement(
         visionPose.toPose2d(), limelightLastDetectedTime, standardDevs);
 
@@ -449,6 +481,7 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
@@ -457,6 +490,170 @@ public class Swerve extends SubsystemBase {
     updateVisionPoseEstimates();
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
+    odometryLock.unlock();
+  }
+
+  @Override
+  public Command getPrematchCheckCommand(
+      VirtualXboxController controller, VirtualJoystick joystick) {
+    return Commands.sequence(
+        // Make sure gyro is connected
+        Commands.runOnce(
+            () -> {
+              if (!navx.isConnected()) {
+                addError("NavX is not connected");
+              } else {
+                addInfo("NavX is connected");
+              }
+            }),
+        // Test gyro zeroing
+        Commands.runOnce(
+            () -> {
+              controller.setStartButton(true);
+              controller.setBackButton(true);
+            }),
+        Commands.waitSeconds(0.2),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(getHeading().getDegrees()) > 0.05) {
+                addError("Gyro failed to zero");
+              } else {
+                addInfo("Gyro zero successful");
+              }
+
+              controller.clearVirtualButtons();
+            }),
+        // Test all modules
+        Commands.sequence(
+            frontLeftModule.getPrematchCommand(this::addInfo, this::addWarning, this::addError),
+            frontRightModule.getPrematchCommand(this::addInfo, this::addWarning, this::addError),
+            backLeftModule.getPrematchCommand(this::addInfo, this::addWarning, this::addError),
+            backRightModule.getPrematchCommand(this::addInfo, this::addWarning, this::addError)),
+        // Test forward speed
+        Commands.runOnce(
+            () -> {
+              controller.setLeftY(-1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().vxMetersPerSecond < Units.feetToMeters(10.0)) {
+                addError("Forward speed too slow");
+              } else if (Math.abs(getChassisSpeeds().vyMetersPerSecond)
+                  > prematchTranslationalTolerance) {
+                addError("Strafe speed too high");
+              } else {
+                addInfo("Forward drive successful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        // Test slowing down to 0 m/s
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(getChassisSpeeds().vxMetersPerSecond) > Units.feetToMeters(0.1)
+                  || Math.abs(getChassisSpeeds().vyMetersPerSecond) > Units.feetToMeters(0.1)) {
+                addError("Robot moving too fast");
+              } else {
+                addInfo("Slow down successful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        // Test backward speed
+        Commands.runOnce(
+            () -> {
+              controller.setLeftY(1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().vxMetersPerSecond > Units.feetToMeters(-10.0)) {
+                addError("Backward speed too slow");
+              } else if (Math.abs(getChassisSpeeds().vyMetersPerSecond)
+                  > prematchTranslationalTolerance) {
+                addError("Strafe speed too high");
+              } else {
+                addInfo("Backward drive successful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        // Test left speed
+        Commands.runOnce(
+            () -> {
+              controller.setLeftX(-1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().vyMetersPerSecond < Units.feetToMeters(10.0)) {
+                addError("Left speed too slow");
+              } else if (Math.abs(getChassisSpeeds().vxMetersPerSecond)
+                  > prematchTranslationalTolerance) {
+                addError("Forward/Backward speed too high");
+              } else {
+                addInfo("Left drive sucessful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        // Test right speed
+        Commands.runOnce(
+            () -> {
+              controller.setLeftX(1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().vyMetersPerSecond > Units.feetToMeters(-10.0)) {
+                addError("Right speed too slow");
+              } else if (Math.abs(getChassisSpeeds().vxMetersPerSecond)
+                  > prematchTranslationalTolerance) {
+                addError("Forward/Backward speed too high");
+              } else {
+                addInfo("Right drive successful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        // Test angular CW speed
+        Commands.runOnce(
+            () -> {
+              controller.setRightX(1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().omegaRadiansPerSecond > Units.degreesToRadians(-160.0)) {
+                addError("Clockwise rotation too slow");
+              } else {
+                addInfo("Clockwise rotation successful");
+              }
+
+              controller.clearVirtualAxes();
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        // Test angular CCW speed
+        Commands.runOnce(
+            () -> {
+              controller.setRightX(-1.0);
+            }),
+        Commands.waitSeconds(prematchDriveDelay),
+        Commands.runOnce(
+            () -> {
+              if (getChassisSpeeds().omegaRadiansPerSecond < Units.degreesToRadians(160.0)) {
+                addError("Counter Clockwise rotation too slow");
+              } else {
+                addInfo("Counter Clockwise rotation successful");
+              }
+
+              controller.clearVirtualAxes();
+            }));
   }
 
   public Command quasistaticForward() {
@@ -538,5 +735,4 @@ public class Swerve extends SubsystemBase {
               backRightModule.stopCharacterizing();
             });
   }
-
 }

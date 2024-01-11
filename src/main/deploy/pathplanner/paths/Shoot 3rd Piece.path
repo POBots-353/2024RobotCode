@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.650466355063765,
+        "y": 5.905547993432169
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.773404771880769,
+        "y": 5.999101228971689
+      },
+      "isLocked": false,
+      "linkedName": "piece 2"
+    },
+    {
+      "anchor": {
+        "x": 5.8261782620431335,
+        "y": 6.291455090032687
+      },
+      "prevControl": {
+        "x": 6.902040470747608,
+        "y": 6.092654464511209
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Amp side shooting point"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "stopIntake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 270.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -177.8,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Side",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

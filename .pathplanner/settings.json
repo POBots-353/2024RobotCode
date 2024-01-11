@@ -5,11 +5,12 @@
   "pathFolders": [
     "Bottom Auto Paths",
     "Test Folder"
+    "Amp Side"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
+  "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 360.0,
+  "defaultMaxAngAccel": 270.0,
   "maxModuleSpeed": 4.5
 }

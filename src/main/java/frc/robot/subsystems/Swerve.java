@@ -310,6 +310,7 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public void zeroYaw() {
+    odometryLock.lock();
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
     setHeading(Rotation2d.fromDegrees(0.0));
@@ -318,6 +319,7 @@ public class Swerve extends VirtualSubsystem {
         getHeading(),
         getModulePositions(),
         new Pose2d(originalOdometryPosition.getTranslation(), AllianceUtil.getZeroRotation()));
+    odometryLock.unlock();
   }
 
   public void setHeading(Rotation2d rotation) {

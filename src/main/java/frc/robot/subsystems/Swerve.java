@@ -30,7 +30,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -205,12 +204,17 @@ public class Swerve extends VirtualSubsystem {
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
-    Timer.delay(1.50);
-
-    frontLeftModule.resetToAbsolute();
-    frontRightModule.resetToAbsolute();
-    backLeftModule.resetToAbsolute();
-    backRightModule.resetToAbsolute();
+    Commands.sequence(
+            Commands.waitSeconds(2.0),
+            runOnce(
+                () -> {
+                  frontLeftModule.resetToAbsolute();
+                  frontRightModule.resetToAbsolute();
+                  backLeftModule.resetToAbsolute();
+                  backRightModule.resetToAbsolute();
+                }))
+        .ignoringDisable(true)
+        .schedule();
   }
 
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {

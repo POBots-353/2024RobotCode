@@ -81,10 +81,11 @@ public final class Constants {
 
     public static final double maxTranslationalSpeed = Units.feetToMeters(12.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
+    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(5.0);
+    public static final double turboMaxTranslationalSpeed = Units.feetToMeters(14.5);
 
     public static final double maxTranslationalAcceleration = Units.feetToMeters(25.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
-    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(10.0);
 
     public static final double wheelCircumference = Units.inchesToMeters(4) * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
@@ -129,7 +130,7 @@ public final class Constants {
 
     public static final double maxModuleSpeed = Units.feetToMeters(14.5);
 
-    public static final int odometryUpdateFrequency = 100; // 100 Hz
+    public static final int odometryUpdateFrequency = 50; // 100 Hz
   }
 
   public static final class AutoConstants {

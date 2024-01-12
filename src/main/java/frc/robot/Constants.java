@@ -130,7 +130,7 @@ public final class Constants {
 
     public static final double maxModuleSpeed = Units.feetToMeters(14.5);
 
-    public static final int odometryUpdateFrequency = 50; // 100 Hz
+    public static final int odometryUpdateFrequency = 100; // 100 Hz
   }
 
   public static final class AutoConstants {

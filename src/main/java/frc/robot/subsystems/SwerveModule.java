@@ -107,10 +107,10 @@ public class SwerveModule {
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
     driveMotor.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
 
     drivePID.setP(SwerveConstants.driveP);
     drivePID.setOutputRange(-1, 1);
@@ -134,13 +134,13 @@ public class SwerveModule {
     turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65535);
     turnMotor.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
 
     turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
 

@@ -28,9 +28,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import java.util.function.Consumer;
+import monologue.Annotations.Log;
+import monologue.Logged;
 
-public class SwerveModule {
-  private String moduleName;
+public class SwerveModule implements Logged {
+  @Log.NT private String moduleName;
 
   private CANSparkMax driveMotor;
   private CANSparkMax turnMotor;
@@ -46,21 +48,21 @@ public class SwerveModule {
       new SimpleMotorFeedforward(
           SwerveConstants.driveKs, SwerveConstants.driveKv, SwerveConstants.driveKa);
 
-  private Rotation2d angleOffset;
+  @Log.NT private Rotation2d angleOffset;
 
   private StatusSignal<Double> absoluteAngleSignal;
 
-  private boolean isOpenLoop;
-  private boolean allowTurnInPlace;
+  @Log.NT private boolean isOpenLoop;
+  @Log.NT private boolean allowTurnInPlace;
 
-  private SwerveModuleState desiredState = new SwerveModuleState();
-  private SwerveModuleState previousState = new SwerveModuleState();
+  @Log.NT private SwerveModuleState desiredState = new SwerveModuleState();
+  @Log.NT private SwerveModuleState previousState = new SwerveModuleState();
 
   private double previousDrivePosition = 0.0;
   private double previousTurnPosition = 0.0;
 
-  private double characterizationVolts = 0.0;
-  private boolean characterizing = false;
+  @Log.NT private double characterizationVolts = 0.0;
+  @Log.NT private boolean characterizing = false;
 
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {

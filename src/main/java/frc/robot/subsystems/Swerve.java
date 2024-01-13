@@ -57,8 +57,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import monologue.Annotations.Log;
+import monologue.Logged;
 
-public class Swerve extends VirtualSubsystem {
+public class Swerve extends VirtualSubsystem implements Logged {
   private SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(SwerveConstants.wheelLocations);
 
@@ -97,13 +99,15 @@ public class Swerve extends VirtualSubsystem {
   private AHRS navx =
       new AHRS(
           Port.kUSB, SerialDataType.kProcessedData, (byte) SwerveConstants.odometryUpdateFrequency);
+
+  @Log.NT(key = "Angle Offset")
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
 
   private List<Pose2d> detectedTargets = new ArrayList<>();
-  private double limelightLastDetectedTime = 0.0;
+  @Log.NT private double limelightLastDetectedTime = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -327,14 +331,17 @@ public class Swerve extends VirtualSubsystem {
     angleOffset = navx.getRotation2d().minus(rotation);
   }
 
+  @Log.NT(key = "Heading")
   public Rotation2d getHeading() {
     return navx.getRotation2d().minus(angleOffset);
   }
 
+  @Log.NT(key = "Chassis Speeds")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  @Log.NT(key = "Estimated Pose")
   public Pose2d getPose() {
     odometryLock.lock();
     Pose2d pose = poseEstimator.getEstimatedPosition();
@@ -350,6 +357,7 @@ public class Swerve extends VirtualSubsystem {
     odometryLock.unlock();
   }
 
+  @Log.NT(key = "Module Positions")
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
       frontLeftModule.getModulePosition(),
@@ -359,6 +367,7 @@ public class Swerve extends VirtualSubsystem {
     };
   }
 
+  @Log.NT(key = "Module States")
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
       frontLeftModule.getModuleState(),
@@ -368,6 +377,7 @@ public class Swerve extends VirtualSubsystem {
     };
   }
 
+  @Log.NT(key = "Desired States")
   public SwerveModuleState[] getDesiredStates() {
     return new SwerveModuleState[] {
       frontLeftModule.getDesiredState(),

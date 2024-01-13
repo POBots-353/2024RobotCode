@@ -80,6 +80,12 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation "gov.nist.math:jama:1.0.3"
+    implementation 'com.github.shueja:Monologue:v1.0.0-beta4'
+}
+
+repositories {
+    mavenLocal()
+    maven { url 'https://jitpack.io' }
 }
 
 test {

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.LogUtil;
+import monologue.Monologue;
 import org.littletonrobotics.urcl.URCL;
 
 /**
@@ -75,6 +76,8 @@ public class Robot extends TimedRobot {
     odometryNotifier = new Notifier(m_robotContainer::updateSwerveOdometry);
     odometryNotifier.setName("OdometryNotifier");
     odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
+
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, false);
   }
 
   /**
@@ -94,13 +97,15 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putNumber("Code Runtime (ms)", (Timer.getFPGATimestamp() - startTime) * 1000.0);
+    Monologue.updateAll();
+
     SmartDashboard.putNumber(
         "CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("CPU Temperature", RobotController.getCPUTemp());
     SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Code Runtime (ms)", (Timer.getFPGATimestamp() - startTime) * 1000.0);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
@@ -152,15 +151,15 @@ public class RobotContainer implements Logged {
   }
 
   private void configureIntakeBindings() {
+    operatorStick
+        .button(OperatorConstants.intakeNoteButton)
+        .whileTrue(Commands.run(intake::intakeNote, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
-    operatorStick.button(OperatorConstants.intakeNoteButton).
-        whileTrue(Commands.run(intake::intakeNote, intake)).
-        toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
- 
-    operatorStick.button(OperatorConstants.outtakeNoteButton).
-        whileTrue(Commands.run(intake::outtakeNoteInIntake, intake)).
-        toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-        
+    operatorStick
+        .button(OperatorConstants.outtakeNoteButton)
+        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
   }
 
   private void configureBatteryChooser() {

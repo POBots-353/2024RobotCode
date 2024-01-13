@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -70,6 +71,9 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
     configureIntakeBindings();
+
+    NamedCommands.registerCommand("Note Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Stop Intake", Commands.run(intake::stopIntakeMotor, intake));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);

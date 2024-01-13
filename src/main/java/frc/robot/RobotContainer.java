@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
@@ -69,7 +71,9 @@ public class RobotContainer implements Logged {
     configureAutoChooser();
     configureBatteryChooser();
     configurePrematchChecklist();
-    configureIntakeBindings();
+
+    NamedCommands.registerCommand("Note Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Stop Intake", Commands.run(intake::stopIntakeMotor, intake));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -99,6 +103,12 @@ public class RobotContainer implements Logged {
    * joysticks}.
    */
   private void configureBindings() {
+    configureDriveBindings();
+    configureIntakeBindings();
+    configureArmBindings();
+  }
+
+  private void configureDriveBindings() {
     driverController
         .back()
         .and(driverController.start())
@@ -141,6 +151,36 @@ public class RobotContainer implements Logged {
                 swerve));
   }
 
+  private void configureIntakeBindings() {
+    operatorStick
+        .button(OperatorConstants.intakeNoteButton)
+        .whileTrue(Commands.run(intake::intakeNote, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+
+    operatorStick
+        .button(OperatorConstants.outtakeNoteButton)
+        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+  }
+
+  private void configureArmBindings() {
+    operatorStick
+        .button(OperatorConstants.armToPickup)
+        .whileTrue(arm.moveToPosition(ArmConstants.pickupHeight));
+
+    operatorStick
+        .button(OperatorConstants.armToAmp)
+        .whileTrue(arm.moveToPosition(ArmConstants.ampHeight));
+
+    operatorStick
+        .button(OperatorConstants.armShootSubwoofer)
+        .whileTrue(arm.moveToPosition(ArmConstants.subwooferHeight));
+
+    operatorStick
+        .button(OperatorConstants.armShootPodium)
+        .whileTrue(arm.moveToPosition(ArmConstants.podiumHeight));
+  }
+
   private void configureAutoChooser() {
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -155,18 +195,6 @@ public class RobotContainer implements Logged {
     autoChooser.addOption("[SysID] Arm Dynamic Backward", arm.dynamicBackward());
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
-  }
-
-  private void configureIntakeBindings() {
-    operatorStick
-        .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(Commands.run(intake::intakeNote, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    operatorStick
-        .button(OperatorConstants.outtakeNoteButton)
-        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
   }
 
   private void configureBatteryChooser() {

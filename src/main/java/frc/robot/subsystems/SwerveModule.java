@@ -107,10 +107,10 @@ public class SwerveModule {
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
     driveMotor.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
 
     drivePID.setP(SwerveConstants.driveP);
     drivePID.setOutputRange(-1, 1);
@@ -134,13 +134,13 @@ public class SwerveModule {
     turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65535);
     turnMotor.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
 
     turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
 
@@ -185,9 +185,13 @@ public class SwerveModule {
     for (int i = 0; i < 100; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
         failed = false;
+      }
+      if (turnEncoder.getPosition() == position.getRadians()) {
         break;
       }
-      Timer.delay(0.020);
+      if (failed) {
+        Timer.delay(0.020);
+      }
     }
 
     if (failed) {
@@ -200,7 +204,7 @@ public class SwerveModule {
 
   private boolean waitForCANCoder() {
     for (int i = 0; i < 100; i++) {
-      absoluteAngleSignal.waitForUpdate(0.05);
+      absoluteAngleSignal.waitForUpdate(0.1);
 
       if (absoluteAngleSignal.getStatus().isOK()) {
         return true;
@@ -269,23 +273,28 @@ public class SwerveModule {
     double positionDelta = position - previousDrivePosition;
     double velocity = getVelocity();
 
+    previousDrivePosition = position;
+
     if (Double.isNaN(position) || Double.isInfinite(position)) {
       return false;
     }
 
-    if (Math.abs(positionDelta) < Math.abs(velocity * 1.15)) {
-      if (Math.abs(velocity) < 1.0e-4) {
+    if (Math.abs(positionDelta) < Math.abs(velocity * 1.0)) {
+      if (Math.abs(velocity) < 1.0e-4 && Math.abs(positionDelta) < 1.0e-4) {
         return true;
+      } else {
+        return Math.signum(positionDelta) == Math.signum(velocity);
       }
-      return true;
     }
 
-    return Math.signum(positionDelta) == Math.signum(velocity) && Math.abs(velocity) > 1.0e-4;
+    return false;
   }
 
   public boolean turnMotorValid() {
     double position = turnEncoder.getPosition();
     double positionDelta = position - previousTurnPosition;
+
+    previousTurnPosition = position;
 
     if (Double.isNaN(position) || Double.isInfinite(position)) {
       return false;
@@ -331,14 +340,13 @@ public class SwerveModule {
       setAngle(Rotation2d.fromDegrees(0.0));
     }
 
-    previousDrivePosition = driveEncoder.getPosition();
-    previousTurnPosition = turnEncoder.getPosition();
-
     updateTelemetry();
   }
 
   private void updateTelemetry() {
     String telemetryKey = "Swerve/" + moduleName + "/";
+
+    SmartDashboard.putNumber(telemetryKey + "Position", driveEncoder.getPosition());
 
     SmartDashboard.putNumber(telemetryKey + "Velocity", getVelocity());
     SmartDashboard.putNumber(telemetryKey + "Angle", getAngle().getDegrees());

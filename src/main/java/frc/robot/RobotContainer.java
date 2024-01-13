@@ -41,8 +41,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
 
-  // PathPlannerPath pathDeux = PathPlannerPath.fromPathFile("PathDeux");
-
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
       new VirtualXboxController(OperatorConstants.driverControllerPort);
@@ -112,32 +110,29 @@ public class RobotContainer {
 
     driverController
         .leftTrigger()
-        .and(driverController.x())
-        .whileTrue(
-            AutoBuilder.pathfindThenFollowPath(
-              pathDeux, 
-              new PathConstraints(3.0, 3.0, 
-              Units.degreesToRadians(180.0), 180.0)));
-
-    driverController
-        .leftTrigger()
         .whileTrue(
             new TeleopSwerve(
-                driverController::getLeftY, 
-                driverController::getLeftX, 
-                driverController::getRightX, 
-                driverController::getRightY, 
+                driverController::getLeftY,
+                driverController::getLeftX,
+                driverController::getRightX,
+                driverController::getRightY,
                 () -> driverController.getHID().getLeftBumper(),
-                SwerveConstants.slowMotionMaxTranslationalSpeed, 
-                SwerveConstants.maxAngularSpeed, 
+                SwerveConstants.slowMotionMaxTranslationalSpeed,
+                SwerveConstants.maxAngularSpeed,
                 swerve));
 
     driverController
-         .leftTrigger()
-         .and(driverController.x())
-         .whileTrue(
-             AutoBuilder.pathfindThenFollowPath(
-                 pathDeux, new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
+        .rightTrigger()
+        .whileTrue(
+            new TeleopSwerve(
+                driverController::getLeftY,
+                driverController::getLeftX,
+                driverController::getRightX,
+                driverController::getRightY,
+                () -> driverController.getHID().getLeftBumper(),
+                SwerveConstants.turboMaxTranslationalSpeed,
+                SwerveConstants.maxAngularSpeed,
+                swerve));
   }
 
   private void configureAutoChooser() {

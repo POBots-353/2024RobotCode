@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -12,7 +14,12 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ArmConstants;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -22,6 +29,8 @@ public class Arm extends SubsystemBase implements Logged {
 
   private SparkPIDController armPIDController = armMotor.getPIDController();
   private RelativeEncoder armEncoder = armMotor.getEncoder();
+  private DutyCycleEncoder absoluteEncoder =
+      new DutyCycleEncoder(ArmConstants.armAbsoluteEncoderID);
 
   private TrapezoidProfile armProfile = new TrapezoidProfile(ArmConstants.profileConstraints);
 
@@ -30,8 +39,20 @@ public class Arm extends SubsystemBase implements Logged {
       new ArmFeedforward(
           ArmConstants.armKg, ArmConstants.armKs, ArmConstants.armKv, ArmConstants.armKa);
 
+  private SysIdRoutine sysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              (volts) -> {
+                armMotor.setVoltage(volts.in(Volts));
+              },
+              null,
+              this));
+
   /** Creates a new Arm. */
   public Arm() {
+    absoluteEncoder.setDutyCycleRange(1.0 / 1024.0, 1023.0 / 1024.0);
+
     armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
     armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
@@ -60,6 +81,26 @@ public class Arm extends SubsystemBase implements Logged {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler runj
+    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Arm/Position", armEncoder.getPosition());
+    SmartDashboard.putNumber("Arm/Absolute Position", absoluteEncoder.getAbsolutePosition());
+
+    SmartDashboard.putNumber("Arm/Velocity", armEncoder.getVelocity());
+  }
+
+  public Command quasistaticForward() {
+    return sysIdRoutine.quasistatic(Direction.kForward);
+  }
+
+  public Command quasistaticBackward() {
+    return sysIdRoutine.quasistatic(Direction.kReverse);
+  }
+
+  public Command dynamicForward() {
+    return sysIdRoutine.dynamic(Direction.kForward);
+  }
+
+  public Command dynamicBackward() {
+    return sysIdRoutine.dynamic(Direction.kReverse);
   }
 }

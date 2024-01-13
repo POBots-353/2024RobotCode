@@ -102,6 +102,7 @@ public class Swerve extends VirtualSubsystem {
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
 
+  private List<Pose2d> detectedTargets = new ArrayList<>();
   private double limelightLastDetectedTime = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
@@ -427,7 +428,7 @@ public class Swerve extends VirtualSubsystem {
     return true;
   }
 
-  private void updateLimelightPoses(List<Pose2d> poses) {
+  private void updateLimelightPoses() {
     LimelightHelpers.Results results =
         LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
 
@@ -478,15 +479,14 @@ public class Swerve extends VirtualSubsystem {
       Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(tagID);
 
       if (tagPose.isPresent()) {
-        poses.add(tagPose.get().toPose2d());
+        detectedTargets.add(tagPose.get().toPose2d());
       }
     }
   }
 
   public void updateVisionPoseEstimates() {
-    List<Pose2d> detectedTargets = new ArrayList<>();
-
-    updateLimelightPoses(detectedTargets);
+    detectedTargets.clear();
+    updateLimelightPoses();
 
     field.getObject("Detected Targets").setPoses(detectedTargets);
   }

@@ -24,7 +24,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
-    
+
     public static final int intakeNoteButton = 5;
     public static final int outtakeNoteButton = 6;
   }

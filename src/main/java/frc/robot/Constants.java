@@ -24,6 +24,9 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
+    
+    public static final int intakeNoteButton = 5;
+    public static final int outtakeNoteButton = 6;
   }
 
   public static final class FieldConstants {
@@ -166,5 +169,10 @@ public final class Constants {
     public static final int turnID = 7;
     public static final int encoderID = 11;
     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-93.427734375);
+  }
+
+  public static class IntakeConstants {
+    public static final int intakeMotorOneID = 5;
+    public static final double intakeMotorSpeed = 0.80;
   }
 }

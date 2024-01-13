@@ -17,12 +17,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -40,6 +42,7 @@ import java.util.List;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
+  private Intake intake = new Intake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -64,6 +67,7 @@ public class RobotContainer {
     configureAutoChooser();
     configureBatteryChooser();
     configurePrematchChecklist();
+    configureIntakeBindings();
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -144,6 +148,18 @@ public class RobotContainer {
     autoChooser.addOption("[SysID] Swerve Dynamic Backward", swerve.dynamicBackward());
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
+
+  private void configureIntakeBindings() {
+
+    operatorStick.button(OperatorConstants.intakeNoteButton).
+        whileTrue(Commands.run(intake::intakeNote, intake)).
+        toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+ 
+    operatorStick.button(OperatorConstants.outtakeNoteButton).
+        whileTrue(Commands.run(intake::outtakeNoteInIntake, intake)).
+        toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+        
   }
 
   private void configureBatteryChooser() {

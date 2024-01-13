@@ -37,19 +37,21 @@ public final class Constants {
     public static final class LimelightConstants {
       public static final double[] distances =
           new double[] {
-            0.50, 1.00, 1.50,
+            0.50, 1.00, 1.50, 2.00,
           };
       public static final double[] xyStandardDeviations =
           new double[] {
             0.014, // 0.50
             0.020, // 1.00
             0.150, // 1.50
+            0.200, // 2.00
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
             0.115, // 0.50
             0.149, // 1.00
             0.190, // 1.50
+            0.250 // 2.00
           };
 
       public static PolynomialRegression xyPolynomialRegression =

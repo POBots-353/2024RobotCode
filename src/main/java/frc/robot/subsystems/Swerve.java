@@ -30,6 +30,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -309,6 +310,7 @@ public class Swerve extends VirtualSubsystem {
   }
 
   public void zeroYaw() {
+    odometryLock.lock();
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
     setHeading(Rotation2d.fromDegrees(0.0));
@@ -317,6 +319,7 @@ public class Swerve extends VirtualSubsystem {
         getHeading(),
         getModulePositions(),
         new Pose2d(originalOdometryPosition.getTranslation(), AllianceUtil.getZeroRotation()));
+    odometryLock.unlock();
   }
 
   public void setHeading(Rotation2d rotation) {
@@ -399,7 +402,7 @@ public class Swerve extends VirtualSubsystem {
   }
 
   private boolean isValidPose(Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
-    if (targetPose.getTranslation().getNorm() > 3.0) {
+    if (targetPose.getTranslation().getNorm() > 3.5) {
       return false;
     }
 
@@ -416,7 +419,7 @@ public class Swerve extends VirtualSubsystem {
 
     Rotation2d angleDifference = getHeading().minus(visionPose.getRotation().toRotation2d());
 
-    // If the angle is too different from our gyro angle
+    // // If the angle is too different from our gyro angle
     if (Math.abs(MathUtil.inputModulus(angleDifference.getDegrees(), -180.0, 180.0)) > 20.0) {
       return false;
     }
@@ -460,8 +463,14 @@ public class Swerve extends VirtualSubsystem {
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
 
+    odometryLock.lock();
     poseEstimator.addVisionMeasurement(
-        visionPose.toPose2d(), limelightLastDetectedTime, standardDevs);
+        visionPose.toPose2d(),
+        Timer.getFPGATimestamp()
+            - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
+                / 1000.0,
+        standardDevs);
+    odometryLock.unlock();
 
     for (LimelightTarget_Fiducial target : detectedTags) {
       int tagID = (int) target.fiducialID;

@@ -23,6 +23,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
@@ -42,6 +43,7 @@ import monologue.Logged;
 public class RobotContainer implements Logged {
   // The robot's subsystems and commands are defined here...
   private Swerve swerve = new Swerve();
+  private Arm arm = new Arm();
   private Intake intake = new Intake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -147,11 +149,15 @@ public class RobotContainer implements Logged {
     autoChooser.addOption("[SysID] Swerve Dynamic Forward", swerve.dynamicForward());
     autoChooser.addOption("[SysID] Swerve Dynamic Backward", swerve.dynamicBackward());
 
+    autoChooser.addOption("[SysID] Arm Quasistatic Forward", arm.quasistaticForward());
+    autoChooser.addOption("[SysID] Arm Quasistatic Backward", arm.quasistaticBackward());
+    autoChooser.addOption("[SysID] Arm Dynamic Forward", arm.dynamicForward());
+    autoChooser.addOption("[SysID] Arm Dynamic Backward", arm.dynamicBackward());
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configureIntakeBindings() {
-
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
         .whileTrue(Commands.run(intake::intakeNote, intake))

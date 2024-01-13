@@ -9,6 +9,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.PolynomialRegression;
 
@@ -63,6 +64,30 @@ public final class Constants {
       public static PolynomialRegression thetaPolynomialRegression =
           new PolynomialRegression(distances, thetaStandardDeviations, 3);
     }
+  }
+
+  public static final class ArmConstants {
+    public static final int armMotorID = 10;
+    public static final int armAbsoluteEncoderID = 9;
+
+    public static final double armKg = 0.353;
+    public static final double armKs = 0.353;
+    public static final double armKv = 0.353;
+    public static final double armKa = 0.353;
+
+    public static final double armKp = 0.1;
+    public static final double armKi = 0.0;
+    public static final double armKd = 0.0;
+
+    public static final double armGearRatio = 1.0 / 353.0;
+    public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
+    public static final double armVelocityConversionFactor = armPositionConversionFactor / 60.0;
+
+    public static final double maxVelocity = Units.degreesToRadians(180.0);
+    public static final double maxAcceleration = Units.degreesToRadians(180.0);
+
+    public static final TrapezoidProfile.Constraints profileConstraints =
+        new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
   }
 
   public static final class SwerveConstants {

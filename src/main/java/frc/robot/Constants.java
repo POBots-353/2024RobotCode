@@ -170,9 +170,9 @@ public final class Constants {
 
     public static final double driveP = 0.15;
 
-    public static final double driveKs = 0.11196;
-    public static final double driveKv = 2.3939;
-    public static final double driveKa = 0.15385;
+    public static final double driveKs = 0.16022;
+    public static final double driveKv = 2.3501;
+    public static final double driveKa = 0.37865;
 
     public static final double turnP = 0.85;
     public static final double turnD = 0;

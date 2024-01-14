@@ -5,6 +5,7 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
@@ -42,7 +43,7 @@ public class AutoShoot extends Command {
     double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
 
     double angle = ArmConstants.autoShootInterpolation.get(distance);
-    arm.setPosition(angle);
+    arm.setPosition(Rotation2d.fromRadians(angle));
   }
 
   // Called once the command ends or is interrupted.

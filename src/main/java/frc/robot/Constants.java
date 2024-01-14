@@ -86,8 +86,11 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int armMotorID = 10;
-    public static final int armAbsoluteEncoderID = 9;
+    public static final int mainMotorID = 10;
+    public static final int followerID = 11;
+    public static final int absoluteEncoderID = 9;
+
+    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 
     public static final double armKg = 0.353;
     public static final double armKs = 0.353;
@@ -108,12 +111,12 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
-    public static final double pickupAngle = Units.degreesToRadians(0.0);
-    public static final double autoAmpPodiumAngle = Units.degreesToRadians(60.0);
-    public static final double autoSourcePodiumAngle = Units.degreesToRadians(60.0);
-    public static final double ampAngle = Units.degreesToRadians(45.0);
-    public static final double subwooferAngle = Units.degreesToRadians(15.0);
-    public static final double podiumAngle = Units.degreesToRadians(60.0);
+    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(45.0);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(15.0);
+    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(60.0);
 
     // (distance, angle)
     // Stubbed with fake values for now

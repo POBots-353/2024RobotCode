@@ -4,13 +4,14 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
 public class ArmHold extends Command {
   private final Arm arm;
 
-  private double holdPosition;
+  private Rotation2d holdPosition;
 
   /** Creates a new ArmHold. */
   public ArmHold(Arm arm) {

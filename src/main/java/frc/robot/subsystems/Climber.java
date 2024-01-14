@@ -13,19 +13,8 @@ import frc.robot.Constants.IntakeConstants;
 
 public class Climber extends SubsystemBase {
   /** IDK man it's a climber */
-  private DoubleSolenoid climberPiston =
-      new DoubleSolenoid(
-          IntakeConstants.pneumaticHubID,
-          PneumaticsModuleType.CTREPCM,
-          IntakeConstants.climberPistonForwardID,
-          IntakeConstants.PistonReverseID);
-
-  private DoubleSolenoid manipulatorBreak =
-      new DoubleSolenoid(
-          IntakeConstants.pneumaticHubID,
-          PneumaticsModuleType.CTREPCM,
-          IntakeConstants.manipulatorBreakForwardID,
-          IntakeConstants.manipulatorBreakReverseID);
+  private DoubleSolenoid climberPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.CTREPCM,
+          IntakeConstants.climberPistonForwardID, IntakeConstants.PistonReverseID);
 
   private RelativeEncoder climberEncoder;
 
@@ -44,14 +33,6 @@ public class Climber extends SubsystemBase {
 
   public void climberTiltOut() {
     climberPiston.set(Value.kForward);
-  }
-
-  public void toggleOnManipulatorBreak() {
-    manipulatorBreak.set(Value.kForward);
-  }
-
-  public void toggleOffManipulatorBreak() {
-    manipulatorBreak.set(Value.kReverse);
   }
 
   // Maybe use motors?

@@ -32,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Center 5"
+            "pathName": "Source To Center 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Center 5"
+            "pathName": "Source Shoot Center 5"
           }
         },
         {
@@ -50,13 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Center 4"
+            "pathName": "Source To Center 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Center 4"
+            "pathName": "Source Shoot Center 4"
           }
         },
         {

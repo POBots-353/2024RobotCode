@@ -3,36 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.524939881048594,
-        "y": 1.7724617267416347
+        "x": 1.0563812283116707,
+        "y": 6.616622648366552
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.790315896421267,
-        "y": 2.1168847951730987
+        "x": 1.9815373154284102,
+        "y": 5.691466561249814
       },
       "isLocked": false,
-      "linkedName": "ShootingPoint"
+      "linkedName": null
     },
     {
       "anchor": {
         "x": 7.6153838917364425,
-        "y": 2.4323841240275086
+        "y": 7.414093916506922
       },
       "prevControl": {
-        "x": 6.32889012713351,
-        "y": 1.956778965936354
+        "x": 5.896343188697772,
+        "y": 6.9346335843668845
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center 4"
+      "linkedName": "Center 1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.35,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "StartIntake",
+      "name": "Start Intake",
       "waypointRelativePos": 0.85,
       "command": {
         "type": "parallel",
@@ -61,9 +67,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source Side",
+  "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": 145.0,
+    "rotation": -127.1466866980219,
     "velocity": 0
   },
   "useDefaultConstraints": true

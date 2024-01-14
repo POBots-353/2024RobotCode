@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0563812283116707,
-      "y": 6.616622648366552
+      "x": 0.7392210795817603,
+      "y": 4.397002070357417
     },
-    "rotation": -123.32825213432857
+    "rotation": 122.27564431457763
   },
   "command": {
     "type": "sequential",
@@ -32,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To Center 1"
+            "pathName": "Source To Center 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top Shoot Center 1"
+            "pathName": "Source Shoot Center 5"
           }
         },
         {
@@ -50,13 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To Center 2"
+            "pathName": "Source To Center 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top Shoot Center 2"
+            "pathName": "Source Shoot Center 4"
           }
         },
         {
@@ -68,12 +68,24 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To Center 3"
+            "pathName": "Source To Center 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Shoot Center 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
     }
   },
-  "folder": "Amp Side",
+  "folder": "Source Side",
   "choreoAuto": false
 }

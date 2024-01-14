@@ -1,0 +1,39 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
+
+public class Climb extends SubsystemBase {
+  /** IDK man it's a climber */
+  public Climber() {}
+
+  // Just put some functions in here I
+  public void toggleClimber() {}
+  public void climberTiltIn() {}
+  public void climberTiltOut() {}
+
+//Maybe use motors?
+  public double getMotorCurrent() {}
+  public double getClimberPosition() {}
+
+//There will likely be a climber position for 0
+  public void zeroClimberPosition() {
+    climberEncoder.setPosition(0);
+  }
+
+//I'm just guessing there might be a double solenoid?
+  public DoubleSolenoid.Value getPistonState() {}
+
+  @Override
+  public void periodic() {}

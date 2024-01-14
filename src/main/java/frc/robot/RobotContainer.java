@@ -25,6 +25,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
@@ -179,6 +180,8 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.armShootPodium)
         .whileTrue(arm.moveToPosition(ArmConstants.podiumHeight));
+
+    operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }
 
   private void configureAutoChooser() {

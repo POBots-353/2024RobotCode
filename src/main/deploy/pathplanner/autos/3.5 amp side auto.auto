@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "To 2nd Piece"
+            "pathName": "Top To 2nd Piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot 2nd Piece"
+            "pathName": "Top Shoot 2nd Piece"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "To 3rd piece"
+            "pathName": "Top To 3rd piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot 3rd Piece"
+            "pathName": "Top Shoot 3rd Piece"
           }
         },
         {
@@ -56,7 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "To 4th Piece"
+            "pathName": "Top To 4th Piece"
           }
         }
       ]

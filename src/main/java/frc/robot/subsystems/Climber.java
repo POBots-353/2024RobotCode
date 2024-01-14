@@ -9,37 +9,37 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.pistonConstants;
+import frc.robot.Constants.climberConstants;
 
 public class Climber extends SubsystemBase {
   /** Created Climber */
   private DoubleSolenoid climberPiston1 =
       new DoubleSolenoid(
-          pistonConstants.pneumaticHubID,
+          climberConstants.pneumaticHubID,
           PneumaticsModuleType.CTREPCM,
-          pistonConstants.climberPistonForwardID1,
-          pistonConstants.pistonReverseID1);
+          climberConstants.climberPistonForwardID1,
+          climberConstants.pistonReverseID1);
 
   private DoubleSolenoid climberPiston2 =
       new DoubleSolenoid(
-          pistonConstants.pneumaticHubID,
+          climberConstants.pneumaticHubID,
           PneumaticsModuleType.CTREPCM,
-          pistonConstants.climberPistonForwardID2,
-          pistonConstants.pistonReverseID2);
+          climberConstants.climberPistonForwardID2,
+          climberConstants.pistonReverseID2);
 
   private DoubleSolenoid climberPiston3 =
       new DoubleSolenoid(
-          pistonConstants.pneumaticHubID,
+          climberConstants.pneumaticHubID,
           PneumaticsModuleType.CTREPCM,
-          pistonConstants.climberPistonForwardID3,
-          pistonConstants.pistonReverseID3);
+          climberConstants.climberPistonForwardID3,
+          climberConstants.pistonReverseID3);
 
   private DoubleSolenoid climberPiston4 =
       new DoubleSolenoid(
-          pistonConstants.pneumaticHubID,
+          climberConstants.pneumaticHubID,
           PneumaticsModuleType.CTREPCM,
-          pistonConstants.climberPistonForwardID4,
-          pistonConstants.pistonReverseID4);
+          climberConstants.climberPistonForwardID4,
+          climberConstants.pistonReverseID4);
 
   private RelativeEncoder climberEncoder1;
   private RelativeEncoder climberEncoder2;

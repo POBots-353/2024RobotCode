@@ -235,7 +235,7 @@ public final class Constants {
     public static final int intakeMotorOneID = 5;
     public static final double intakeMotorSpeed = 0.80;
   }
-  public static class pistonConstants {
+  public static class climberConstants {
     public static final int pneumaticHubID = 1;
     public static final int pistonReverseID1 = 0;
     public static final int pistonReverseID2 = 0;

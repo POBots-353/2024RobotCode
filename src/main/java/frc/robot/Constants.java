@@ -215,5 +215,11 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int intakeMotorOneID = 5;
     public static final double intakeMotorSpeed = 0.80;
+    public static final int pneumaticHubID = 0;
+    public static final int climberPistonForwardID = 0;
+    public static final int PistonReverseID = 0;
+    public static final int manipulatorBreakForwardID = 0;
+    public static final int manipulatorBreakReverseID = 0;
+    public static final double startingConfigurationHeight = 0;
   }
 }

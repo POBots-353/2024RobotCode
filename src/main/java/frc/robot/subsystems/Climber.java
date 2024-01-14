@@ -42,7 +42,6 @@ private DoubleSolenoid climberPiston4 = new DoubleSolenoid(
   private RelativeEncoder climberEncoder2;
   private RelativeEncoder climberEncoder3;
   private RelativeEncoder climberEncoder4;
-
   
   public Climber() {}
 

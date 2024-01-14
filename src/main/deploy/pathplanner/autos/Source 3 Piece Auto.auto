@@ -5,7 +5,7 @@
       "x": 0.7392210795817603,
       "y": 4.397002070357417
     },
-    "rotation": 120.51023740611554
+    "rotation": 122.27564431457763
   },
   "command": {
     "type": "sequential",
@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source To Center 5"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -48,9 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source To Center 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {

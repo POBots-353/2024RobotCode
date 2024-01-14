@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source To Center 5"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -48,9 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source To Center 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -66,9 +92,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source To Center 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {

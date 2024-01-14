@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Amp To Center 1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -48,9 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Amp To Center 2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -66,9 +92,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Amp To Center 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
           }
         }
       ]

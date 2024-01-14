@@ -76,6 +76,16 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand("Start Intake", Commands.run(intake::intakeNote, intake));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
+    NamedCommands.registerCommand(
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Source Podium",
+        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
 
@@ -167,19 +177,19 @@ public class RobotContainer implements Logged {
   private void configureArmBindings() {
     operatorStick
         .button(OperatorConstants.armToPickup)
-        .whileTrue(arm.moveToPosition(ArmConstants.pickupHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.pickupAngle));
 
     operatorStick
         .button(OperatorConstants.armToAmp)
-        .whileTrue(arm.moveToPosition(ArmConstants.ampHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.ampAngle));
 
     operatorStick
         .button(OperatorConstants.armShootSubwoofer)
-        .whileTrue(arm.moveToPosition(ArmConstants.subwooferHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.subwooferAngle));
 
     operatorStick
         .button(OperatorConstants.armShootPodium)
-        .whileTrue(arm.moveToPosition(ArmConstants.podiumHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }

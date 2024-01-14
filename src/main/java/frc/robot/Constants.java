@@ -108,10 +108,12 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
-    public static final double pickupHeight = Units.degreesToRadians(0.0);
-    public static final double ampHeight = Units.degreesToRadians(45.0);
-    public static final double subwooferHeight = Units.degreesToRadians(15.0);
-    public static final double podiumHeight = Units.degreesToRadians(60.0);
+    public static final double pickupAngle = Units.degreesToRadians(0.0);
+    public static final double autoAmpPodiumAngle = Units.degreesToRadians(60.0);
+    public static final double autoSourcePodiumAngle = Units.degreesToRadians(60.0);
+    public static final double ampAngle = Units.degreesToRadians(45.0);
+    public static final double subwooferAngle = Units.degreesToRadians(15.0);
+    public static final double podiumAngle = Units.degreesToRadians(60.0);
 
     // (distance, angle)
     // Stubbed with fake values for now

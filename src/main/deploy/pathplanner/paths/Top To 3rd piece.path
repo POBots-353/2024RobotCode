@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.966358320181027,
+        "x": 6.674004459120028,
         "y": 6.127736927838528
       },
       "isLocked": false,
@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 7.685548818391084,
-        "y": 4.525637769224256
+        "x": 7.650466355063765,
+        "y": 5.905547993432169
       },
       "prevControl": {
-        "x": 7.2704063356844655,
-        "y": 5.203898726885772
+        "x": 7.130076482375187,
+        "y": 5.917242147874609
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "piece 2"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,11 +57,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.8560135854289,
+    "rotation": 167.31961650818022,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Side",
+  "folder": "Top",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

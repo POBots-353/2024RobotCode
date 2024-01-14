@@ -85,6 +85,10 @@ public class Arm extends SubsystemBase implements Logged {
     return new TrapezoidProfile.State(armEncoder.getPosition(), armEncoder.getVelocity());
   }
 
+  public double getPosition() {
+    return armEncoder.getPosition();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

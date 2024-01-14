@@ -25,6 +25,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -91,6 +92,8 @@ public class RobotContainer implements Logged {
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+
+    arm.setDefaultCommand(new ArmHold(arm));
 
     swerve.setDefaultCommand(
         new TeleopSwerve(

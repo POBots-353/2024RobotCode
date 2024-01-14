@@ -9,51 +9,100 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.pistonConstants;
 
 public class Climber extends SubsystemBase {
-  /** IDK man it's a climber */
-  private DoubleSolenoid climberPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.CTREPCM,
-          IntakeConstants.climberPistonForwardID, IntakeConstants.PistonReverseID);
+  /** Created Climber */
+  private DoubleSolenoid climberPiston1 =
+  new DoubleSolenoid(
+      pistonConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
+      pistonConstants.climberPistonForwardID1,
+      pistonConstants.pistonReverseID1);
 
-  private RelativeEncoder climberEncoder;
+private DoubleSolenoid climberPiston2 = new DoubleSolenoid(
+      pistonConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
+      pistonConstants.climberPistonForwardID2,
+      pistonConstants.pistonReverseID2);
 
-  public Climber() {
-    climberEncoder.setPosition(IntakeConstants.startingConfigurationHeight);
-  }
+private DoubleSolenoid climberPiston3 = new DoubleSolenoid(
+      pistonConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
+      pistonConstants.climberPistonForwardID3,
+      pistonConstants.pistonReverseID3);
 
-  // Just put some functions in here I
+private DoubleSolenoid climberPiston4 = new DoubleSolenoid(
+      pistonConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
+      pistonConstants.climberPistonForwardID4,
+      pistonConstants.pistonReverseID4);
+
+  private RelativeEncoder climberEncoder1;
+  private RelativeEncoder climberEncoder2;
+  private RelativeEncoder climberEncoder3;
+  private RelativeEncoder climberEncoder4;
+
+  
+  public Climber() {}
+
+  // Maybe methods
   public void toggleClimber() {
-    climberPiston.toggle();
+    climberPiston1.toggle();
+    climberPiston2.toggle();
   }
 
   public void climberTiltIn() {
-    climberPiston.set(Value.kReverse);
+    climberPiston1.set(Value.kReverse);
+    climberPiston2.set(Value.kReverse);
   }
 
   public void climberTiltOut() {
-    climberPiston.set(Value.kForward);
+    climberPiston1.set(Value.kForward);
+    climberPiston2.set(Value.kForward);
+  }
+  
+  public void climberExtendsUp() {
+    climberPiston3.set(Value.kForward);
+    climberPiston4.set(Value.kForward);
   }
 
-  // Maybe use motors?
+    public void climberRestractDown() {
+    climberPiston3.set(Value.kForward);
+    climberPiston4.set(Value.kForward);
+  }
+
+  // I don't know if there might be motors
   public double getMotorCurrent() {
     return 0;
   }
 
   public double getClimberPosition() {
-    return climberEncoder.getPosition();
+    return climberEncoder1.getPosition();
   }
 
-  // There will likely be a climber position for 0
-  public void zeroClimberPosition() {
-    climberEncoder.setPosition(0);
+  // Position 0 for all climber pistons
+  public void zeroClimberPositionTilt() {
+    climberEncoder1.setPosition(0);
+    climberEncoder2.setPosition(0);
   }
 
-  // I'm just guessing there might be a double solenoid?
-  public DoubleSolenoid.Value getPistonState() {
-    return climberPiston.get();
+  public void zeroClimberPositionExtend() {
+    climberEncoder3.setPosition(0);
+    climberEncoder4.setPosition(0);
   }
 
+  // Get Piston Positions
+  public DoubleSolenoid.Value[] getPistonState() {
+    return new DoubleSolenoid.Value[] {
+        climberPiston1.get(),
+        climberPiston2.get(),
+        climberPiston3.get(),
+        climberPiston4.get()
+    };
+}
+
+  // add teleop stuff here
   @Override
   public void periodic() {}
 }

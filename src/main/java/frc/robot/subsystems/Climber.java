@@ -14,35 +14,38 @@ import frc.robot.Constants.pistonConstants;
 public class Climber extends SubsystemBase {
   /** Created Climber */
   private DoubleSolenoid climberPiston1 =
-  new DoubleSolenoid(
-      pistonConstants.pneumaticHubID,
-      PneumaticsModuleType.CTREPCM,
-      pistonConstants.climberPistonForwardID1,
-      pistonConstants.pistonReverseID1);
+      new DoubleSolenoid(
+          pistonConstants.pneumaticHubID,
+          PneumaticsModuleType.CTREPCM,
+          pistonConstants.climberPistonForwardID1,
+          pistonConstants.pistonReverseID1);
 
-private DoubleSolenoid climberPiston2 = new DoubleSolenoid(
-      pistonConstants.pneumaticHubID,
-      PneumaticsModuleType.CTREPCM,
-      pistonConstants.climberPistonForwardID2,
-      pistonConstants.pistonReverseID2);
+  private DoubleSolenoid climberPiston2 =
+      new DoubleSolenoid(
+          pistonConstants.pneumaticHubID,
+          PneumaticsModuleType.CTREPCM,
+          pistonConstants.climberPistonForwardID2,
+          pistonConstants.pistonReverseID2);
 
-private DoubleSolenoid climberPiston3 = new DoubleSolenoid(
-      pistonConstants.pneumaticHubID,
-      PneumaticsModuleType.CTREPCM,
-      pistonConstants.climberPistonForwardID3,
-      pistonConstants.pistonReverseID3);
+  private DoubleSolenoid climberPiston3 =
+      new DoubleSolenoid(
+          pistonConstants.pneumaticHubID,
+          PneumaticsModuleType.CTREPCM,
+          pistonConstants.climberPistonForwardID3,
+          pistonConstants.pistonReverseID3);
 
-private DoubleSolenoid climberPiston4 = new DoubleSolenoid(
-      pistonConstants.pneumaticHubID,
-      PneumaticsModuleType.CTREPCM,
-      pistonConstants.climberPistonForwardID4,
-      pistonConstants.pistonReverseID4);
+  private DoubleSolenoid climberPiston4 =
+      new DoubleSolenoid(
+          pistonConstants.pneumaticHubID,
+          PneumaticsModuleType.CTREPCM,
+          pistonConstants.climberPistonForwardID4,
+          pistonConstants.pistonReverseID4);
 
   private RelativeEncoder climberEncoder1;
   private RelativeEncoder climberEncoder2;
   private RelativeEncoder climberEncoder3;
   private RelativeEncoder climberEncoder4;
-  
+
   public Climber() {}
 
   // Maybe methods
@@ -60,13 +63,13 @@ private DoubleSolenoid climberPiston4 = new DoubleSolenoid(
     climberPiston1.set(Value.kForward);
     climberPiston2.set(Value.kForward);
   }
-  
+
   public void climberExtendsUp() {
     climberPiston3.set(Value.kForward);
     climberPiston4.set(Value.kForward);
   }
 
-    public void climberRestractDown() {
+  public void climberRestractDown() {
     climberPiston3.set(Value.kForward);
     climberPiston4.set(Value.kForward);
   }
@@ -94,12 +97,9 @@ private DoubleSolenoid climberPiston4 = new DoubleSolenoid(
   // Get Piston Positions
   public DoubleSolenoid.Value[] getPistonState() {
     return new DoubleSolenoid.Value[] {
-        climberPiston1.get(),
-        climberPiston2.get(),
-        climberPiston3.get(),
-        climberPiston4.get()
+      climberPiston1.get(), climberPiston2.get(), climberPiston3.get(), climberPiston4.get()
     };
-}
+  }
 
   // add teleop stuff here
   @Override

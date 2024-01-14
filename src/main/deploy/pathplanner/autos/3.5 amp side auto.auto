@@ -14,7 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "shootFromStart"
+            "name": "Warm Up Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -32,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shootFromPodium"
+            "name": "Shoot"
           }
         },
         {
@@ -50,7 +62,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shootFromPodium"
+            "name": "Shoot"
           }
         },
         {
@@ -62,6 +74,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Amp Side",
   "choreoAuto": false
 }

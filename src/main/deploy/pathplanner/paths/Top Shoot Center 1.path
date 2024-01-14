@@ -47,6 +47,29 @@
           ]
         }
       }
+    },
+    {
+      "name": "Arm to Amp Podium",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Warm Up Shooter"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Arm to Amp Podium"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -61,7 +84,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Top",
+  "folder": "Amp Side",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

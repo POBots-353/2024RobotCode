@@ -73,8 +73,8 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Note Intake", Commands.run(intake::intakeNote, intake));
-    NamedCommands.registerCommand("Stop Intake", Commands.run(intake::stopIntakeMotor, intake));
+    NamedCommands.registerCommand("Start Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);

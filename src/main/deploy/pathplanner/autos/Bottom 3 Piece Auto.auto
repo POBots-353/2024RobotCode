@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2203899732474786,
-      "y": 2.1322847840500865
+      "x": 0.7392210795817603,
+      "y": 4.397002070357417
     },
-    "rotation": 105.56846105075361
+    "rotation": 120.51023740611554
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootFromClose"
+            "name": "Warm Up Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -32,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootFromStadium"
+            "name": "Shoot"
           }
         },
         {
@@ -46,10 +58,16 @@
           "data": {
             "pathName": "Bottom Shoot Center 4"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Source Side",
   "choreoAuto": false
 }

@@ -47,6 +47,29 @@
           ]
         }
       }
+    },
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Warm Up Shooter"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Arm to Source Podium"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -61,7 +84,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Bottom",
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

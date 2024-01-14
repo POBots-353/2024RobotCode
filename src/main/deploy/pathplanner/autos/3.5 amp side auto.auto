@@ -5,7 +5,7 @@
       "x": 1.0563812283116707,
       "y": 6.616622648366552
     },
-    "rotation": -131.51873397545788
+    "rotation": -123.32825213432857
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To 2nd Piece"
+            "pathName": "Top To Center 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top Shoot 2nd Piece"
+            "pathName": "Top Shoot Center 1"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To 3rd piece"
+            "pathName": "Top To Center 2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top Shoot 3rd Piece"
+            "pathName": "Top Shoot Center 2"
           }
         },
         {
@@ -56,7 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top To 4th Piece"
+            "pathName": "Top To Center 3"
           }
         }
       ]

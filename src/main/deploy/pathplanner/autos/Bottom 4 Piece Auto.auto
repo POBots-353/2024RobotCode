@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 6"
+            "pathName": "Bottom To Center 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 6"
+            "pathName": "Bottom Shoot Center 5"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 5"
+            "pathName": "Bottom To Center 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 5"
+            "pathName": "Bottom Shoot Center 4"
           }
         },
         {
@@ -56,13 +56,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 4"
+            "pathName": "Bottom To Center 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 4"
+            "pathName": "Bottom Shoot Center 3"
           }
         },
         {

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.95,
-      "y": 3.97
+      "x": 1.2203899732474786,
+      "y": 2.1322847840500865
     },
-    "rotation": 0
+    "rotation": 105.56846105075361
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 6"
+            "pathName": "Bottom To Center 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 6"
+            "pathName": "Bottom Shoot Center 5"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom To Piece 5"
+            "pathName": "Bottom To Center 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Shoot Piece 5"
+            "pathName": "Bottom Shoot Center 4"
           }
         }
       ]

@@ -14,6 +14,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -59,6 +60,11 @@ public class Arm extends SubsystemBase implements Logged {
     armPIDController.setP(ArmConstants.armKp);
     armPIDController.setI(ArmConstants.armKi);
     armPIDController.setD(ArmConstants.armKd);
+  }
+
+  public Command moveToPosition(double position) {
+    return run(() -> setPosition(position))
+        .until(() -> Math.abs(armEncoder.getPosition() - position) < Units.degreesToRadians(0.5));
   }
 
   public void setProfileState(TrapezoidProfile.State state) {

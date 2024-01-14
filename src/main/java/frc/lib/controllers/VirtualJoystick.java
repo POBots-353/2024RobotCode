@@ -3,7 +3,6 @@ package frc.lib.controllers;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -143,10 +142,5 @@ public class VirtualJoystick extends CommandJoystick {
     }
 
     virtualAxes.replace(AxisType.kThrottle, Optional.of(value));
-  }
-
-  public void whileTrue(Command run) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'whileTrue'");
   }
 }

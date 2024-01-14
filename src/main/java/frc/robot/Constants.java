@@ -25,9 +25,20 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
-    
-    public static final int intakeNoteButton = 5;
-    public static final int outtakeNoteButton = 6;
+
+    public static final int intakeNoteButton = 12;
+    public static final int outtakeNoteButton = 11;
+
+    public static final int shootButton = 11;
+
+    public static final int armToPickup = 4;
+    public static final int armShootSubwoofer = 6;
+    public static final int armShootPodium = 7;
+    public static final int armToAmp = 5;
+    public static final int armAutoShoot = 13;
+
+    public static final int climberUpButton = 3;
+    public static final int climberDownButton = 0;
   }
 
   public static final class FieldConstants {
@@ -88,6 +99,11 @@ public final class Constants {
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+
+    public static final double pickupHeight = Units.degreesToRadians(0.0);
+    public static final double ampHeight = Units.degreesToRadians(45.0);
+    public static final double subwooferHeight = Units.degreesToRadians(15.0);
+    public static final double podiumHeight = Units.degreesToRadians(60.0);
   }
 
   public static final class SwerveConstants {

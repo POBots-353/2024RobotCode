@@ -473,9 +473,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return true;
   }
 
-  private void updateLimelightPoses() {
+  private void updateLimelightPoses(String limelightName) {
+    if (!LimelightHelpers.getTV(limelightName)) {
+      return;
+    }
     LimelightHelpers.Results results =
-        LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
+        LimelightHelpers.getLatestResults(limelightName).targetingResults;
 
     if (!results.valid) {
       return;
@@ -531,7 +534,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public void updateVisionPoseEstimates() {
     detectedTargets.clear();
-    updateLimelightPoses();
+    updateLimelightPoses(VisionConstants.limelightName);
 
     field.getObject("Detected Targets").setPoses(detectedTargets);
   }
@@ -539,7 +542,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
@@ -547,6 +549,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     updateVisionPoseEstimates();
 
+    odometryLock.lock();
     field.setRobotPose(poseEstimator.getEstimatedPosition());
     odometryLock.unlock();
   }

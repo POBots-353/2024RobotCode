@@ -29,19 +29,19 @@ public final class Constants {
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
 
-    public static final int intakeNoteButton = 12;
-    public static final int outtakeNoteButton = 11;
+    public static final int intakeNoteButton = 13;
+    public static final int outtakeNoteButton = 12;
 
-    public static final int shootButton = 11;
+    public static final int shootButton = 12;
 
-    public static final int armToPickup = 4;
-    public static final int armShootSubwoofer = 6;
-    public static final int armShootPodium = 7;
-    public static final int armToAmp = 5;
-    public static final int armAutoShoot = 13;
+    public static final int armToPickup = 5;
+    public static final int armShootSubwoofer = 7;
+    public static final int armShootPodium = 8;
+    public static final int armToAmp = 6;
+    public static final int armAutoShoot = 14;
 
-    public static final int climberUpButton = 3;
-    public static final int climberDownButton = 0;
+    public static final int climberUpButton = 4;
+    public static final int climberDownButton = 1;
   }
 
   public static final class FieldConstants {

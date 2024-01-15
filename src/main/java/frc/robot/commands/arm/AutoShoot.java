@@ -43,7 +43,7 @@ public class AutoShoot extends Command {
     double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
 
     double angle = ArmConstants.autoShootInterpolation.get(distance);
-    arm.setPosition(Rotation2d.fromRadians(angle));
+    arm.setDesiredPosition(Rotation2d.fromRadians(angle));
   }
 
   // Called once the command ends or is interrupted.

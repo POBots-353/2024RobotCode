@@ -194,6 +194,16 @@ public class RobotContainer implements Logged {
         .button(OperatorConstants.armShootPodium)
         .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
+    operatorStick
+        .button(OperatorConstants.armManualUp)
+        .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
+
+    operatorStick
+        .button(OperatorConstants.armManualDown)
+        .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
+
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }
 

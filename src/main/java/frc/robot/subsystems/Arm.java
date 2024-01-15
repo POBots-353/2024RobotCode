@@ -113,7 +113,7 @@ public class Arm extends SubsystemBase implements Logged {
   }
 
   public Command moveToPosition(Rotation2d position) {
-    return run(() -> setPosition(position))
+    return run(() -> setDesiredPosition(position))
         .until(
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
@@ -127,11 +127,15 @@ public class Arm extends SubsystemBase implements Logged {
         state.position, ControlType.kPosition, 0, feedforward, ArbFFUnits.kVoltage);
   }
 
-  public void setPosition(Rotation2d position) {
+  public void setDesiredPosition(Rotation2d position) {
     TrapezoidProfile.State currentState = getCurrentState();
     TrapezoidProfile.State desiredState = new TrapezoidProfile.State(position.getRadians(), 0.0);
 
     setProfileState(armProfile.calculate(0.020, currentState, desiredState));
+  }
+
+  public void setSpeed(double speed) {
+    mainMotor.set(speed);
   }
 
   public TrapezoidProfile.State getCurrentState() {

@@ -40,6 +40,9 @@ public final class Constants {
     public static final int armToAmp = 6;
     public static final int armAutoShoot = 14;
 
+    public static final int armManualUp = 10;
+    public static final int armManualDown = 9;
+
     public static final int climberUpButton = 4;
     public static final int climberDownButton = 1;
   }
@@ -107,6 +110,8 @@ public final class Constants {
 
     public static final double maxVelocity = Units.degreesToRadians(180.0);
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
+
+    public static final double manualSpeed = 0.60;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);

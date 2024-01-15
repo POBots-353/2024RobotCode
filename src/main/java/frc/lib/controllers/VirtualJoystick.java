@@ -14,6 +14,8 @@ public class VirtualJoystick extends CommandJoystick {
   private Map<Integer, Boolean> virtualButtons = new HashMap<>();
   private Map<AxisType, Optional<Double>> virtualAxes = new HashMap<>();
 
+  private boolean virtualAxesEnabled = false;
+
   public VirtualJoystick(int port) {
     super(port);
 
@@ -40,6 +42,9 @@ public class VirtualJoystick extends CommandJoystick {
 
   @Override
   public double getX() {
+    if (!virtualAxesEnabled) {
+      return super.getX();
+    }
     if (virtualAxes.get(AxisType.kX).isPresent() && !DriverStation.isFMSAttached()) {
       return virtualAxes.get(AxisType.kX).get();
     }
@@ -49,6 +54,9 @@ public class VirtualJoystick extends CommandJoystick {
 
   @Override
   public double getY() {
+    if (!virtualAxesEnabled) {
+      return super.getY();
+    }
     if (virtualAxes.get(AxisType.kY).isPresent() && !DriverStation.isFMSAttached()) {
       return virtualAxes.get(AxisType.kY).get();
     }
@@ -58,6 +66,9 @@ public class VirtualJoystick extends CommandJoystick {
 
   @Override
   public double getZ() {
+    if (!virtualAxesEnabled) {
+      return super.getZ();
+    }
     if (virtualAxes.get(AxisType.kZ).isPresent() && !DriverStation.isFMSAttached()) {
       return virtualAxes.get(AxisType.kZ).get();
     }
@@ -67,6 +78,9 @@ public class VirtualJoystick extends CommandJoystick {
 
   @Override
   public double getTwist() {
+    if (!virtualAxesEnabled) {
+      return super.getTwist();
+    }
     if (virtualAxes.get(AxisType.kTwist).isPresent() && !DriverStation.isFMSAttached()) {
       return virtualAxes.get(AxisType.kTwist).get();
     }
@@ -76,6 +90,9 @@ public class VirtualJoystick extends CommandJoystick {
 
   @Override
   public double getThrottle() {
+    if (!virtualAxesEnabled) {
+      return super.getThrottle();
+    }
     if (virtualAxes.get(AxisType.kThrottle).isPresent() && !DriverStation.isFMSAttached()) {
       return virtualAxes.get(AxisType.kThrottle).get();
     }
@@ -84,6 +101,10 @@ public class VirtualJoystick extends CommandJoystick {
   }
 
   public void clearVirtualAxes() {
+    if (!virtualAxesEnabled) {
+      return;
+    }
+    virtualAxesEnabled = false;
     for (AxisType axis : virtualAxes.keySet()) {
       virtualAxes.replace(axis, Optional.empty());
     }
@@ -104,43 +125,32 @@ public class VirtualJoystick extends CommandJoystick {
     virtualButtons.replace(button, value);
   }
 
-  public void setX(double value) {
+  public void setVirtualAxis(AxisType axis, double value) {
     if (DriverStation.isFMSAttached()) {
+      DriverStation.reportError("Cannot set virtual axis while FMS is connected", true);
       return;
     }
+    virtualAxesEnabled = true;
+    virtualAxes.replace(axis, Optional.of(value));
+  }
 
-    virtualAxes.replace(AxisType.kX, Optional.of(value));
+  public void setX(double value) {
+    setVirtualAxis(AxisType.kX, value);
   }
 
   public void setY(double value) {
-    if (DriverStation.isFMSAttached()) {
-      return;
-    }
-
-    virtualAxes.replace(AxisType.kY, Optional.of(value));
+    setVirtualAxis(AxisType.kY, value);
   }
 
   public void setZ(double value) {
-    if (DriverStation.isFMSAttached()) {
-      return;
-    }
-
-    virtualAxes.replace(AxisType.kZ, Optional.of(value));
+    setVirtualAxis(AxisType.kZ, value);
   }
 
   public void setTwist(double value) {
-    if (DriverStation.isFMSAttached()) {
-      return;
-    }
-
-    virtualAxes.replace(AxisType.kTwist, Optional.of(value));
+    setVirtualAxis(AxisType.kTwist, value);
   }
 
   public void setThrottle(double value) {
-    if (DriverStation.isFMSAttached()) {
-      return;
-    }
-
-    virtualAxes.replace(AxisType.kThrottle, Optional.of(value));
+    setVirtualAxis(AxisType.kThrottle, value);
   }
 }

@@ -16,6 +16,8 @@ public class VirtualXboxController extends CommandXboxController {
   private Map<XboxController.Button, Boolean> virtualButtons = new HashMap<>();
   private Map<XboxController.Axis, Optional<Double>> virtualAxes = new HashMap<>();
 
+  private boolean virtualAxesEnabled = false;
+
   private boolean virtualPOVEnabled = false;
   private int virtualPOVValue = -1;
 
@@ -100,6 +102,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getLeftX() {
+    if (!virtualAxesEnabled) {
+      return super.getLeftX();
+    }
     if (virtualAxes.get(Axis.kLeftX).isPresent()) {
       return virtualAxes.get(Axis.kLeftX).get();
     }
@@ -108,6 +113,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getRightX() {
+    if (!virtualAxesEnabled) {
+      return super.getRightX();
+    }
     if (virtualAxes.get(Axis.kRightX).isPresent()) {
       return virtualAxes.get(Axis.kRightX).get();
     }
@@ -116,6 +124,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getLeftY() {
+    if (!virtualAxesEnabled) {
+      return super.getLeftY();
+    }
     if (virtualAxes.get(Axis.kLeftY).isPresent()) {
       return virtualAxes.get(Axis.kLeftY).get();
     }
@@ -124,6 +135,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getRightY() {
+    if (!virtualAxesEnabled) {
+      return super.getRightY();
+    }
     if (virtualAxes.get(Axis.kRightY).isPresent()) {
       return virtualAxes.get(Axis.kRightY).get();
     }
@@ -132,6 +146,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getLeftTriggerAxis() {
+    if (!virtualAxesEnabled) {
+      return super.getLeftTriggerAxis();
+    }
     if (virtualAxes.get(Axis.kLeftTrigger).isPresent()) {
       return virtualAxes.get(Axis.kLeftTrigger).get();
     }
@@ -140,6 +157,9 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public double getRightTriggerAxis() {
+    if (!virtualAxesEnabled) {
+      return super.getRightTriggerAxis();
+    }
     if (virtualAxes.get(Axis.kRightTrigger).isPresent()) {
       return virtualAxes.get(Axis.kRightTrigger).get();
     }
@@ -210,6 +230,10 @@ public class VirtualXboxController extends CommandXboxController {
   }
 
   public void setPOV(int angle) {
+    if (DriverStation.isFMSAttached()) {
+      return;
+    }
+    virtualPOVEnabled = true;
     virtualPOVValue = angle;
   }
 
@@ -219,11 +243,8 @@ public class VirtualXboxController extends CommandXboxController {
       return;
     }
 
+    virtualAxesEnabled = true;
     virtualAxes.replace(axis, Optional.of(0.0));
-  }
-
-  public void disableVirtualAxis(XboxController.Axis axis) {
-    virtualAxes.replace(axis, Optional.empty());
   }
 
   public void setVirtualAxis(XboxController.Axis axis, double value) {
@@ -232,6 +253,7 @@ public class VirtualXboxController extends CommandXboxController {
       return;
     }
 
+    virtualAxesEnabled = true;
     virtualAxes.replace(axis, Optional.of(value));
   }
 
@@ -245,6 +267,10 @@ public class VirtualXboxController extends CommandXboxController {
   }
 
   public void clearVirtualAxes() {
+    if (!virtualAxesEnabled) {
+      return;
+    }
+    virtualAxesEnabled = false;
     for (Axis axis : virtualAxes.keySet()) {
       virtualAxes.replace(axis, Optional.empty());
     }
@@ -260,72 +286,24 @@ public class VirtualXboxController extends CommandXboxController {
     setVirtualAxis(Axis.kLeftX, value);
   }
 
-  public void enableVirtualLeftX() {
-    enableVirtualAxis(Axis.kLeftX);
-  }
-
-  public void disableVirtualLeftX() {
-    disableVirtualAxis(Axis.kLeftX);
-  }
-
   public void setRightX(double value) {
     setVirtualAxis(Axis.kRightX, value);
-  }
-
-  public void enableVirtualRightX() {
-    enableVirtualAxis(Axis.kRightX);
-  }
-
-  public void disableVirtualRightX() {
-    disableVirtualAxis(Axis.kRightX);
   }
 
   public void setLeftY(double value) {
     setVirtualAxis(Axis.kLeftY, value);
   }
 
-  public void enableVirtualLeftY() {
-    enableVirtualAxis(Axis.kLeftY);
-  }
-
-  public void disableVirtualLeftY() {
-    disableVirtualAxis(Axis.kLeftY);
-  }
-
   public void setRightY(double value) {
     setVirtualAxis(Axis.kRightY, value);
-  }
-
-  public void enableVirtualRightY() {
-    enableVirtualAxis(Axis.kRightY);
-  }
-
-  public void disableVirtualRightY() {
-    disableVirtualAxis(Axis.kRightY);
   }
 
   public void setLeftTriggerAxis(double value) {
     setVirtualAxis(Axis.kLeftTrigger, value);
   }
 
-  public void enableVirtualLeftTrigger() {
-    enableVirtualAxis(Axis.kLeftTrigger);
-  }
-
-  public void disableVirtualLeftTrigger() {
-    disableVirtualAxis(Axis.kLeftTrigger);
-  }
-
   public void setRightTriggerAxis(double value) {
     setVirtualAxis(Axis.kRightTrigger, value);
-  }
-
-  public void enableVirtualRightTrigger() {
-    enableVirtualAxis(Axis.kRightTrigger);
-  }
-
-  public void disableVirtualRightTrigger() {
-    disableVirtualAxis(Axis.kRightTrigger);
   }
 
   public void setLeftBumper(boolean state) {

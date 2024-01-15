@@ -5,6 +5,7 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
@@ -12,6 +13,7 @@ public class ArmHold extends Command {
   private final Arm arm;
 
   private Rotation2d holdPosition;
+  private TrapezoidProfile.State holdState;
 
   /** Creates a new ArmHold. */
   public ArmHold(Arm arm) {
@@ -24,12 +26,13 @@ public class ArmHold extends Command {
   @Override
   public void initialize() {
     holdPosition = arm.getPosition();
+    holdState = new TrapezoidProfile.State(holdPosition.getRadians(), 0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setPosition(holdPosition);
+    arm.setProfileState(holdState);
   }
 
   // Called once the command ends or is interrupted.

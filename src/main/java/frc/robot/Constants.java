@@ -9,6 +9,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -59,6 +61,41 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final String limelightName = "limelight";
+    public static final String arducamName = "arducam";
+
+    public static final Transform3d arducamPose =
+        new Transform3d(
+            Units.inchesToMeters(12.5),
+            0.0,
+            Units.inchesToMeters(3.53),
+            new Rotation3d(0.0, 0.0, 0.0));
+
+    public static final class ArducamConstants {
+      public static final double[] distances =
+          new double[] {
+            0.50, 1.00, 1.50, 2.00,
+          };
+      public static final double[] xyStandardDeviations =
+          new double[] {
+            0.014, // 0.50
+            0.020, // 1.00
+            0.150, // 1.50
+            0.200, // 2.00
+          };
+      public static final double[] thetaStandardDeviations =
+          new double[] {
+            0.115, // 0.50
+            0.149, // 1.00
+            0.190, // 1.50
+            0.250 // 2.00
+          };
+
+      public static PolynomialRegression xyPolynomialRegression =
+          new PolynomialRegression(distances, xyStandardDeviations, 3);
+
+      public static PolynomialRegression thetaPolynomialRegression =
+          new PolynomialRegression(distances, thetaStandardDeviations, 3);
+    }
 
     public static final class LimelightConstants {
       public static final double[] distances =

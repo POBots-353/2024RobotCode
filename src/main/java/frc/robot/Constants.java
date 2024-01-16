@@ -173,8 +173,8 @@ public final class Constants {
   }
 
   public static final class SwerveConstants {
-    public static final double TRACK_WIDTH = Units.inchesToMeters(21.5);
-    public static final double WHEEL_BASE = Units.inchesToMeters(21.5);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
+    public static final double WHEEL_BASE = Units.inchesToMeters(24.0);
 
     public static final Translation2d frontLeft =
         new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);

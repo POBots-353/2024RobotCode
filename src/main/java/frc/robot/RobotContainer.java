@@ -74,7 +74,7 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Start Intake", Commands.run(intake::autoIntake, intake));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -168,7 +168,7 @@ public class RobotContainer implements Logged {
   private void configureIntakeBindings() {
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(Commands.run(intake::intakeNote, intake))
+        .whileTrue(Commands.run(intake::feedToShooter, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
     operatorStick

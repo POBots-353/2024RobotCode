@@ -31,7 +31,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -105,7 +105,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
           BackRightModule.encoderID,
           BackRightModule.angleOffset);
 
-  private AHRS navx = new AHRS(I2C.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
+  private AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
 
   @Log.NT(key = "Angle Offset")
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);

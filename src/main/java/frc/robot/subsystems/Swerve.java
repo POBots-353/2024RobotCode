@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.kauailabs.navx.frc.AHRS.SerialDataType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -32,7 +31,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -99,9 +98,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
           BackRightModule.encoderID,
           BackRightModule.angleOffset);
 
-  private AHRS navx =
-      new AHRS(
-          Port.kUSB, SerialDataType.kProcessedData, (byte) SwerveConstants.odometryUpdateFrequency);
+  private AHRS navx = new AHRS(I2C.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
 
   @Log.NT(key = "Angle Offset")
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
@@ -342,6 +339,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Log.NT(key = "Chassis Speeds")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  @Log.NT(key = "Field Relative Speeds")
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
   }
 
   @Log.NT(key = "Estimated Pose")

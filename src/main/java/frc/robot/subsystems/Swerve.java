@@ -360,6 +360,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  @Log.NT(key = "Field Relative Speeds")
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
+  }
+
   @Log.NT(key = "Estimated Pose")
   public Pose2d getPose() {
     odometryLock.lock();

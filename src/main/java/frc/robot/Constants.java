@@ -61,7 +61,7 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final String limelightName = "limelight";
-    public static final String arducamName = "arducam";
+    public static final String arducamName = "Arducam_OV9281";
 
     public static final Transform3d arducamPose =
         new Transform3d(

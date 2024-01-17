@@ -194,9 +194,7 @@ public class SwerveModule implements Logged {
       if (turnEncoder.getPosition() == position.getRadians()) {
         break;
       }
-      if (failed) {
-        Timer.delay(0.020);
-      }
+      Timer.delay(0.010);
     }
 
     if (failed) {

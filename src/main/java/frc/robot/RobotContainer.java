@@ -88,10 +88,10 @@ public class RobotContainer implements Logged {
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
-    
-    NamedCommands.registerCommand("Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
-    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
 
+    NamedCommands.registerCommand(
+        "Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
+    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -218,7 +218,7 @@ public class RobotContainer implements Logged {
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }
 
-  private void configureShooterBindings(){
+  private void configureShooterBindings() {
     operatorStick
         .button(OperatorConstants.shootButton)
         .whileTrue(Commands.run(() -> shooter.setMotorSpeed(0.5), shooter))

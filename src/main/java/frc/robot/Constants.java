@@ -196,6 +196,13 @@ public final class Constants {
     public static final int shooterFollowerId = 0;
   }
 
+  public static final class ClimberConstants {
+    public static final int mainMotorID = 15;
+    public static final int followerMotorID = 16;
+
+    public static final double climberMotorSpeed = 0.75;
+  }
+
   public static final class SwerveConstants {
     public static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
     public static final double WHEEL_BASE = Units.inchesToMeters(24.0);

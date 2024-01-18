@@ -240,8 +240,7 @@ public class RobotContainer implements Logged {
         Commands.sequence(
                 Commands.runOnce(
                     () -> {
-                      alerts.clear();
-                      Alert.clearGroup("Alerts");
+                      clearPrematchAlerts();
                     }),
                 Commands.runOnce(
                     () -> {
@@ -330,6 +329,14 @@ public class RobotContainer implements Logged {
 
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
+  }
+
+  private void clearPrematchAlerts() {
+    for (Alert alert : alerts) {
+      alert.removeFromGroup();
+    }
+
+    alerts.clear();
   }
 
   private void addAlert(Alert alert) {

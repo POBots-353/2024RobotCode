@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import java.util.function.Consumer;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -64,6 +66,16 @@ public class SwerveModule implements Logged {
   @Log.NT private double characterizationVolts = 0.0;
   @Log.NT private boolean characterizing = false;
 
+  private Alert driveConfigFailed =
+      new Alert("Failed to configure drive motor for " + moduleName, AlertType.ERROR);
+  private Alert turnConfigFailed =
+      new Alert("Failed to configure turn motor for " + moduleName, AlertType.ERROR);
+
+  private Alert noAbsoluteValue =
+      new Alert("No absolute angle received for " + moduleName + ".", AlertType.ERROR);
+  private Alert motorPositionNotSet =
+      new Alert("Turn motor position not set for " + moduleName + ".", AlertType.ERROR);
+
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
@@ -84,14 +96,41 @@ public class SwerveModule implements Logged {
 
     Timer.delay(0.10);
 
-    configureDriveMotor();
-    configureTurnMotor();
+    configureMotors();
     configureAngleEncoder();
 
     absoluteAngleSignal = canCoder.getAbsolutePosition();
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
+  }
+
+  private void configureMotors() {
+    boolean driveFailed = true;
+    boolean turnFailed = true;
+
+    for (int i = 0; i < 5; i++) {
+      configureDriveMotor();
+      if (driveMotor.getLastError() == REVLibError.kOk) {
+        driveFailed = false;
+        break;
+      }
+    }
+    if (driveFailed) {
+      driveConfigFailed.set(true);
+    }
+
+    for (int i = 0; i < 5; i++) {
+      configureTurnMotor();
+
+      if (turnMotor.getLastError() == REVLibError.kOk) {
+        turnFailed = false;
+        break;
+      }
+    }
+    if (turnFailed) {
+      turnConfigFailed.set(true);
+    }
   }
 
   private void configureDriveMotor() {
@@ -178,6 +217,7 @@ public class SwerveModule implements Logged {
 
   public void resetToAbsolute() {
     if (!waitForCANCoder()) {
+      noAbsoluteValue.set(true);
       return;
     }
 
@@ -201,6 +241,7 @@ public class SwerveModule implements Logged {
       DataLogManager.log("Failed to set absolute angle of " + moduleName + " module!");
       DriverStation.reportError(
           "Failed to set absolute angle of " + moduleName + " module!", false);
+      motorPositionNotSet.set(true);
     }
     turnMotor.setCANTimeout(0);
   }

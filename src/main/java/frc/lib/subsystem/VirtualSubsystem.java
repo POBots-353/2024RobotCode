@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class VirtualSubsystem extends SubsystemBase {
-  protected List<Alert> systemAlerts = new ArrayList<Alert>();
+  protected List<Alert> prematchAlerts = new ArrayList<Alert>();
   protected String systemStatus = "Pre-Match not ran";
 
   public final void cancelCurrentCommand() {
@@ -31,9 +31,17 @@ public abstract class VirtualSubsystem extends SubsystemBase {
     return getName() + "/Alerts";
   }
 
+  public void clearAlerts() {
+    for (Alert alert : prematchAlerts) {
+      alert.removeFromGroup();
+    }
+
+    prematchAlerts.clear();
+  }
+
   private final void addAlert(Alert alert) {
     alert.set(true);
-    systemAlerts.add(alert);
+    prematchAlerts.add(alert);
   }
 
   public final void addInfo(String message) {
@@ -58,7 +66,7 @@ public abstract class VirtualSubsystem extends SubsystemBase {
   }
 
   public final boolean containsErrors() {
-    for (Alert alert : systemAlerts) {
+    for (Alert alert : prematchAlerts) {
       if (alert.getType() == AlertType.ERROR) {
         return true;
       }
@@ -77,7 +85,7 @@ public abstract class VirtualSubsystem extends SubsystemBase {
             Commands.runOnce(
                 () -> {
                   cancelCurrentCommand();
-                  Alert.clearGroup(getAlertGroup());
+                  clearAlerts();
                   setSystemStatus("Running Pre-Match Check");
                 }),
             getPrematchCheckCommand(controller, joystick))

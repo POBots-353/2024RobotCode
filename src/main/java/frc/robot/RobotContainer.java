@@ -25,6 +25,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -73,14 +74,26 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Note Intake", Commands.run(intake::intakeNote, intake));
-    NamedCommands.registerCommand("Stop Intake", Commands.run(intake::stopIntakeMotor, intake));
+    NamedCommands.registerCommand("Start Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
+
+    NamedCommands.registerCommand(
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Source Podium",
+        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+
+    arm.setDefaultCommand(new ArmHold(arm));
 
     swerve.setDefaultCommand(
         new TeleopSwerve(
@@ -167,19 +180,29 @@ public class RobotContainer implements Logged {
   private void configureArmBindings() {
     operatorStick
         .button(OperatorConstants.armToPickup)
-        .whileTrue(arm.moveToPosition(ArmConstants.pickupHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.pickupAngle));
 
     operatorStick
         .button(OperatorConstants.armToAmp)
-        .whileTrue(arm.moveToPosition(ArmConstants.ampHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.ampAngle));
 
     operatorStick
         .button(OperatorConstants.armShootSubwoofer)
-        .whileTrue(arm.moveToPosition(ArmConstants.subwooferHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.subwooferAngle));
 
     operatorStick
         .button(OperatorConstants.armShootPodium)
-        .whileTrue(arm.moveToPosition(ArmConstants.podiumHeight));
+        .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
+
+    operatorStick
+        .button(OperatorConstants.armManualUp)
+        .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
+
+    operatorStick
+        .button(OperatorConstants.armManualDown)
+        .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
 
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }

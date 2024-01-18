@@ -32,7 +32,7 @@ import monologue.Annotations.Log;
 import monologue.Logged;
 
 public class SwerveModule implements Logged {
-  @Log.NT private String moduleName;
+  private String moduleName;
 
   private CANSparkMax driveMotor;
   private CANSparkMax turnMotor;
@@ -48,7 +48,7 @@ public class SwerveModule implements Logged {
       new SimpleMotorFeedforward(
           SwerveConstants.driveKs, SwerveConstants.driveKv, SwerveConstants.driveKa);
 
-  @Log.NT private Rotation2d angleOffset;
+  private Rotation2d angleOffset;
 
   private StatusSignal<Double> absoluteAngleSignal;
 
@@ -68,6 +68,9 @@ public class SwerveModule implements Logged {
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
     this.angleOffset = angleOffset;
+
+    log("Module Name", moduleName);
+    log("Angle Offset", angleOffset);
 
     driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
     turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);

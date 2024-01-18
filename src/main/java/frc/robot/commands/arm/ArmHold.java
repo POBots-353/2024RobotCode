@@ -4,25 +4,20 @@
 
 package frc.robot.commands.arm;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Swerve;
-import frc.robot.util.AllianceUtil;
 
-public class AutoShoot extends Command {
+public class ArmHold extends Command {
   private final Arm arm;
-  private final Swerve swerve;
 
-  private Pose2d speakerPose;
+  private Rotation2d holdPosition;
+  private TrapezoidProfile.State holdState;
 
-  /** Creates a new AutoShoot. */
-  public AutoShoot(Arm arm, Swerve swerve) {
+  /** Creates a new ArmHold. */
+  public ArmHold(Arm arm) {
     this.arm = arm;
-    this.swerve = swerve;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm);
   }
@@ -30,20 +25,14 @@ public class AutoShoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (AllianceUtil.isRedAlliance()) {
-      speakerPose = FieldConstants.speakerRedAlliance;
-    } else {
-      speakerPose = FieldConstants.speakerBlueAlliance;
-    }
+    holdPosition = arm.getPosition();
+    holdState = new TrapezoidProfile.State(holdPosition.getRadians(), 0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
-
-    double angle = ArmConstants.autoShootInterpolation.get(distance);
-    arm.setDesiredPosition(Rotation2d.fromRadians(angle));
+    arm.setProfileState(holdState);
   }
 
   // Called once the command ends or is interrupted.

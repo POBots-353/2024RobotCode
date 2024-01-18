@@ -9,6 +9,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -29,19 +31,22 @@ public final class Constants {
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
 
-    public static final int intakeNoteButton = 12;
-    public static final int outtakeNoteButton = 11;
+    public static final int intakeNoteButton = 13;
+    public static final int outtakeNoteButton = 12;
 
-    public static final int shootButton = 11;
+    public static final int shootButton = 12;
 
-    public static final int armToPickup = 4;
-    public static final int armShootSubwoofer = 6;
-    public static final int armShootPodium = 7;
-    public static final int armToAmp = 5;
-    public static final int armAutoShoot = 13;
+    public static final int armToPickup = 5;
+    public static final int armShootSubwoofer = 7;
+    public static final int armShootPodium = 8;
+    public static final int armToAmp = 6;
+    public static final int armAutoShoot = 14;
 
-    public static final int climberUpButton = 3;
-    public static final int climberDownButton = 0;
+    public static final int armManualUp = 10;
+    public static final int armManualDown = 9;
+
+    public static final int climberUpButton = 4;
+    public static final int climberDownButton = 1;
   }
 
   public static final class FieldConstants {
@@ -56,6 +61,41 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final String limelightName = "limelight";
+    public static final String arducamName = "arducam";
+
+    public static final Transform3d arducamPose =
+        new Transform3d(
+            Units.inchesToMeters(12.5),
+            0.0,
+            Units.inchesToMeters(3.53),
+            new Rotation3d(0.0, 0.0, 0.0));
+
+    public static final class ArducamConstants {
+      public static final double[] distances =
+          new double[] {
+            0.50, 1.00, 1.50, 2.00,
+          };
+      public static final double[] xyStandardDeviations =
+          new double[] {
+            0.014, // 0.50
+            0.020, // 1.00
+            0.150, // 1.50
+            0.200, // 2.00
+          };
+      public static final double[] thetaStandardDeviations =
+          new double[] {
+            0.115, // 0.50
+            0.149, // 1.00
+            0.190, // 1.50
+            0.250 // 2.00
+          };
+
+      public static PolynomialRegression xyPolynomialRegression =
+          new PolynomialRegression(distances, xyStandardDeviations, 3);
+
+      public static PolynomialRegression thetaPolynomialRegression =
+          new PolynomialRegression(distances, thetaStandardDeviations, 3);
+    }
 
     public static final class LimelightConstants {
       public static final double[] distances =
@@ -86,8 +126,11 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int armMotorID = 10;
-    public static final int armAbsoluteEncoderID = 9;
+    public static final int mainMotorID = 10;
+    public static final int followerID = 11;
+    public static final int absoluteEncoderID = 9;
+
+    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 
     public static final double armKg = 0.353;
     public static final double armKs = 0.353;
@@ -105,13 +148,17 @@ public final class Constants {
     public static final double maxVelocity = Units.degreesToRadians(180.0);
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
 
+    public static final double manualSpeed = 0.60;
+
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
-    public static final double pickupHeight = Units.degreesToRadians(0.0);
-    public static final double ampHeight = Units.degreesToRadians(45.0);
-    public static final double subwooferHeight = Units.degreesToRadians(15.0);
-    public static final double podiumHeight = Units.degreesToRadians(60.0);
+    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(45.0);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(15.0);
+    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(60.0);
 
     // (distance, angle)
     // Stubbed with fake values for now
@@ -126,8 +173,8 @@ public final class Constants {
   }
 
   public static final class SwerveConstants {
-    public static final double TRACK_WIDTH = Units.inchesToMeters(21.5);
-    public static final double WHEEL_BASE = Units.inchesToMeters(21.5);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
+    public static final double WHEEL_BASE = Units.inchesToMeters(24.0);
 
     public static final Translation2d frontLeft =
         new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);

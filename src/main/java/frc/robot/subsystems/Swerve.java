@@ -19,8 +19,11 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
@@ -48,6 +51,7 @@ import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.VisionConstants.ArducamConstants;
 import frc.robot.Constants.VisionConstants.LimelightConstants;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
@@ -59,6 +63,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import monologue.Annotations.Log;
 import monologue.Logged;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Swerve extends VirtualSubsystem implements Logged {
   private SwerveDriveKinematics kinematics =
@@ -106,6 +116,17 @@ public class Swerve extends VirtualSubsystem implements Logged {
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
 
+  private SwerveDriveWheelPositions previousWheelPositions =
+      new SwerveDriveWheelPositions(getModulePositions());
+  private Rotation2d previousAngle = Rotation2d.fromDegrees(0.0);
+
+  private PhotonCamera arducam = new PhotonCamera(VisionConstants.arducamName);
+  private PhotonPoseEstimator arducamPoseEstimator =
+      new PhotonPoseEstimator(
+          FieldConstants.aprilTagLayout,
+          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          VisionConstants.arducamPose);
+
   private List<Pose2d> detectedTargets = new ArrayList<>();
   @Log.NT private double limelightLastDetectedTime = 0.0;
 
@@ -132,6 +153,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   public Swerve() {
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
+    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
     AutoBuilder.configureHolonomic(
         this::getPose,
@@ -387,15 +409,43 @@ public class Swerve extends VirtualSubsystem implements Logged {
     };
   }
 
+  private boolean odometryUpdateValid(SwerveDriveWheelPositions positions, Rotation2d heading) {
+    Twist2d twist = kinematics.toTwist2d(previousWheelPositions, positions);
+    twist.dtheta = heading.minus(previousAngle).getRadians();
+
+    odometryLock.lock();
+    Pose2d currentPose = poseEstimator.getEstimatedPosition();
+    odometryLock.unlock();
+    Pose2d newPose = currentPose.exp(twist);
+
+    previousAngle = heading;
+    previousWheelPositions = positions;
+
+    Translation2d distance = newPose.minus(currentPose).getTranslation();
+
+    // It's literally impossible for the robot to move 2 meters in 20 milliseconds
+    if (Math.abs(distance.getX()) > 2.0 || Math.abs(distance.getY()) > 2.0) {
+      return false;
+    }
+
+    return true;
+  }
+
   public void updateOdometry() {
-    if (!frontLeftModule.motorsValid()
-        || !frontRightModule.motorsValid()
-        || !backLeftModule.motorsValid()
-        || !backRightModule.motorsValid()) {
+    // if (!frontLeftModule.motorsValid()
+    //     || !frontRightModule.motorsValid()
+    //     || !backLeftModule.motorsValid()
+    //     || !backRightModule.motorsValid()) {
+    //   return;
+    // }
+    Rotation2d heading = getHeading();
+    SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
+
+    if (!odometryUpdateValid(positions, heading)) {
       return;
     }
     odometryLock.lock();
-    poseEstimator.update(getHeading(), getModulePositions());
+    poseEstimator.update(heading, positions);
     odometryLock.unlock();
   }
 
@@ -403,10 +453,25 @@ public class Swerve extends VirtualSubsystem implements Logged {
       Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets > 1) {
-      return VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10.0));
+      return VecBuilder.fill(
+          Units.inchesToMeters(2.25), Units.inchesToMeters(2.25), Units.degreesToRadians(10.0));
     } else {
       double xyStandardDev = LimelightConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = LimelightConstants.thetaPolynomialRegression.predict(distance);
+
+      return VecBuilder.fill(xyStandardDev, xyStandardDev, thetaStandardDev * 4);
+    }
+  }
+
+  private Vector<N3> getArducamStandardDeviations(
+      Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
+    double distance = targetPose.getTranslation().toTranslation2d().getNorm();
+    if (detectedTargets < 1) {
+      return VecBuilder.fill(
+          Units.inchesToMeters(4.0), Units.inchesToMeters(4.0), Units.degreesToRadians(10.0));
+    } else {
+      double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
+      double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);
 
       return VecBuilder.fill(xyStandardDev, xyStandardDev, thetaStandardDev * 4);
     }
@@ -438,9 +503,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return true;
   }
 
-  private void updateLimelightPoses() {
+  private void updateLimelightPoses(String limelightName) {
+    if (!LimelightHelpers.getTV(limelightName)) {
+      return;
+    }
     LimelightHelpers.Results results =
-        LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
+        LimelightHelpers.getLatestResults(limelightName).targetingResults;
 
     if (!results.valid) {
       return;
@@ -494,9 +562,56 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
   }
 
+  private void updatePhotonVisionPoses() {
+    PhotonPipelineResult result = arducam.getLatestResult();
+
+    if (!result.hasTargets()) {
+      return;
+    }
+
+    Optional<EstimatedRobotPose> optionalVisionPose = arducamPoseEstimator.update(result);
+    if (optionalVisionPose.isEmpty()) {
+      return;
+    }
+
+    EstimatedRobotPose visionPose = optionalVisionPose.get();
+
+    Pose3d closestTargetPose =
+        new Pose3d(
+            result.getBestTarget().getBestCameraToTarget().getTranslation(),
+            result.getBestTarget().getBestCameraToTarget().getRotation());
+
+    if (!isValidPose(visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size())) {
+      return;
+    }
+
+    Vector<N3> standardDevs =
+        getArducamStandardDeviations(
+            visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size());
+
+    odometryLock.lock();
+    poseEstimator.addVisionMeasurement(
+        visionPose.estimatedPose.toPose2d(), visionPose.timestampSeconds, standardDevs);
+
+    arducamPoseEstimator.setReferencePose(poseEstimator.getEstimatedPosition());
+    odometryLock.unlock();
+
+    for (PhotonTrackedTarget target : visionPose.targetsUsed) {
+      int aprilTagID = target.getFiducialId();
+
+      Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(aprilTagID);
+      if (tagPose.isEmpty()) {
+        continue;
+      }
+
+      detectedTargets.add(tagPose.get().toPose2d());
+    }
+  }
+
   public void updateVisionPoseEstimates() {
     detectedTargets.clear();
-    updateLimelightPoses();
+    updateLimelightPoses(VisionConstants.limelightName);
+    updatePhotonVisionPoses();
 
     field.getObject("Detected Targets").setPoses(detectedTargets);
   }
@@ -504,7 +619,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
@@ -512,6 +626,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     updateVisionPoseEstimates();
 
+    odometryLock.lock();
     field.setRobotPose(poseEstimator.getEstimatedPosition());
     odometryLock.unlock();
   }

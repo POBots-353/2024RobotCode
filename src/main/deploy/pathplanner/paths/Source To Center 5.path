@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.491915377390684,
-        "y": 0.7930268454454622
+        "x": 0.7392210795817603,
+        "y": 4.397002070357417
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.906389672428468,
-        "y": 1.0432023671064878
+        "x": 1.8852482149408742,
+        "y": 3.0521743094768246
       },
       "isLocked": false,
-      "linkedName": "Piece 6 Position"
+      "linkedName": "Bottom Starting Point"
     },
     {
       "anchor": {
-        "x": 5.524939881048594,
-        "y": 1.7724617267416347
+        "x": 7.591995582851565,
+        "y": 0.7484258843161573
       },
       "prevControl": {
-        "x": 6.267983904388862,
-        "y": 1.3043683631226912
+        "x": 5.3851380483038405,
+        "y": 1.1947895695998079
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ShootingPoint"
+      "linkedName": "Center 5"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "StopIntake",
-      "waypointRelativePos": 0.1,
+      "name": "StartIntake",
+      "waypointRelativePos": 0.9,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "StopIntake"
+                "name": "Start Intake"
               }
             }
           ]
@@ -50,18 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 360.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Bottom",
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Source Side",
+  "previewStartingState": {
+    "rotation": 122.00538320808347,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }

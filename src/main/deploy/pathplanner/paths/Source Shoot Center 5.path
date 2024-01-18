@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.650466355063765,
-        "y": 5.905547993432169
+        "x": 7.591995582851565,
+        "y": 0.7484258843161573
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.773404771880769,
-        "y": 5.999101228971689
+        "x": 7.00646987788935,
+        "y": 0.9986014059771827
       },
       "isLocked": false,
-      "linkedName": "piece 2"
+      "linkedName": "Center 5"
     },
     {
       "anchor": {
-        "x": 5.8261782620431335,
-        "y": 6.291455090032687
+        "x": 5.524939881048594,
+        "y": 1.7724617267416347
       },
       "prevControl": {
-        "x": 6.902040470747608,
-        "y": 6.092654464511209
+        "x": 6.267983904388862,
+        "y": 1.3043683631226912
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp side shooting point"
+      "linkedName": "ShootingPoint"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,30 @@
             {
               "type": "named",
               "data": {
-                "name": "stopIntake"
+                "name": "Stop Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Warm Up Shooter"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Arm to Source Podium"
               }
             }
           ]
@@ -57,11 +80,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -177.8,
+    "rotation": 145.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Top",
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

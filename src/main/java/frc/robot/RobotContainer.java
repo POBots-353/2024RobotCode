@@ -224,13 +224,21 @@ public class RobotContainer implements Logged {
   }
 
   private void configureBatteryChooser() {
-    batteryChooser.addOption("2019.5 #2", "Al");
+    batteryChooser.addOption("2015 #1", "Jerry");
+    batteryChooser.addOption("2015 #2", "Bob");
+    batteryChooser.addOption("2015 #3", "Omar");
+    batteryChooser.addOption("2016 #2", "Ella");
+    batteryChooser.addOption("2017 #1", "2017 #1");
+    batteryChooser.addOption("2018 #1", "Larry");
+    batteryChooser.addOption("2019.5 #2", "Allan");
     batteryChooser.addOption("2019.5 #3", "Daniel");
-    batteryChooser.addOption("2020 #1", "2020 #1");
-    batteryChooser.addOption("2020 #2", "2020 #2");
+    batteryChooser.addOption("2020 #1", "Karen");
+    batteryChooser.addOption("2020 #2", "Gary");
+    batteryChooser.addOption("2020 #3", "Harold");
     batteryChooser.addOption("2021 #1", "Fred");
-    batteryChooser.addOption("2024 #1", "2024 #1");
-    batteryChooser.addOption("2024 #2", "2024 #2");
+    batteryChooser.addOption("2022 #1", "Charles");
+    batteryChooser.addOption("2024 #1", "Ian");
+    batteryChooser.addOption("2024 #2", "Nancy");
 
     SmartDashboard.putData("Battery Chooser", batteryChooser);
   }

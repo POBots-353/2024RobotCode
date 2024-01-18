@@ -74,7 +74,7 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", Commands.run(intake::intakeNote, intake));
+    NamedCommands.registerCommand("Start Intake", Commands.run(intake::autoIntake, intake));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -168,7 +168,7 @@ public class RobotContainer implements Logged {
   private void configureIntakeBindings() {
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(Commands.run(intake::intakeNote, intake))
+        .whileTrue(Commands.run(intake::feedToShooter, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
     operatorStick
@@ -240,8 +240,7 @@ public class RobotContainer implements Logged {
         Commands.sequence(
                 Commands.runOnce(
                     () -> {
-                      alerts.clear();
-                      Alert.clearGroup("Alerts");
+                      clearPrematchAlerts();
                     }),
                 Commands.runOnce(
                     () -> {
@@ -330,6 +329,14 @@ public class RobotContainer implements Logged {
 
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
+  }
+
+  private void clearPrematchAlerts() {
+    for (Alert alert : alerts) {
+      alert.removeFromGroup();
+    }
+
+    alerts.clear();
   }
 
   private void addAlert(Alert alert) {

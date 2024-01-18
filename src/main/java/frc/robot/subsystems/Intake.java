@@ -35,7 +35,8 @@ public class Intake extends SubsystemBase {
   public void autoIntake() {
     if (irBreakBeam.get()) {
       feedToShooter();
-    } stopIntakeMotor();
+    }
+    stopIntakeMotor();
   }
 
   @Override

@@ -181,6 +181,21 @@ public final class Constants {
         new LinearInterpolation(autoShootTimes);
   }
 
+  public static class IntakeConstants {
+    public static final int intakeMotorOneID = 5;
+    public static final double intakeMotorSpeed = 0.80;
+  }
+
+  public static class ShooterConstants {
+    public static final double shooterVelocity = 0;
+    public static final double shooterKs = 0.353;
+    public static final double shooterKv = 0.353;
+    public static final double shooterKa = 0.353;
+    public static final double shooterP = 0.353;
+    public static final int shooterMainId = 0;
+    public static final int shooterFollowerId = 0;
+  }
+
   public static final class SwerveConstants {
     public static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
     public static final double WHEEL_BASE = Units.inchesToMeters(24.0);
@@ -285,20 +300,5 @@ public final class Constants {
     public static final int turnID = 7;
     public static final int encoderID = 11;
     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-93.427734375);
-  }
-
-  public static class IntakeConstants {
-    public static final int intakeMotorOneID = 5;
-    public static final double intakeMotorSpeed = 0.80;
-  }
-
-  public static class ShooterConstants {
-    public static final double shooterVelocity = 0;
-    public static final double shooterKs = 0.353;
-    public static final double shooterKv = 0.353;
-    public static final double shooterKa = 0.353;
-    public static final double shooterP = 0.353;
-    public static final int shooterMainId = 0;
-    public static final int shooterFollowerId = 0;
   }
 }

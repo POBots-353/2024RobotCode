@@ -5,19 +5,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
+import java.util.function.DoubleSupplier;
 
 public class ShootWhileMoving extends Command {
   private final Arm arm;
@@ -25,21 +30,50 @@ public class ShootWhileMoving extends Command {
   private final Shooter shooter;
   private final Swerve swerve;
 
+  private DoubleSupplier forwardSpeed;
+  private DoubleSupplier strafeSpeed;
+
+  private double maxTranslationalSpeed;
+
+  private SlewRateLimiter forwardRateLimiter =
+      new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
+  private SlewRateLimiter strafeRateLimiter =
+      new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
+
+  private PIDController turnToAngleController =
+      new PIDController(SwerveConstants.headingP, 0, SwerveConstants.headingD);
+
   private Pose2d speakerPose;
 
   private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
 
+  private int setpointCount = 0;
+
+  private final int minimumSetpointCount = 10;
   private final double feedTime = 0.250;
 
   /** Creates a new ShootWhileMoving. */
-  public ShootWhileMoving(Arm arm, Intake intake, Shooter shooter, Swerve swerve) {
+  public ShootWhileMoving(
+      DoubleSupplier forwardSpeed,
+      DoubleSupplier strafeSpeed,
+      double maxTranslationalSpeed,
+      Arm arm,
+      Intake intake,
+      Shooter shooter,
+      Swerve swerve) {
     this.arm = arm;
     this.intake = intake;
     this.shooter = shooter;
     this.swerve = swerve;
 
+    this.forwardSpeed = forwardSpeed;
+    this.strafeSpeed = strafeSpeed;
+    this.maxTranslationalSpeed = maxTranslationalSpeed;
+
+    turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
+
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake, shooter);
+    addRequirements(arm, intake, shooter, swerve);
   }
 
   // Called when the command is initially scheduled.
@@ -52,6 +86,8 @@ public class ShootWhileMoving extends Command {
     }
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
+
+    setpointCount = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -101,14 +137,61 @@ public class ShootWhileMoving extends Command {
       distance = newDistance;
     }
 
-    Rotation2d angle = Rotation2d.fromRadians(ArmConstants.autoShootInterpolation.get(distance));
-    arm.setDesiredPosition(angle);
+    // Calculate arm angle
+    Rotation2d armAngle = Rotation2d.fromRadians(ArmConstants.autoShootInterpolation.get(distance));
+    arm.setDesiredPosition(armAngle);
 
+    // Shooter speed
     shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
 
-    Rotation2d angleError = arm.getPosition().minus(angle);
+    // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
+    double forwardMetersPerSecond = -forwardSpeed.getAsDouble() * maxTranslationalSpeed;
+    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed;
 
-    if (Math.abs(MathUtil.inputModulus(angleError.getDegrees(), -180.0, 180.0)) < 0.25) {
+    forwardMetersPerSecond = forwardRateLimiter.calculate(forwardMetersPerSecond);
+    strafeMetersPerSecond = strafeRateLimiter.calculate(strafeMetersPerSecond);
+
+    if (Math.abs(forwardMetersPerSecond) < Units.inchesToMeters(0.5)) {
+      forwardMetersPerSecond = 0.0;
+      forwardRateLimiter.reset(0.0);
+    }
+
+    if (Math.abs(strafeMetersPerSecond) < Units.inchesToMeters(0.5)) {
+      strafeMetersPerSecond = 0.0;
+      strafeRateLimiter.reset(0.0);
+    }
+
+    Rotation2d desiredAngle =
+        Rotation2d.fromRadians(3 * Math.PI / 2)
+            .minus(virtualGoalLocation.minus(robotPose).getAngle());
+
+    Rotation2d robotAngle = swerve.getHeading();
+
+    double angularSpeed =
+        turnToAngleController.calculate(robotAngle.getRadians(), desiredAngle.getRadians());
+
+    angularSpeed = MathUtil.clamp(angularSpeed, -0.75, 0.75);
+
+    swerve.driveFieldOriented(
+        forwardMetersPerSecond,
+        strafeMetersPerSecond,
+        angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
+        true,
+        true,
+        false);
+
+    Rotation2d armAngleError = armAngle.minus(arm.getPosition());
+    Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
+
+    double armAngleErrorWrapped = MathUtil.inputModulus(armAngleError.getDegrees(), -180.0, 180.0);
+    double driveAngleErrorWrapped =
+        MathUtil.inputModulus(driveAngleError.getDegrees(), -180.0, 180.0);
+
+    if (Math.abs(armAngleErrorWrapped) < 1.00 && Math.abs(driveAngleErrorWrapped) < 1.00) {
+      setpointCount++;
+    }
+
+    if (setpointCount >= minimumSetpointCount) {
       intake.feedToShooter();
     }
 
@@ -119,6 +202,10 @@ public class ShootWhileMoving extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.stopIntakeMotor();
+
+    forwardRateLimiter.reset(0.0);
+    strafeRateLimiter.reset(0.0);
+    turnToAngleController.reset();
   }
 
   // Returns true when the command should end.

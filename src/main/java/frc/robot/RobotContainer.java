@@ -8,7 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -33,8 +32,8 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
-import frc.robot.util.AllianceUtil;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.AllianceUtil;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -132,52 +131,69 @@ public class RobotContainer implements Logged {
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
-   
+
     driverController
         .leftTrigger()
         .and(driverController.rightTrigger())
         .whileTrue(
-            new ProxyCommand(() -> {
-              if (AllianceUtil.isRedAlliance()) {
-                return AutoBuilder.pathfindToPose(
-                new Pose2d(FieldConstants.driverStationRedAlliance.getX(), FieldConstants.driverStationRedAlliance.getY(), 
-                FieldConstants.driverStationRedAlliance.getRotation()),
-                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
-                Units.degreesToRadians(180.0), 180.0));
-              }
-              else {
-                return AutoBuilder.pathfindToPose(
-                new Pose2d(FieldConstants.driverStationBlueAlliance.getX(), FieldConstants.driverStationBlueAlliance.getY(), 
-                FieldConstants.driverStationBlueAlliance.getRotation()),
-                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
-                Units.degreesToRadians(180.0), 180.0));
-              }
-            })
-        );
-  
-  driverController
+            new ProxyCommand(
+                () -> {
+                  if (AllianceUtil.isRedAlliance()) {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.driverStationRedAlliance.getX(),
+                            FieldConstants.driverStationRedAlliance.getY(),
+                            FieldConstants.driverStationRedAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  } else {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.driverStationBlueAlliance.getX(),
+                            FieldConstants.driverStationBlueAlliance.getY(),
+                            FieldConstants.driverStationBlueAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  }
+                }));
+
+    driverController
         .leftBumper()
         .and(driverController.rightBumper())
         .whileTrue(
-            new ProxyCommand(() -> {
-              if (AllianceUtil.isRedAlliance()) {
-                return AutoBuilder.pathfindToPose(
-                new Pose2d(FieldConstants.speakerRedAlliance.getX(), FieldConstants.speakerRedAlliance.getY(), 
-                FieldConstants.speakerRedAlliance.getRotation()),
-                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
-                Units.degreesToRadians(180.0), 180.0));
-              }
-              else {
-                return AutoBuilder.pathfindToPose(
-                new Pose2d(FieldConstants.speakerBlueAlliance.getX(), FieldConstants.speakerBlueAlliance.getY(), 
-                FieldConstants.speakerBlueAlliance.getRotation()),
-                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
-                Units.degreesToRadians(180.0), 180.0));
-              }
-            })
-        );
-    
-              
+            new ProxyCommand(
+                () -> {
+                  if (AllianceUtil.isRedAlliance()) {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.speakerRedAlliance.getX(),
+                            FieldConstants.speakerRedAlliance.getY(),
+                            FieldConstants.speakerRedAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  } else {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.speakerBlueAlliance.getX(),
+                            FieldConstants.speakerBlueAlliance.getY(),
+                            FieldConstants.speakerBlueAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  }
+                }));
+
     driverController
         .leftTrigger()
         .whileTrue(

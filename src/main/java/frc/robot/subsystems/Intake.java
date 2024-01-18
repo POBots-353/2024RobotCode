@@ -13,7 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  CANSparkMax intakeMotor1 =
+  CANSparkMax intakeMotor =
       new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
 
   DigitalInput irBreakBeam = new DigitalInput(IntakeConstants.intakeMotorOneID);
@@ -21,21 +21,22 @@ public class Intake extends SubsystemBase {
   public Intake() {}
 
   public void feedToShooter() {
-    intakeMotor1.set(IntakeConstants.intakeMotorSpeed);
+    intakeMotor.set(IntakeConstants.intakeMotorSpeed);
   }
 
   public void outtakeNoteInIntake() {
-    intakeMotor1.set(-IntakeConstants.intakeMotorSpeed);
+    intakeMotor.set(-IntakeConstants.intakeMotorSpeed);
   }
 
   public void stopIntakeMotor() {
-    intakeMotor1.set(0.0);
+    intakeMotor.set(0.0);
   }
 
   public void autoIntake() {
     if (irBreakBeam.get()) {
       feedToShooter();
-    } stopIntakeMotor();
+    }
+    stopIntakeMotor();
   }
 
   @Override

@@ -7,9 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import org.photonvision.simulation.SimPhotonCamera;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
@@ -19,8 +16,10 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.SparkMaxUtil;
 
 public class Shooter extends SubsystemBase {
-  private CANSparkMax shooterMain = new CANSparkMax(ShooterConstants.shooterMainId, MotorType.kBrushless);
-  private CANSparkMax shooterFollower = new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
+  private CANSparkMax shooterMain =
+      new CANSparkMax(ShooterConstants.shooterMainId, MotorType.kBrushless);
+  private CANSparkMax shooterFollower =
+      new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
   private SimpleMotorFeedforward shooterFeedforward =
       new SimpleMotorFeedforward(
           ShooterConstants.shooterKs, ShooterConstants.shooterKv, ShooterConstants.shooterKa);

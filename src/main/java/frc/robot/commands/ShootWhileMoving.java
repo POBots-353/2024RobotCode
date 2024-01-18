@@ -27,6 +27,10 @@ public class ShootWhileMoving extends Command {
 
   private Pose2d speakerPose;
 
+  private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
+
+  private final double feedTime = 0.250;
+
   /** Creates a new ShootWhileMoving. */
   public ShootWhileMoving(Arm arm, Intake intake, Shooter shooter, Swerve swerve) {
     this.arm = arm;
@@ -46,6 +50,8 @@ public class ShootWhileMoving extends Command {
     } else {
       speakerPose = FieldConstants.speakerBlueAlliance;
     }
+
+    previouSpeeds = swerve.getFieldRelativeSpeeds();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,12 +60,20 @@ public class ShootWhileMoving extends Command {
     Translation2d robotPose = swerve.getPose().getTranslation();
     ChassisSpeeds fieldSpeeds = swerve.getFieldRelativeSpeeds();
 
+    ChassisSpeeds fieldAcceleration = fieldSpeeds.minus(previouSpeeds).div(0.020);
+
     double distance = robotPose.minus(speakerPose.getTranslation()).getNorm();
 
     double shotTime = ArmConstants.autoShootTimeInterpolation.get(distance);
 
-    double virtualGoalX = speakerPose.getX() + fieldSpeeds.vxMetersPerSecond * shotTime;
-    double virtualGoalY = speakerPose.getY() + fieldSpeeds.vyMetersPerSecond * shotTime;
+    double virtualGoalX =
+        speakerPose.getX()
+            - shotTime
+                * (fieldSpeeds.vxMetersPerSecond + fieldAcceleration.vxMetersPerSecond * feedTime);
+    double virtualGoalY =
+        speakerPose.getY()
+            - shotTime
+                * (fieldSpeeds.vyMetersPerSecond + fieldAcceleration.vyMetersPerSecond * feedTime);
 
     Translation2d virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
@@ -71,8 +85,16 @@ public class ShootWhileMoving extends Command {
         break;
       }
 
-      virtualGoalX = speakerPose.getX() + fieldSpeeds.vxMetersPerSecond * newShotTime;
-      virtualGoalY = speakerPose.getY() + fieldSpeeds.vyMetersPerSecond * newShotTime;
+      virtualGoalX =
+          speakerPose.getX()
+              - newShotTime
+                  * (fieldSpeeds.vxMetersPerSecond
+                      + fieldAcceleration.vxMetersPerSecond * feedTime);
+      virtualGoalY =
+          speakerPose.getY()
+              - newShotTime
+                  * (fieldSpeeds.vyMetersPerSecond
+                      + fieldAcceleration.vyMetersPerSecond * feedTime);
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
       shotTime = newShotTime;
@@ -89,6 +111,8 @@ public class ShootWhileMoving extends Command {
     if (Math.abs(MathUtil.inputModulus(angleError.getDegrees(), -180.0, 180.0)) < 0.25) {
       intake.feedToShooter();
     }
+
+    previouSpeeds = fieldSpeeds;
   }
 
   // Called once the command ends or is interrupted.

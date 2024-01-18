@@ -17,6 +17,7 @@ import frc.robot.Constants.climberConstants;
 
 public class Climber extends SubsystemBase {
   /** Created Climber */
+  //Climber pistons (in case we need them)
   private DoubleSolenoid climberPiston1 =
       new DoubleSolenoid(climberConstants.pneumaticHubID,PneumaticsModuleType.CTREPCM,
           climberConstants.climberPistonForwardID1, climberConstants.pistonReverseID1);
@@ -25,34 +26,19 @@ public class Climber extends SubsystemBase {
       new DoubleSolenoid(climberConstants.pneumaticHubID,PneumaticsModuleType.CTREPCM,
           climberConstants.climberPistonForwardID2, climberConstants.pistonReverseID2);
 
+    private RelativeEncoder climberEncoder1;
+    private RelativeEncoder climberEncoder2;
+
+  //Climber Motors
           CANSparkMax climberMotor1 = new CANSparkMax(climberConstants.climberMotorOneID, MotorType.kBrushless);
           CANSparkMax climberMotor2 = new CANSparkMax(climberConstants.climberMotorTwoID, MotorType.kBrushless);
           
-  private RelativeEncoder climberEncoder1;
-  private RelativeEncoder climberEncoder2;
-  
+  //Contructor
   public Climber() {}
+  
   // Methods are self explanatory (I made two in case we need two climbers)
-  public void toggleClimber() {
-    climberPiston1.toggle();
-    climberPiston2.toggle();
-  }
-  public void climber1ExtendsUp() {
-    climberPiston1.set(Value.kForward);
-  }
 
-  public void climber2ExtendsUp() {
-    climberPiston1.set(Value.kForward);
-  }
-
-  public void climber1RestractDown() {
-    climberPiston1.set(Value.kReverse);
-  }
-
-  public void climber2RestractDown() {
-    climberPiston2.set(Value.kReverse);
-  }
-
+  //Motor stuff
   public void setClimberMotor1Speed() {
   climberMotor1.set(climberConstants.climberMotorSpeed);
   }
@@ -73,6 +59,27 @@ public class Climber extends SubsystemBase {
   }
     public double getMotor2Current() {
     return climberMotor2.getOutputCurrent();
+  }
+
+  //Piston stuff
+  public void toggleClimber() {
+    climberPiston1.toggle();
+    climberPiston2.toggle();
+  }
+  public void climber1ExtendsUp() {
+    climberPiston1.set(Value.kForward);
+  }
+
+  public void climber2ExtendsUp() {
+    climberPiston1.set(Value.kForward);
+  }
+
+  public void climber1RestractDown() {
+    climberPiston1.set(Value.kReverse);
+  }
+
+  public void climber2RestractDown() {
+    climberPiston2.set(Value.kReverse);
   }
 
   public double getClimberPiston1Position() {
@@ -99,9 +106,10 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    //Climber Piston positions
     SmartDashboard.putNumber("Climber 1 position", climberEncoder1.getPosition());
     SmartDashboard.putNumber("Climber 2 position", climberEncoder2.getPosition()); 
-    /* Posts the climber position to SmartDashboard */
     
     // Posts the climber motor temperatures/current
     SmartDashboard.putNumber("Climber Motor 1 Temperature", climberMotor1.getMotorTemperature());

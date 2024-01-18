@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
@@ -31,6 +33,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
+import frc.robot.util.AllianceUtil;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
@@ -129,15 +132,52 @@ public class RobotContainer implements Logged {
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
-
+   
     driverController
         .leftTrigger()
         .and(driverController.rightTrigger())
         .whileTrue(
-            AutoBuilder.pathfindToPose(
-                new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
-                new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
-
+            new ProxyCommand(() -> {
+              if (AllianceUtil.isRedAlliance()) {
+                return AutoBuilder.pathfindToPose(
+                new Pose2d(FieldConstants.driverStationRedAlliance.getX(), FieldConstants.driverStationRedAlliance.getY(), 
+                FieldConstants.driverStationRedAlliance.getRotation()),
+                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
+                Units.degreesToRadians(180.0), 180.0));
+              }
+              else {
+                return AutoBuilder.pathfindToPose(
+                new Pose2d(FieldConstants.driverStationBlueAlliance.getX(), FieldConstants.driverStationBlueAlliance.getY(), 
+                FieldConstants.driverStationBlueAlliance.getRotation()),
+                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
+                Units.degreesToRadians(180.0), 180.0));
+              }
+            })
+        );
+  
+  driverController
+        .leftBumper()
+        .and(driverController.rightBumper())
+        .whileTrue(
+            new ProxyCommand(() -> {
+              if (AllianceUtil.isRedAlliance()) {
+                return AutoBuilder.pathfindToPose(
+                new Pose2d(FieldConstants.speakerRedAlliance.getX(), FieldConstants.speakerRedAlliance.getY(), 
+                FieldConstants.speakerRedAlliance.getRotation()),
+                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
+                Units.degreesToRadians(180.0), 180.0));
+              }
+              else {
+                return AutoBuilder.pathfindToPose(
+                new Pose2d(FieldConstants.speakerBlueAlliance.getX(), FieldConstants.speakerBlueAlliance.getY(), 
+                FieldConstants.speakerBlueAlliance.getRotation()),
+                new PathConstraints(SwerveConstants.maxTranslationalSpeed, SwerveConstants.maxTranslationalAcceleration, 
+                Units.degreesToRadians(180.0), 180.0));
+              }
+            })
+        );
+    
+              
     driverController
         .leftTrigger()
         .whileTrue(

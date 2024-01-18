@@ -291,4 +291,14 @@ public final class Constants {
     public static final int intakeMotorOneID = 5;
     public static final double intakeMotorSpeed = 0.80;
   }
+
+  public static class ShooterConstants {
+    public static final double shooterVelocity = 0;
+    public static final double shooterKs = 0.353;
+    public static final double shooterKv = 0.353;
+    public static final double shooterKa = 0.353;
+    public static final double shooterP = 0.353;
+    public static final int shooterMainId = 0;
+    public static final int shooterFollowerId = 0;
+  }
 }

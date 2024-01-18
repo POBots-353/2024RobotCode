@@ -29,6 +29,7 @@ import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -49,6 +50,7 @@ public class RobotContainer implements Logged {
   private Swerve swerve = new Swerve();
   private Arm arm = new Arm();
   private Intake intake = new Intake();
+  private Shooter shooter = new Shooter();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -74,7 +76,7 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", Commands.run(intake::autoIntake, intake));
+    NamedCommands.registerCommand("Start Intake", Commands.run(() -> intake.intake(), intake));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -86,6 +88,10 @@ public class RobotContainer implements Logged {
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+    
+    NamedCommands.registerCommand("Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
+    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
+
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -120,6 +126,7 @@ public class RobotContainer implements Logged {
     configureDriveBindings();
     configureIntakeBindings();
     configureArmBindings();
+    configureShooterBindings();
   }
 
   private void configureDriveBindings() {
@@ -168,8 +175,7 @@ public class RobotContainer implements Logged {
   private void configureIntakeBindings() {
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(Commands.run(intake::feedToShooter, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+        .whileTrue(Commands.run(intake::feedToShooter));
 
     operatorStick
         .button(OperatorConstants.outtakeNoteButton)
@@ -207,6 +213,13 @@ public class RobotContainer implements Logged {
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }
 
+  private void configureShooterBindings(){
+    operatorStick
+        .button(OperatorConstants.shootButton)
+        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(0.5), shooter))
+        .toggleOnFalse(Commands.run(() -> shooter.setMotorSpeed(0), shooter));
+  }
+
   private void configureAutoChooser() {
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -224,21 +237,13 @@ public class RobotContainer implements Logged {
   }
 
   private void configureBatteryChooser() {
-    batteryChooser.addOption("2015 #1", "Jerry");
-    batteryChooser.addOption("2015 #2", "Bob");
-    batteryChooser.addOption("2015 #3", "Omar");
-    batteryChooser.addOption("2016 #2", "Ella");
-    batteryChooser.addOption("2017 #1", "2017 #1");
-    batteryChooser.addOption("2018 #1", "Larry");
-    batteryChooser.addOption("2019.5 #2", "Allan");
+    batteryChooser.addOption("2019.5 #2", "Al");
     batteryChooser.addOption("2019.5 #3", "Daniel");
-    batteryChooser.addOption("2020 #1", "Karen");
-    batteryChooser.addOption("2020 #2", "Gary");
-    batteryChooser.addOption("2020 #3", "Harold");
+    batteryChooser.addOption("2020 #1", "2020 #1");
+    batteryChooser.addOption("2020 #2", "2020 #2");
     batteryChooser.addOption("2021 #1", "Fred");
-    batteryChooser.addOption("2022 #1", "Charles");
-    batteryChooser.addOption("2024 #1", "Ian");
-    batteryChooser.addOption("2024 #2", "Nancy");
+    batteryChooser.addOption("2024 #1", "2024 #1");
+    batteryChooser.addOption("2024 #2", "2024 #2");
 
     SmartDashboard.putData("Battery Chooser", batteryChooser);
   }
@@ -248,7 +253,8 @@ public class RobotContainer implements Logged {
         Commands.sequence(
                 Commands.runOnce(
                     () -> {
-                      clearPrematchAlerts();
+                      alerts.clear();
+                      Alert.clearGroup("Alerts");
                     }),
                 Commands.runOnce(
                     () -> {
@@ -337,14 +343,6 @@ public class RobotContainer implements Logged {
 
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
-  }
-
-  private void clearPrematchAlerts() {
-    for (Alert alert : alerts) {
-      alert.removeFromGroup();
-    }
-
-    alerts.clear();
   }
 
   private void addAlert(Alert alert) {

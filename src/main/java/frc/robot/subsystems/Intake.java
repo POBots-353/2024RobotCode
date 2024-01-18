@@ -32,7 +32,7 @@ public class Intake extends SubsystemBase {
     intakeMotor1.set(0.0);
   }
 
-  public void autoIntake() {
+  public void intake() {
     if (irBreakBeam.get()) {
       feedToShooter();
     }

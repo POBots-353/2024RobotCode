@@ -128,6 +128,11 @@ public class RobotContainer implements Logged {
         .and(driverController.start())
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
+    driverController
+        .leftStick()
+        .and(driverController.rightStick())
+        .onTrue(swerve.runOnce(swerve::resetModulesToAbsolute).ignoringDisable(true));
+
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
     driverController

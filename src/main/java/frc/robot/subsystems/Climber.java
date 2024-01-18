@@ -36,7 +36,8 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Climber Motor Temperature", mainMotor.getMotorTemperature());
-    SmartDashboard.putNumber("Climber Motor Current", mainMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/Temperature", mainMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Climber/Current", mainMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/Applied Output", mainMotor.getAppliedOutput());
   }
 }

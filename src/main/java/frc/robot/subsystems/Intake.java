@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -14,9 +16,11 @@ public class Intake extends SubsystemBase {
   CANSparkMax intakeMotor1 =
       new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
 
+  DigitalInput irBreakBeam = new DigitalInput(IntakeConstants.intakeMotorOneID);
+
   public Intake() {}
 
-  public void intakeNote() {
+  public void feedToShooter() {
     intakeMotor1.set(IntakeConstants.intakeMotorSpeed);
   }
 
@@ -28,8 +32,15 @@ public class Intake extends SubsystemBase {
     intakeMotor1.set(0.0);
   }
 
+  public void autoIntake() {
+    if (irBreakBeam.get()) {
+      feedToShooter();
+    } stopIntakeMotor();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Intake Note?", !irBreakBeam.get());
   }
 }

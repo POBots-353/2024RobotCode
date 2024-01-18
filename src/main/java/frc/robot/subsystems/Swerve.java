@@ -229,17 +229,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
-    Commands.sequence(
-            Commands.waitSeconds(2.0),
-            runOnce(
-                () -> {
-                  frontLeftModule.resetToAbsolute();
-                  frontRightModule.resetToAbsolute();
-                  backLeftModule.resetToAbsolute();
-                  backRightModule.resetToAbsolute();
-                }))
+    Commands.sequence(Commands.waitSeconds(2.0), runOnce(this::resetModulesToAbsolute))
         .ignoringDisable(true)
         .schedule();
+  }
+
+  public void resetModulesToAbsolute() {
+    frontLeftModule.resetToAbsolute();
+    frontRightModule.resetToAbsolute();
+    backLeftModule.resetToAbsolute();
+    backRightModule.resetToAbsolute();
   }
 
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {

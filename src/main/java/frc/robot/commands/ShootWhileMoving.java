@@ -12,26 +12,30 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
 
 public class ShootWhileMoving extends Command {
   private final Arm arm;
   private final Intake intake;
+  private final Shooter shooter;
   private final Swerve swerve;
 
   private Pose2d speakerPose;
 
   /** Creates a new ShootWhileMoving. */
-  public ShootWhileMoving(Arm arm, Intake intake, Swerve swerve) {
+  public ShootWhileMoving(Arm arm, Intake intake, Shooter shooter, Swerve swerve) {
     this.arm = arm;
     this.intake = intake;
+    this.shooter = shooter;
     this.swerve = swerve;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake);
+    addRequirements(arm, intake, shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -78,10 +82,12 @@ public class ShootWhileMoving extends Command {
     Rotation2d angle = Rotation2d.fromRadians(ArmConstants.autoShootInterpolation.get(distance));
     arm.setDesiredPosition(angle);
 
+    shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+
     Rotation2d angleError = arm.getPosition().minus(angle);
 
     if (Math.abs(MathUtil.inputModulus(angleError.getDegrees(), -180.0, 180.0)) < 0.25) {
-      // Feed into shooter
+      intake.feedToShooter();
     }
   }
 
@@ -89,7 +95,6 @@ public class ShootWhileMoving extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.stopIntakeMotor();
-    // stop shooter
   }
 
   // Returns true when the command should end.

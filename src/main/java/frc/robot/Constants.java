@@ -170,6 +170,15 @@ public final class Constants {
 
     public static final LinearInterpolation autoShootInterpolation =
         new LinearInterpolation(autoShootArmAngles);
+
+    // (distance, time)
+    public static final Point2D[] autoShootTimes =
+        new Point2D.Double[] {
+          new Point2D.Double(0.25, 0.5), new Point2D.Double(0.25, 0.5),
+        };
+
+    public static final LinearInterpolation autoShootTimeInterpolation =
+        new LinearInterpolation(autoShootTimes);
   }
 
   public static final class SwerveConstants {

@@ -132,6 +132,7 @@ public class RobotContainer implements Logged {
     configureIntakeBindings();
     configureArmBindings();
     configureShooterBindings();
+    configureClimbingBindings();
   }
 
   private void configureDriveBindings() {

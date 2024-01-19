@@ -57,6 +57,9 @@ public final class Constants {
         new Pose2d(0.25, 5.5, Rotation2d.fromDegrees(180.0));
     public static final Pose2d speakerRedAlliance =
         new Pose2d(16.3, 5.5, Rotation2d.fromDegrees(0.0));
+
+    public static Pose2d driverStationBlueAlliance = new Pose2d();
+    public static Pose2d driverStationRedAlliance = new Pose2d();
   }
 
   public static final class VisionConstants {

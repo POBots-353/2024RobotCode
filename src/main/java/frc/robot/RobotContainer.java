@@ -67,6 +67,7 @@ public class RobotContainer implements Logged {
   private SendableChooser<Command> autoChooser;
 
   private List<Alert> alerts = new ArrayList<Alert>();
+  private Alert armPrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
 
@@ -388,6 +389,21 @@ public class RobotContainer implements Logged {
             .unless(DriverStation::isFMSAttached)
             .withName("Swerve Pre-Match");
 
+    Command armPrematch =
+        arm.buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  armPrematchAlert.removeFromGroup();
+                  alerts.remove(armPrematchAlert);
+
+                  if (arm.containsErrors()) {
+                    armPrematchAlert = new Alert("Arm Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    armPrematchAlert = new Alert("Arm Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(armPrematchAlert);
+                });
+
     SmartDashboard.putData(
         "Full Pre-Match",
         Commands.sequence(
@@ -397,6 +413,7 @@ public class RobotContainer implements Logged {
                     }),
                 generalPreMatch.asProxy(),
                 swervePreMatch.asProxy(),
+                armPrematch.asProxy(),
                 Commands.runOnce(
                     () -> {
                       if (!errorsPresent()) {
@@ -411,6 +428,7 @@ public class RobotContainer implements Logged {
 
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
+    SmartDashboard.putData("Arm/Arm Pre-Match Check", armPrematch.asProxy());
   }
 
   private void clearPrematchAlerts() {

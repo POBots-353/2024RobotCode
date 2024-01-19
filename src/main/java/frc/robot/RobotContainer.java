@@ -29,6 +29,7 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -53,6 +54,7 @@ public class RobotContainer implements Logged {
   private Arm arm = new Arm();
   private Intake intake = new Intake();
   private Shooter shooter = new Shooter();
+  private Climber climber = new Climber();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -243,6 +245,14 @@ public class RobotContainer implements Logged {
         .button(OperatorConstants.outtakeNoteButton)
         .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+  }
+  private void configureClimbingBindings() {
+    operatorStick
+      .button(OperatorConstants.climberUpButton)
+      .whileTrue(Commands.run(climber::setClimberUp, climber));
+    operatorStick
+      .button(OperatorConstants.climberDownButton)
+      .whileTrue(Commands.run(climber::setClimberDown, climber));
   }
 
   private void configureArmBindings() {

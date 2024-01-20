@@ -248,13 +248,14 @@ public class RobotContainer implements Logged {
         .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
   }
+
   private void configureClimbingBindings() {
     operatorStick
-      .button(OperatorConstants.climberUpButton)
-      .whileTrue(Commands.run(climber::setClimberUp, climber));
+        .button(OperatorConstants.climberUpButton)
+        .whileTrue(Commands.run(climber::setClimberUp, climber));
     operatorStick
-      .button(OperatorConstants.climberDownButton)
-      .whileTrue(Commands.run(climber::setClimberDown, climber));
+        .button(OperatorConstants.climberDownButton)
+        .whileTrue(Commands.run(climber::setClimberDown, climber));
   }
 
   private void configureArmBindings() {
@@ -415,9 +416,10 @@ public class RobotContainer implements Logged {
                   }
                   addAlert(armPrematchAlert);
                 });
-      
+
     Command intakePrematch =
-        intake.buildPrematch(driverController, operatorStick)
+        intake
+            .buildPrematch(driverController, operatorStick)
             .finallyDo(
                 (interrupted) -> {
                   intakePrematchAlert.removeFromGroup();
@@ -429,8 +431,8 @@ public class RobotContainer implements Logged {
                     armPrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
                   }
                   addAlert(intakePrematchAlert);
-                });      
-    
+                });
+
     SmartDashboard.putData(
         "Full Pre-Match",
         Commands.sequence(

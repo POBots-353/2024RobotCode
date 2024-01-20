@@ -144,7 +144,7 @@ public final class Constants {
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
-    public static final double armGearRatio = 1.0 / 353.0;
+    public static final double armGearRatio = 1.0 / 400.0;
     public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
     public static final double armVelocityConversionFactor = armPositionConversionFactor / 60.0;
 

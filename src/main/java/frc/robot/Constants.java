@@ -32,7 +32,6 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
 
     public static final int intakeNoteButton = 13;
-    public static final int outtakeNoteButton = 12;
 
     public static final int shootButton = 12;
 
@@ -47,6 +46,9 @@ public final class Constants {
 
     public static final int climberUpButton = 4;
     public static final int climberDownButton = 1;
+
+    public static final int manualShootButton = 12;
+    public static final int manualFeedButton = 11;
   }
 
   public static final class FieldConstants {

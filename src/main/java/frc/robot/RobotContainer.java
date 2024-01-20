@@ -24,6 +24,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
@@ -244,9 +245,8 @@ public class RobotContainer implements Logged {
         .whileTrue(Commands.run(intake::feedToShooter));
 
     operatorStick
-        .button(OperatorConstants.outtakeNoteButton)
-        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+        .button(OperatorConstants.manualShootButton)
+        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
   }
 
   private void configureClimbingBindings() {

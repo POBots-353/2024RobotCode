@@ -84,13 +84,15 @@ public final class Constants {
             0.020, // 1.00
             0.150, // 1.50
             0.200, // 2.00
+            1.15, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
             0.115, // 0.50
             0.149, // 1.00
             0.190, // 1.50
-            0.250 // 2.00
+            0.250, // 2.00
+            1.85, // 5.5
           };
 
       public static PolynomialRegression xyPolynomialRegression =

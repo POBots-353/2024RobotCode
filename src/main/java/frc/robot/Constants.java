@@ -173,37 +173,6 @@ public final class Constants {
 
     public static final LinearInterpolation autoShootInterpolation =
         new LinearInterpolation(autoShootArmAngles);
-
-    // (distance, time)
-    public static final Point2D[] autoShootTimes =
-        new Point2D.Double[] {
-          new Point2D.Double(0.25, 0.5), new Point2D.Double(0.25, 0.5),
-        };
-
-    public static final LinearInterpolation autoShootTimeInterpolation =
-        new LinearInterpolation(autoShootTimes);
-  }
-
-  public static class IntakeConstants {
-    public static final int intakeMotorOneID = 5;
-    public static final double intakeMotorSpeed = 0.80;
-  }
-
-  public static class ShooterConstants {
-    public static final double shooterVelocity = 0;
-    public static final double shooterKs = 0.353;
-    public static final double shooterKv = 0.353;
-    public static final double shooterKa = 0.353;
-    public static final double shooterP = 0.353;
-    public static final int shooterMainId = 0;
-    public static final int shooterFollowerId = 0;
-  }
-
-  public static final class ClimberConstants {
-    public static final int mainMotorID = 15;
-    public static final int followerMotorID = 16;
-
-    public static final double climberMotorSpeed = 0.75;
   }
 
   public static final class SwerveConstants {
@@ -310,5 +279,10 @@ public final class Constants {
     public static final int turnID = 7;
     public static final int encoderID = 11;
     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-93.427734375);
+  }
+
+  public static class IntakeConstants {
+    public static final int intakeMotorOneID = 5;
+    public static final double intakeMotorSpeed = 0.80;
   }
 }

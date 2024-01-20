@@ -70,6 +70,7 @@ public class RobotContainer implements Logged {
 
   private List<Alert> alerts = new ArrayList<Alert>();
   private Alert armPrematchAlert = new Alert("", AlertType.INFO);
+  private Alert intakePrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
 
@@ -414,7 +415,22 @@ public class RobotContainer implements Logged {
                   }
                   addAlert(armPrematchAlert);
                 });
+      
+    Command intakePrematch =
+        intake.buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  intakePrematchAlert.removeFromGroup();
+                  alerts.remove(intakePrematchAlert);
 
+                  if (intake.containsErrors()) {
+                    intakePrematchAlert = new Alert("Intake Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    armPrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(intakePrematchAlert);
+                });      
+    
     SmartDashboard.putData(
         "Full Pre-Match",
         Commands.sequence(
@@ -425,6 +441,7 @@ public class RobotContainer implements Logged {
                 generalPreMatch.asProxy(),
                 swervePreMatch.asProxy(),
                 armPrematch.asProxy(),
+                intakePrematch.asProxy(),
                 Commands.runOnce(
                     () -> {
                       if (!errorsPresent()) {
@@ -440,6 +457,7 @@ public class RobotContainer implements Logged {
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
     SmartDashboard.putData("Arm/Arm Pre-Match Check", armPrematch.asProxy());
+    SmartDashboard.putData("Intake/Intake Pre-Match Check", intakePrematch.asProxy());
   }
 
   private void clearPrematchAlerts() {

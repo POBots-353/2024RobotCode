@@ -219,6 +219,8 @@ public class SwerveModule implements Logged {
     if (!waitForCANCoder()) {
       noAbsoluteValue.set(true);
       return;
+    } else {
+      noAbsoluteValue.set(false);
     }
 
     Rotation2d position = getAbsoluteAngle().minus(angleOffset);
@@ -242,6 +244,8 @@ public class SwerveModule implements Logged {
       DriverStation.reportError(
           "Failed to set absolute angle of " + moduleName + " module!", false);
       motorPositionNotSet.set(true);
+    } else {
+      motorPositionNotSet.set(false);
     }
     turnMotor.setCANTimeout(0);
   }

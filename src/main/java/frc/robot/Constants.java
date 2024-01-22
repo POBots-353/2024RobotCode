@@ -32,7 +32,6 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
 
     public static final int intakeNoteButton = 13;
-    public static final int outtakeNoteButton = 12;
 
     public static final int shootButton = 12;
 
@@ -47,6 +46,9 @@ public final class Constants {
 
     public static final int climberUpButton = 4;
     public static final int climberDownButton = 1;
+
+    public static final int manualShootButton = 12;
+    public static final int manualFeedButton = 11;
   }
 
   public static final class FieldConstants {
@@ -57,6 +59,9 @@ public final class Constants {
         new Pose2d(0.25, 5.5, Rotation2d.fromDegrees(180.0));
     public static final Pose2d speakerRedAlliance =
         new Pose2d(16.3, 5.5, Rotation2d.fromDegrees(0.0));
+
+    public static Pose2d driverStationBlueAlliance = new Pose2d();
+    public static Pose2d driverStationRedAlliance = new Pose2d();
   }
 
   public static final class VisionConstants {
@@ -81,13 +86,15 @@ public final class Constants {
             0.020, // 1.00
             0.150, // 1.50
             0.200, // 2.00
+            1.15, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
             0.115, // 0.50
             0.149, // 1.00
             0.190, // 1.50
-            0.250 // 2.00
+            0.250, // 2.00
+            1.85, // 5.5
           };
 
       public static PolynomialRegression xyPolynomialRegression =
@@ -141,7 +148,7 @@ public final class Constants {
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
-    public static final double armGearRatio = 1.0 / 353.0;
+    public static final double armGearRatio = 1.0 / 400.0;
     public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
     public static final double armVelocityConversionFactor = armPositionConversionFactor / 60.0;
 
@@ -194,6 +201,13 @@ public final class Constants {
     public static final double shooterP = 0.353;
     public static final int shooterMainId = 0;
     public static final int shooterFollowerId = 0;
+  }
+
+  public static final class ClimberConstants {
+    public static final int mainMotorID = 15;
+    public static final int followerMotorID = 16;
+
+    public static final double climberMotorSpeed = 0.75;
   }
 
   public static final class SwerveConstants {

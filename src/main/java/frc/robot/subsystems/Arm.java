@@ -21,18 +21,24 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.controllers.VirtualJoystick;
+import frc.lib.controllers.VirtualXboxController;
+import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.Logged;
 
-public class Arm extends SubsystemBase implements Logged {
+public class Arm extends VirtualSubsystem implements Logged {
   private CANSparkMax mainMotor = new CANSparkMax(ArmConstants.mainMotorID, MotorType.kBrushless);
   private CANSparkMax followerMotor =
       new CANSparkMax(ArmConstants.followerID, MotorType.kBrushless);
@@ -42,6 +48,12 @@ public class Arm extends SubsystemBase implements Logged {
   private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(ArmConstants.absoluteEncoderID);
 
   private TrapezoidProfile armProfile = new TrapezoidProfile(ArmConstants.profileConstraints);
+
+  private Alert absolutePositionNotSet =
+      new Alert("Arm failed to set to absolute position", AlertType.ERROR);
+
+  private final double prematchDelay = 2.5;
+  private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
 
   @Log.NT
   private ArmFeedforward armFeedforward =
@@ -103,11 +115,15 @@ public class Arm extends SubsystemBase implements Logged {
       if (armEncoder.getPosition() == position) {
         break;
       }
+      Timer.delay(0.010);
     }
 
     if (failed) {
       DriverStation.reportError("Failed to set absolute posiiton of arm motor", false);
       DataLogManager.log("Failed to set absolute posiiton of arm motor");
+      absolutePositionNotSet.set(true);
+    } else {
+      absolutePositionNotSet.set(false);
     }
     mainMotor.setCANTimeout(0);
   }
@@ -160,6 +176,94 @@ public class Arm extends SubsystemBase implements Logged {
         "Arm/Absolute Position", Units.radiansToDegrees(absoluteEncoder.getAbsolutePosition()));
 
     SmartDashboard.putNumber("Arm/Velocity", Units.radiansToDegrees(armEncoder.getVelocity()));
+  }
+
+  @Override
+  public Command getPrematchCheckCommand(
+      VirtualXboxController controller, VirtualJoystick joystick) {
+    return Commands.sequence(
+        // Check for hardware errors
+        Commands.runOnce(
+            () -> {
+              REVLibError error = mainMotor.getLastError();
+              if (error != REVLibError.kOk) {
+                addError("Arm motor error: " + error.name());
+              } else {
+                addInfo("Main arm motor contains no errors");
+              }
+
+              if (!absoluteEncoder.isConnected()) {
+                addError("Arm absolute encoder is not connected");
+              } else {
+                addInfo("ARm absolute encoder is connected");
+              }
+            }),
+        // Move to pickup height
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.armToPickup, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(armEncoder.getPosition() - ArmConstants.pickupAngle.getRadians())
+                  > prematchAngleTolerance) {
+                addError("Arm did not sufficiently reach pickup position");
+              } else {
+                addInfo("Arm successfully reached ground pickup position");
+              }
+              joystick.clearVirtualButtons();
+            }),
+        Commands.waitSeconds(0.5),
+        // Move to amp height
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.armToAmp, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(armEncoder.getPosition() - ArmConstants.ampAngle.getRadians())
+                  > prematchAngleTolerance) {
+                addError("Arm did not sufficiently reach amp position");
+              } else {
+                addInfo("Arm successfully reached amp position");
+              }
+              joystick.clearVirtualButtons();
+            }),
+        Commands.waitSeconds(0.5),
+        // Move to subwoofer shooting angle
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.armShootSubwoofer, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(armEncoder.getPosition() - ArmConstants.subwooferAngle.getRadians())
+                  > prematchAngleTolerance) {
+                addError("Arm did not sufficiently reach subwoofer position");
+              } else {
+                addInfo("Arm successfully reached subwoofer position");
+              }
+              joystick.clearVirtualButtons();
+            }),
+        Commands.waitSeconds(0.5),
+        // Move to podium shooting angle
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.armShootPodium, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (Math.abs(armEncoder.getPosition() - ArmConstants.podiumAngle.getRadians())
+                  > prematchAngleTolerance) {
+                addError("Arm did not sufficiently reach podium shooting angle");
+              } else {
+                addInfo("Arm successfully reached podium shooting angle");
+              }
+            }));
   }
 
   public Command quasistaticForward() {

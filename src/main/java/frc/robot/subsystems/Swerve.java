@@ -18,6 +18,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -229,17 +230,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
-    Commands.sequence(
-            Commands.waitSeconds(2.0),
-            runOnce(
-                () -> {
-                  frontLeftModule.resetToAbsolute();
-                  frontRightModule.resetToAbsolute();
-                  backLeftModule.resetToAbsolute();
-                  backRightModule.resetToAbsolute();
-                }))
+    Commands.sequence(Commands.waitSeconds(2.0), runOnce(this::resetModulesToAbsolute))
         .ignoringDisable(true)
         .schedule();
+  }
+
+  public void resetModulesToAbsolute() {
+    frontLeftModule.resetToAbsolute();
+    frontRightModule.resetToAbsolute();
+    backLeftModule.resetToAbsolute();
+    backRightModule.resetToAbsolute();
   }
 
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
@@ -353,6 +353,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Log.NT(key = "Heading")
   public Rotation2d getHeading() {
     return navx.getRotation2d().minus(angleOffset);
+  }
+
+  @Log.NT(key = "Rotation3d")
+  public Rotation3d getHeading3d() {
+    return navx.getRotation3d();
   }
 
   @Log.NT(key = "Chassis Speeds")

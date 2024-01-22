@@ -8,7 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -17,22 +16,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.AllianceUtil;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -51,6 +55,7 @@ public class RobotContainer implements Logged {
   private Arm arm = new Arm();
   private Intake intake = new Intake();
   private Shooter shooter = new Shooter();
+  private Climber climber = new Climber();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -65,6 +70,8 @@ public class RobotContainer implements Logged {
   private SendableChooser<Command> autoChooser;
 
   private List<Alert> alerts = new ArrayList<Alert>();
+  private Alert armPrematchAlert = new Alert("", AlertType.INFO);
+  private Alert intakePrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
 
@@ -88,10 +95,10 @@ public class RobotContainer implements Logged {
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
-    
-    NamedCommands.registerCommand("Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
-    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
 
+    NamedCommands.registerCommand(
+        "Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
+    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -127,6 +134,7 @@ public class RobotContainer implements Logged {
     configureIntakeBindings();
     configureArmBindings();
     configureShooterBindings();
+    configureClimbingBindings();
   }
 
   private void configureDriveBindings() {
@@ -135,15 +143,74 @@ public class RobotContainer implements Logged {
         .and(driverController.start())
         .onTrue(Commands.runOnce(swerve::zeroYaw).ignoringDisable(true));
 
+    driverController
+        .leftStick()
+        .and(driverController.rightStick())
+        .onTrue(swerve.runOnce(swerve::resetModulesToAbsolute).ignoringDisable(true));
+
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
     driverController
         .leftTrigger()
         .and(driverController.rightTrigger())
         .whileTrue(
-            AutoBuilder.pathfindToPose(
-                new Pose2d(6.0, 3.2, Rotation2d.fromDegrees(0.0)),
-                new PathConstraints(3.0, 3.0, Units.degreesToRadians(180.0), 180.0)));
+            new ProxyCommand(
+                () -> {
+                  if (AllianceUtil.isRedAlliance()) {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.driverStationRedAlliance.getX(),
+                            FieldConstants.driverStationRedAlliance.getY(),
+                            FieldConstants.driverStationRedAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  } else {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.driverStationBlueAlliance.getX(),
+                            FieldConstants.driverStationBlueAlliance.getY(),
+                            FieldConstants.driverStationBlueAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  }
+                }));
+
+    driverController
+        .leftBumper()
+        .and(driverController.rightBumper())
+        .whileTrue(
+            new ProxyCommand(
+                () -> {
+                  if (AllianceUtil.isRedAlliance()) {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.speakerRedAlliance.getX(),
+                            FieldConstants.speakerRedAlliance.getY(),
+                            FieldConstants.speakerRedAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  } else {
+                    return AutoBuilder.pathfindToPose(
+                        new Pose2d(
+                            FieldConstants.speakerBlueAlliance.getX(),
+                            FieldConstants.speakerBlueAlliance.getY(),
+                            FieldConstants.speakerBlueAlliance.getRotation()),
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            Units.degreesToRadians(180.0),
+                            180.0));
+                  }
+                }));
 
     driverController
         .leftTrigger()
@@ -178,9 +245,17 @@ public class RobotContainer implements Logged {
         .whileTrue(Commands.run(intake::feedToShooter));
 
     operatorStick
-        .button(OperatorConstants.outtakeNoteButton)
-        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+        .button(OperatorConstants.manualShootButton)
+        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
+  }
+
+  private void configureClimbingBindings() {
+    operatorStick
+        .button(OperatorConstants.climberUpButton)
+        .whileTrue(Commands.run(climber::setClimberUp, climber));
+    operatorStick
+        .button(OperatorConstants.climberDownButton)
+        .whileTrue(Commands.run(climber::setClimberDown, climber));
   }
 
   private void configureArmBindings() {
@@ -213,7 +288,7 @@ public class RobotContainer implements Logged {
     operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
   }
 
-  private void configureShooterBindings(){
+  private void configureShooterBindings() {
     operatorStick
         .button(OperatorConstants.shootButton)
         .whileTrue(Commands.run(() -> shooter.setMotorSpeed(0.5), shooter))
@@ -237,13 +312,21 @@ public class RobotContainer implements Logged {
   }
 
   private void configureBatteryChooser() {
-    batteryChooser.addOption("2019.5 #2", "Al");
+    batteryChooser.addOption("2015 #1", "Jerry");
+    batteryChooser.addOption("2015 #2", "Bob");
+    batteryChooser.addOption("2015 #3", "Omar");
+    batteryChooser.addOption("2016 #2", "Ella");
+    batteryChooser.addOption("2017 #1", "2017 #1");
+    batteryChooser.addOption("2018 #1", "Larry");
+    batteryChooser.addOption("2019.5 #2", "Allan");
     batteryChooser.addOption("2019.5 #3", "Daniel");
-    batteryChooser.addOption("2020 #1", "2020 #1");
-    batteryChooser.addOption("2020 #2", "2020 #2");
+    batteryChooser.addOption("2020 #1", "Karen");
+    batteryChooser.addOption("2020 #2", "Gary");
+    batteryChooser.addOption("2020 #3", "Harold");
     batteryChooser.addOption("2021 #1", "Fred");
-    batteryChooser.addOption("2024 #1", "2024 #1");
-    batteryChooser.addOption("2024 #2", "2024 #2");
+    batteryChooser.addOption("2022 #1", "Charles");
+    batteryChooser.addOption("2024 #1", "Ian");
+    batteryChooser.addOption("2024 #2", "Nancy");
 
     SmartDashboard.putData("Battery Chooser", batteryChooser);
   }
@@ -319,16 +402,48 @@ public class RobotContainer implements Logged {
             .unless(DriverStation::isFMSAttached)
             .withName("Swerve Pre-Match");
 
+    Command armPrematch =
+        arm.buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  armPrematchAlert.removeFromGroup();
+                  alerts.remove(armPrematchAlert);
+
+                  if (arm.containsErrors()) {
+                    armPrematchAlert = new Alert("Arm Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    armPrematchAlert = new Alert("Arm Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(armPrematchAlert);
+                });
+
+    Command intakePrematch =
+        intake
+            .buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  intakePrematchAlert.removeFromGroup();
+                  alerts.remove(intakePrematchAlert);
+
+                  if (intake.containsErrors()) {
+                    intakePrematchAlert = new Alert("Intake Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    armPrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(intakePrematchAlert);
+                });
+
     SmartDashboard.putData(
         "Full Pre-Match",
         Commands.sequence(
                 Commands.runOnce(
                     () -> {
-                      alerts.clear();
-                      Alert.clearGroup("Alerts");
+                      clearPrematchAlerts();
                     }),
                 generalPreMatch.asProxy(),
                 swervePreMatch.asProxy(),
+                armPrematch.asProxy(),
+                intakePrematch.asProxy(),
                 Commands.runOnce(
                     () -> {
                       if (!errorsPresent()) {
@@ -343,6 +458,16 @@ public class RobotContainer implements Logged {
 
     SmartDashboard.putData("General Pre-Match Check", generalPreMatch.asProxy());
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
+    SmartDashboard.putData("Arm/Arm Pre-Match Check", armPrematch.asProxy());
+    SmartDashboard.putData("Intake/Intake Pre-Match Check", intakePrematch.asProxy());
+  }
+
+  private void clearPrematchAlerts() {
+    for (Alert alert : alerts) {
+      alert.removeFromGroup();
+    }
+
+    alerts.clear();
   }
 
   private void addAlert(Alert alert) {

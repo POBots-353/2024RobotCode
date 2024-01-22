@@ -78,7 +78,7 @@ public final class Constants {
     public static final class ArducamConstants {
       public static final double[] distances =
           new double[] {
-            0.50, 1.00, 1.50, 2.00,
+            0.50, 1.00, 1.50, 2.00, 4.95, 5.5,
           };
       public static final double[] xyStandardDeviations =
           new double[] {
@@ -86,6 +86,7 @@ public final class Constants {
             0.020, // 1.00
             0.150, // 1.50
             0.200, // 2.00
+            0.037, // 4.95
             1.15, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =

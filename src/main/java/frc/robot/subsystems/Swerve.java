@@ -475,7 +475,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets < 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(4.0), Units.inchesToMeters(4.0), Units.degreesToRadians(10.0));
+          Units.inchesToMeters(2.75), Units.inchesToMeters(2.75), Units.degreesToRadians(10.0));
     } else {
       double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);

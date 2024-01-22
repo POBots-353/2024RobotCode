@@ -17,11 +17,18 @@ public class Climber extends SubsystemBase {
   private CANSparkMax followerMotor =
       new CANSparkMax(ClimberConstants.followerMotorID, MotorType.kBrushless);
 
+  private RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
+
+  private final double prematchDelay = 2.5;
+
   public Climber() {
     followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
   }
 
+public double getVelocity() {
+  return climberEncoder.getVelocity();
+}
   public void setClimberUp() {
     mainMotor.set(ClimberConstants.climberMotorSpeed);
   }
@@ -41,3 +48,53 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Applied Output", mainMotor.getAppliedOutput());
   }
 }
+
+@Override 
+public Command getPrematchCheckCommand(
+  VirtualXboxController controller, VirtualJoystick joystick) {
+ return  Commands.sequence(
+  // Check for hardware motors
+  Commands.runOnce(
+  () -> {
+    REVLibError error = climberMotor.getLastError();
+    if (error != REVLibError.kOk) {
+      addError("Climber motor error: " + error.name());
+    } else {
+      addInfo("Climber motor contains no errors"); 
+    }
+
+  }
+  )
+ )},
+ // Checks climber motor 
+ Commands.runOnce(
+  () -> {
+    joystick.setButton(operatorConstants.climberUpButton, true);
+  }),
+  Commands.waitSeconds(prematchDelay),
+  Commands.runOnce(
+    () -> {
+      if (getVelocity() < 10) {
+        addError("Climber motor isn't working");
+      } else {
+        addInfo("Climber motor is moving");
+      }
+      joystick.clearVirtualButtons();
+    }),
+    Commands.waitSeconds(0.5),
+
+    Commands.runOnce(
+      () -> {
+        joystick.setButton(operatorConstants.climberDownButton, true);
+      }),
+      Commands.waitSeconds(prematchDelay),
+      Commands.runOnce(
+      () -> {
+        if(getVelocity() > -10) {
+          addError("Climber motor isn't working");
+        } else {
+          addInfo("Climber motor is moving");
+        }
+        joystick.clearVirtualButtons();
+      }
+    )

@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -60,8 +59,9 @@ public class Shooter extends VirtualSubsystem implements Logged {
     shooterPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
   }
 
-
-
+  public void stopMotor() {
+    shooterMain.set(0);
+  }
 
   @Override
   public void periodic() {

@@ -18,6 +18,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -352,6 +353,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Log.NT(key = "Heading")
   public Rotation2d getHeading() {
     return navx.getRotation2d().minus(angleOffset);
+  }
+
+  @Log.NT(key = "Rotation3d")
+  public Rotation3d getHeading3d() {
+    return navx.getRotation3d();
   }
 
   @Log.NT(key = "Chassis Speeds")

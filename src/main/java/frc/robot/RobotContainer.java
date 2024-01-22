@@ -291,7 +291,7 @@ public class RobotContainer implements Logged {
   private void configureShooterBindings() {
     operatorStick
         .button(OperatorConstants.shootButton)
-        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(0.5), shooter))
+        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
         .toggleOnFalse(Commands.run(() -> shooter.setMotorSpeed(0), shooter));
   }
 

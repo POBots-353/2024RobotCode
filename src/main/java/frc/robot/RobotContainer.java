@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,6 +28,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
@@ -366,6 +369,23 @@ public class RobotContainer implements Logged {
                         addError("Controller port 1 is not a generic joystick");
                       } else {
                         addInfo("Controller port 1 is the correct joystick type");
+                      }
+                    }),
+                Commands.runOnce(
+                    () -> {
+                      NetworkTable rootTable = NetworkTableInstance.getDefault().getTable("");
+
+                      if (!rootTable.containsSubTable(VisionConstants.limelightName)) {
+                        addError("Limelight is not connected");
+                      } else {
+                        addInfo("Limelight is connected");
+                      }
+
+                      if (!rootTable.containsSubTable(
+                          "photonvision/" + VisionConstants.arducamName)) {
+                        addError("Arducam is not connected");
+                      } else {
+                        addInfo("Arudcam is connected");
                       }
                     }))
             .until(this::errorsPresent)

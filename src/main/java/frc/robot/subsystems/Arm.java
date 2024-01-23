@@ -9,9 +9,11 @@ import static edu.wpi.first.units.Units.Volts;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -20,7 +22,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,12 +41,18 @@ import monologue.Logged;
 
 public class Arm extends VirtualSubsystem implements Logged {
   private CANSparkMax mainMotor = new CANSparkMax(ArmConstants.mainMotorID, MotorType.kBrushless);
-  private CANSparkMax followerMotor =
-      new CANSparkMax(ArmConstants.followerID, MotorType.kBrushless);
+  private CANSparkMax backLeftFollower =
+      new CANSparkMax(ArmConstants.leftFollowerID, MotorType.kBrushless);
+
+  private CANSparkMax frontRightFollower =
+      new CANSparkMax(ArmConstants.frontRightID, MotorType.kBrushless);
+  private CANSparkMax backRightFollower =
+      new CANSparkMax(ArmConstants.backRightID, MotorType.kBrushless);
 
   private SparkPIDController armPIDController = mainMotor.getPIDController();
   private RelativeEncoder armEncoder = mainMotor.getEncoder();
-  private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(ArmConstants.absoluteEncoderID);
+  private SparkAbsoluteEncoder absoluteEncoder =
+      mainMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
   private TrapezoidProfile armProfile = new TrapezoidProfile(ArmConstants.profileConstraints);
 
@@ -72,10 +79,13 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   /** Creates a new Arm. */
   public Arm() {
-    absoluteEncoder.setDutyCycleRange(1.0 / 1024.0, 1023.0 / 1024.0);
-
     configureMainMotor();
-    configureFollowerMotor();
+
+    configureFollowerMotor(backLeftFollower);
+    configureFollowerMotor(frontRightFollower);
+    configureFollowerMotor(backRightFollower);
+
+    configureAbsoluteEncoder();
 
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
         .ignoringDisable(true)
@@ -93,19 +103,29 @@ public class Arm extends VirtualSubsystem implements Logged {
     armPIDController.setOutputRange(-1.0, 1.0);
 
     mainMotor.setIdleMode(IdleMode.kBrake);
+
+    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
+    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
+
     mainMotor.setCANTimeout(0);
   }
 
-  private void configureFollowerMotor() {
-    followerMotor.setCANTimeout(250);
-    followerMotor.follow(mainMotor, true);
-    SparkMaxUtil.configureFollower(followerMotor);
-    followerMotor.setCANTimeout(0);
+  private void configureFollowerMotor(CANSparkMax follower) {
+    backLeftFollower.setCANTimeout(250);
+    backLeftFollower.follow(mainMotor);
+    SparkMaxUtil.configureFollower(follower);
+    follower.setCANTimeout(0);
+  }
+
+  private void configureAbsoluteEncoder() {
+    absoluteEncoder.setZeroOffset(ArmConstants.absoluteOffset.getRotations());
+    absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+    absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
   }
 
   private void resetToAbsolute() {
     mainMotor.setCANTimeout(250);
-    double position = getAbsoluteAngle().minus(ArmConstants.absoluteOffset).getRadians();
+    double position = absoluteEncoder.getPosition();
 
     boolean failed = true;
     for (int i = 0; i < 250; i++) {
@@ -160,7 +180,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Absolute Angle")
   public Rotation2d getAbsoluteAngle() {
-    return Rotation2d.fromRotations(absoluteEncoder.getAbsolutePosition());
+    return Rotation2d.fromRadians(absoluteEncoder.getPosition() - absoluteEncoder.getZeroOffset());
   }
 
   @Log.NT(key = "Angle")
@@ -172,10 +192,13 @@ public class Arm extends VirtualSubsystem implements Logged {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Arm/Position", Units.radiansToDegrees(armEncoder.getPosition()));
+    SmartDashboard.putNumber("Arm/Absolute Position", getAbsoluteAngle().getDegrees());
     SmartDashboard.putNumber(
-        "Arm/Absolute Position", Units.radiansToDegrees(absoluteEncoder.getAbsolutePosition()));
+        "Arm/Absolute Encoder Position", Units.radiansToDegrees(absoluteEncoder.getPosition()));
 
     SmartDashboard.putNumber("Arm/Velocity", Units.radiansToDegrees(armEncoder.getVelocity()));
+    SmartDashboard.putNumber(
+        "Arm/Absolute Encoder Velocity", Units.radiansToDegrees(absoluteEncoder.getVelocity()));
   }
 
   @Override
@@ -190,12 +213,6 @@ public class Arm extends VirtualSubsystem implements Logged {
                 addError("Arm motor error: " + error.name());
               } else {
                 addInfo("Main arm motor contains no errors");
-              }
-
-              if (!absoluteEncoder.isConnected()) {
-                addError("Arm absolute encoder is not connected");
-              } else {
-                addInfo("ARm absolute encoder is connected");
               }
             }),
         // Move to pickup height

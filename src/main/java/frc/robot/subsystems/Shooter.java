@@ -108,11 +108,11 @@ public class Shooter extends VirtualSubsystem implements Logged {
     return sysIdRoutine.quasistatic(Direction.kReverse);
   }
 
-public Command dynamicForward() {
-  return sysIdRoutine.dynamic(Direction.kForward);
-}
+  public Command dynamicForward() {
+    return sysIdRoutine.dynamic(Direction.kForward);
+  }
 
-public Command dynamicBackward() {
-  return sysIdRoutine.dynamic(Direction.kReverse);
-}
+  public Command dynamicBackward() {
+    return sysIdRoutine.dynamic(Direction.kReverse);
+  }
 }

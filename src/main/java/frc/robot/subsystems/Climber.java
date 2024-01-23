@@ -37,12 +37,8 @@ public class Climber extends VirtualSubsystem {
     return climberEncoder.getVelocity();
   }
 
-  public void setClimberUp() {
+  public void climb() {
     mainMotor.set(ClimberConstants.climberMotorSpeed);
-  }
-
-  public void setClimberDown() {
-    mainMotor.set(-ClimberConstants.climberMotorSpeed);
   }
 
   public void stopClimberMotors() {
@@ -73,27 +69,12 @@ public class Climber extends VirtualSubsystem {
         // Checks climber motor
         Commands.runOnce(
             () -> {
-              joystick.setButton(OperatorConstants.climberUpButton, true);
+              joystick.setButton(OperatorConstants.climberButton, true);
             }),
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
               if (getVelocity() < 10) {
-                addError("Climber motor isn't working");
-              } else {
-                addInfo("Climber motor is moving");
-              }
-              joystick.clearVirtualButtons();
-            }),
-        Commands.waitSeconds(0.5),
-        Commands.runOnce(
-            () -> {
-              joystick.setButton(OperatorConstants.climberDownButton, true);
-            }),
-        Commands.waitSeconds(prematchDelay),
-        Commands.runOnce(
-            () -> {
-              if (getVelocity() > -10) {
                 addError("Climber motor isn't working");
               } else {
                 addInfo("Climber motor is moving");

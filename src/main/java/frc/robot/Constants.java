@@ -44,8 +44,7 @@ public final class Constants {
     public static final int armManualUp = 10;
     public static final int armManualDown = 9;
 
-    public static final int climberUpButton = 4;
-    public static final int climberDownButton = 1;
+    public static final int climberButton = 1;
 
     public static final int manualShootButton = 12;
     public static final int manualFeedButton = 11;

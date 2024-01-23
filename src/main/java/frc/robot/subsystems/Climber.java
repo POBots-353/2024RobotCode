@@ -37,10 +37,14 @@ public class Climber extends VirtualSubsystem {
     return climberEncoder.getVelocity();
   }
 
-  public void climb() {
+  public void climberUp() {
     mainMotor.set(ClimberConstants.climberMotorSpeed);
   }
 
+  public void climberDown() {
+    mainMotor.set(-ClimberConstants.climberMotorSpeed);
+  }
+  
   public void stopClimberMotors() {
     mainMotor.set(0.0);
   }

@@ -17,6 +17,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
@@ -98,4 +99,20 @@ public class Shooter extends VirtualSubsystem implements Logged {
               }
             }));
   }
+
+  public Command quasistaticForward() {
+    return sysIdRoutine.quasistatic(Direction.kForward);
+  }
+
+  public Command quasistaticBackward() {
+    return sysIdRoutine.quasistatic(Direction.kReverse);
+  }
+
+public Command dynamicForward() {
+  return sysIdRoutine.dynamic(Direction.kForward);
+}
+
+public Command dynamicBackward() {
+  return sysIdRoutine.dynamic(Direction.kReverse);
+}
 }

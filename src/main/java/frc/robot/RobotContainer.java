@@ -310,6 +310,11 @@ public class RobotContainer implements Logged {
     autoChooser.addOption("[SysID] Arm Dynamic Forward", arm.dynamicForward());
     autoChooser.addOption("[SysID] Arm Dynamic Backward", arm.dynamicBackward());
 
+    autoChooser.addOption("[SysID] Shooter Quasistatic Forward", shooter.quasistaticForward());
+    autoChooser.addOption("[SysID] Shooter Quasistatic Backward", shooter.quasistaticBackward());
+    autoChooser.addOption("[SysID] Shooter Dynamic Forward", shooter.dynamicForward());
+    autoChooser.addOption("[SysID] Shooter Dynamic Backward", shooter.dynamicBackward());
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 

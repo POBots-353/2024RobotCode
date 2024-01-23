@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2757726569959797,
-      "y": 6.320766490997681
+      "x": 1.0563812283116707,
+      "y": 6.616622648366552
     },
-    "rotation": -170.973773116674
+    "rotation": -123.32825213432857
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 1"
+                  "pathName": "Amp To Center 1"
                 }
               },
               {
@@ -51,7 +51,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 1 to shoot"
+            "pathName": "Amp Shoot Center 1"
           }
         },
         {
@@ -67,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 2"
+                  "pathName": "Amp to Center 2"
                 }
               },
               {
@@ -82,38 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 2 to shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "To Wing 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Wing 3 to Shoot"
+            "pathName": "Amp Shoot Center 2"
           }
         },
         {
@@ -125,6 +94,6 @@
       ]
     }
   },
-  "folder": "Wing Side",
+  "folder": "Amp Side",
   "choreoAuto": false
 }

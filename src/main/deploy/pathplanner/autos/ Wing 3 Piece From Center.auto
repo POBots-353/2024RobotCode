@@ -90,37 +90,6 @@
           "data": {
             "name": "Shoot"
           }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "To Wing 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Wing 3 to Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
         }
       ]
     }

@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.LinearInterpolation;
 import frc.robot.util.PolynomialRegression;
 import java.awt.geom.Point2D;
@@ -210,6 +211,14 @@ public final class Constants {
     public static final int followerMotorID = 16;
 
     public static final double climberMotorSpeed = 0.75;
+  }
+
+  public static final class LEDConstants {
+    public static final int ledPort = 0;
+    public static final int bufferLength = 50;
+
+    public static final Color transparent = new Color(0, 0, 0);
+    public static final Color rslColor = new Color(255, 125, 25);
   }
 
   public static final class SwerveConstants {

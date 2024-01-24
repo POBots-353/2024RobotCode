@@ -32,9 +32,11 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
+import frc.robot.commands.leds.RSLSync;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
@@ -59,6 +61,7 @@ public class RobotContainer implements Logged {
   private Intake intake = new Intake();
   private Shooter shooter = new Shooter();
   private Climber climber = new Climber();
+  private LEDs leds = new LEDs();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -108,6 +111,8 @@ public class RobotContainer implements Logged {
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+
+    leds.setDefaultCommand(new RSLSync(leds));
 
     arm.setDefaultCommand(new ArmHold(arm));
 

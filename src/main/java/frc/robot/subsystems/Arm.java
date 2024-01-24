@@ -118,14 +118,13 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureAbsoluteEncoder() {
-    absoluteEncoder.setZeroOffset(ArmConstants.absoluteOffset.getRotations());
     absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
     absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
   }
 
   private void resetToAbsolute() {
     mainMotor.setCANTimeout(250);
-    double position = absoluteEncoder.getPosition();
+    double position = absoluteEncoder.getPosition() - ArmConstants.absoluteOffset.getRadians();
 
     boolean failed = true;
     for (int i = 0; i < 250; i++) {
@@ -153,7 +152,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         .until(
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
-                    < Units.degreesToRadians(0.5));
+                    <= Units.degreesToRadians(0.5));
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
@@ -180,7 +179,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Absolute Angle")
   public Rotation2d getAbsoluteAngle() {
-    return Rotation2d.fromRadians(absoluteEncoder.getPosition() - absoluteEncoder.getZeroOffset());
+    return Rotation2d.fromRadians(absoluteEncoder.getPosition());
   }
 
   @Log.NT(key = "Angle")

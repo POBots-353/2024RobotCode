@@ -85,6 +85,8 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureMainMotor() {
     mainMotor.setCANTimeout(250);
+    mainMotor.setInverted(ArmConstants.mainMotorInverted);
+
     armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
     armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
@@ -110,6 +112,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureAbsoluteEncoder() {
     absoluteEncoder.setZeroOffset(0.0);
+    absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
     absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
     absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
   }

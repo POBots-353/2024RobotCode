@@ -13,6 +13,8 @@ public class SolidColor extends Command {
   private final Color color;
   private final LEDs leds;
 
+  private boolean ledsOn = false;
+
   /** Creates a new SolidColor. */
   public SolidColor(Color color, LEDs leds) {
     this.color = color;
@@ -29,17 +31,23 @@ public class SolidColor extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    AddressableLEDBuffer buffer = leds.getBuffer();
-    for (int i = 0; i < buffer.getLength(); i++) {
-      buffer.setLED(i, color);
-    }
-
-    leds.updateBuffer();
+    ledsOn = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (!ledsOn) {
+      AddressableLEDBuffer buffer = leds.getBuffer();
+      for (int i = 0; i < buffer.getLength(); i++) {
+        buffer.setLED(i, color);
+      }
+
+      leds.updateBuffer();
+    }
+
+    ledsOn = true;
+  }
 
   // Called once the command ends or is interrupted.
   @Override

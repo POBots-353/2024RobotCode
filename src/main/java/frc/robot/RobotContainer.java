@@ -30,9 +30,11 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
+import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
 import frc.robot.subsystems.Arm;
@@ -128,6 +130,12 @@ public class RobotContainer implements Logged {
             SwerveConstants.maxTranslationalSpeed,
             SwerveConstants.maxAngularSpeed,
             swerve));
+
+    new StartupConnectionCheck(
+            new LoadingAnimation(Color.kBlue, leds),
+            new SolidColor(Color.kGreen, leds).withTimeout(5.0),
+            new SolidColor(Color.kRed, leds).withTimeout(5.0))
+        .schedule();
   }
 
   /**

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3600463489066534,
-        "y": 5.539005553831515
+        "x": 2.0877218285557193,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WIng 2"
     },
     {
       "anchor": {
-        "x": 1.93,
-        "y": 6.2
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.9273340648009147,
-        "y": 6.199254763923165
+        "x": 2.1396848991332913,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
@@ -73,10 +73,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -89,5 +89,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.652241333822927,
-        "y": 5.900082214495487
+        "x": 7.239702924484309,
+        "y": 6.171610859626855
       },
       "isLocked": false,
       "linkedName": "Center 2"
@@ -48,5 +48,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

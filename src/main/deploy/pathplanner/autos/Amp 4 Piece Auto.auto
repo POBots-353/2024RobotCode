@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2757726569959797,
-      "y": 6.320766490997681
+      "x": 1.0563812283116707,
+      "y": 6.616622648366552
     },
-    "rotation": -157.2350538824099
+    "rotation": -123.32825213432857
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 1"
+                  "pathName": "Amp To Center 1"
                 }
               },
               {
@@ -46,6 +46,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot Center 1"
           }
         },
         {
@@ -61,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Wing 1 to Wing 2"
+                  "pathName": "Amp To Center 2"
                 }
               },
               {
@@ -71,6 +77,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot Center 2"
           }
         },
         {
@@ -84,25 +96,24 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Wing 2 to Wing 3"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Arm to Pickup"
-                      }
-                    }
-                  ]
+                  "pathName": "Amp To Center 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot Center 3"
           }
         },
         {
@@ -114,6 +125,6 @@
       ]
     }
   },
-  "folder": "Wing Side",
+  "folder": "Amp Side",
   "choreoAuto": false
 }

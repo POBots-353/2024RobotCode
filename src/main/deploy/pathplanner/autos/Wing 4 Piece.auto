@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0563812283116707,
-      "y": 6.616622648366552
+      "x": 1.2757726569959797,
+      "y": 6.320766490997681
     },
-    "rotation": -123.32825213432857
+    "rotation": -157.2350538824099
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 1"
+                  "pathName": "Start to Wing 1"
                 }
               },
               {
@@ -46,12 +46,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Shoot Center 1"
           }
         },
         {
@@ -67,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp to Center 2"
+                  "pathName": "Wing 1 to Wing 2"
                 }
               },
               {
@@ -80,51 +74,20 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Shoot Center 2"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp To Center 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "pathName": "Wing 2 to Wing 3"
           }
         }
       ]
     }
   },
-  "folder": "Amp Side",
+  "folder": "Wing",
   "choreoAuto": false
 }

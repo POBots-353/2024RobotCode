@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 1"
+                  "pathName": "Start to Wing 1"
                 }
               },
               {
@@ -51,7 +51,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 1 to shoot"
+            "pathName": "Wing 1 to Shoot"
           }
         },
         {
@@ -67,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 2"
+                  "pathName": "Wing Shoot to Wing 2"
                 }
               },
               {
@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 2 to shoot"
+            "pathName": "Wing 2 to Shoot"
           }
         },
         {
@@ -94,6 +94,6 @@
       ]
     }
   },
-  "folder": "Wing Side",
+  "folder": "Wing",
   "choreoAuto": false
 }

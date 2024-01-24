@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.93,
-        "y": 6.2
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9348463224062677,
-        "y": 6.164274279744849
+        "x": 1.9346939692452838,
+        "y": 5.2230330994185525
       },
       "isLocked": false,
       "linkedName": "Wing Shooter"
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 2.35,
-        "y": 5.55
+        "y": 4.368142031576503
       },
       "prevControl": {
-        "x": 2.3545621182550964,
-        "y": 5.525455743636098
+        "x": 2.2040432097982583,
+        "y": 4.636284063153006
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Wing 3"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -50,14 +50,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 179.88224320061764,
+    "rotation": 155.2,
     "rotateFast": false
   },
   "reversed": false,
@@ -66,5 +66,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

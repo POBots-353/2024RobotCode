@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 2.35,
-        "y": 4.1
+        "y": 4.368142031576503
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3177163309547377,
-        "y": 4.108650383049391
+        "x": 2.192332373252477,
+        "y": 4.6128623900614425
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Wing 3"
     },
     {
       "anchor": {
-        "x": 1.93,
-        "y": 6.2
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.9362516991284853,
-        "y": 6.1983248622672
+        "x": 1.8761397865163765,
+        "y": 5.246454772510115
       },
       "nextControl": null,
       "isLocked": false,
@@ -86,8 +86,8 @@
   "reversed": false,
   "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 155.2,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

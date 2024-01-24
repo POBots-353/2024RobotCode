@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.25,
+        "x": 2.35,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.752410464637191,
-        "y": 4.728998394086198
+        "x": 2.0166698250657547,
+        "y": 5.246454772510115
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WIng 2"
     },
     {
       "anchor": {
-        "x": 2.25,
-        "y": 4.35
+        "x": 2.35,
+        "y": 4.368142031576503
       },
       "prevControl": {
-        "x": 2.2545498640259436,
-        "y": 4.351120880135278
+        "x": 2.0400914981573175,
+        "y": 4.789732147224637
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Wing 3"
     }
   ],
   "rotationTargets": [],
@@ -106,5 +106,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2918717783297384,
-        "y": 6.774176188946861
+        "x": 2.0166698250657547,
+        "y": 6.464381773271393
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Wing 1"
     },
     {
       "anchor": {
-        "x": 1.93,
-        "y": 6.2
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.949576925597943,
-        "y": 6.199323412037938
+        "x": 1.7824530941501242,
+        "y": 5.984237474894352
       },
       "nextControl": null,
       "isLocked": false,
@@ -73,10 +73,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -86,8 +86,8 @@
   "reversed": false,
   "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -156.0744633715317,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

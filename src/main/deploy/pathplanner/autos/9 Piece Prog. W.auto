@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "To Wing piece 1"
+                  "pathName": "Start to Wing 1"
                 }
               },
               {
@@ -211,7 +211,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center shoot to source 2"
+                  "pathName": "Source Shoot to Center 2"
                 }
               },
               {
@@ -242,7 +242,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center 2 to 1 "
+                  "pathName": "Center 2 to Center 1 "
                 }
               },
               {

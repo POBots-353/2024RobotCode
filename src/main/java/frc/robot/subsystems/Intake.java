@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
-
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,13 +18,13 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
-import monologue.Logged;
 import monologue.Annotations.Log;
+import monologue.Logged;
 
 public class Intake extends VirtualSubsystem implements Logged {
   /** Creates a new Intake. */
-  CANSparkMax intakeMotor =
-      new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
+  CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
+
   RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
 
   DigitalInput irBreakBeam = new DigitalInput(IntakeConstants.intakeMotorOneID);
@@ -54,7 +54,7 @@ public class Intake extends VirtualSubsystem implements Logged {
     if (!isIRBeamBreakBroken()) {
       feedToShooter();
     } else {
-    stopIntakeMotor();
+      stopIntakeMotor();
     }
   }
 
@@ -70,12 +70,13 @@ public class Intake extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber("Intake Motor Velocity", getVelocity());
   }
 
-  @Override 
-  public Command getPrematchCheckCommand(VirtualXboxController controller, VirtualJoystick joystick) {
+  @Override
+  public Command getPrematchCheckCommand(
+      VirtualXboxController controller, VirtualJoystick joystick) {
     return Commands.sequence(
-      // Check for hardware errors
-      Commands.runOnce(
-        () -> {
+        // Check for hardware errors
+        Commands.runOnce(
+            () -> {
               REVLibError error = intakeMotor.getLastError();
               if (error != REVLibError.kOk) {
                 addError("Intake motor error: " + error.name());
@@ -83,40 +84,39 @@ public class Intake extends VirtualSubsystem implements Logged {
                 addInfo("Intake motor contains no errors");
               }
             }),
-      // Checks Intake Motor
-      Commands.runOnce(
-        () -> {
-          joystick.setButton(OperatorConstants.intakeNoteButton, true);
-        }),
-      Commands.waitSeconds(prematchDelay),
-      Commands.runOnce(
-        () -> {
-          if (getVelocity() == 0) {
-            addError("Intake Motor isn't working");
-          } else {
-            addInfo("Intake Motor is moving");
-          }
-          joystick.clearVirtualButtons();
-        }),
-      Commands.waitSeconds(0.5),
-      // Checks IR Beam Break functionality
-      Commands.runOnce(
-        () -> {
-          joystick.setButton(OperatorConstants.intakeNoteButton, true);
-        }),
-      Commands.waitSeconds(prematchDelay),
-      Commands.runOnce(
-        () -> {
-          if (isIRBeamBreakBroken() && getVelocity() != 0) {
-            addError("IR Break Beam isn't stopping the motor");
-          }
-          else {
-            addInfo("IR Break Beak is functioning");
-          }
-        }),
-      Commands.runOnce(
-        () -> {
-          joystick.clearVirtualButtons();
-        }));
+        // Checks Intake Motor
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.intakeNoteButton, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (getVelocity() == 0) {
+                addError("Intake Motor isn't working");
+              } else {
+                addInfo("Intake Motor is moving");
+              }
+              joystick.clearVirtualButtons();
+            }),
+        Commands.waitSeconds(0.5),
+        // Checks IR Beam Break functionality
+        Commands.runOnce(
+            () -> {
+              joystick.setButton(OperatorConstants.intakeNoteButton, true);
+            }),
+        Commands.waitSeconds(prematchDelay),
+        Commands.runOnce(
+            () -> {
+              if (isIRBeamBreakBroken() && getVelocity() != 0) {
+                addError("IR Break Beam isn't stopping the motor");
+              } else {
+                addInfo("IR Break Beak is functioning");
+              }
+            }),
+        Commands.runOnce(
+            () -> {
+              joystick.clearVirtualButtons();
+            }));
   }
 }

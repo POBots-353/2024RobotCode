@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6153838917364425,
-        "y": 7.414093916506922
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.983899551849991,
-        "y": 7.156822518767367
+        "x": 1.9346939692452838,
+        "y": 5.2230330994185525
       },
       "isLocked": false,
-      "linkedName": "Center 1"
+      "linkedName": "Wing Shooter"
     },
     {
       "anchor": {
-        "x": 5.8261782620431335,
-        "y": 6.291455090032687
+        "x": 2.35,
+        "y": 4.368142031576503
       },
       "prevControl": {
-        "x": 6.501920222100072,
-        "y": 6.780574360007493
+        "x": 2.2040432097982583,
+        "y": 4.636284063153006
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp side shooting point"
+      "linkedName": "Wing 3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Stop Intake",
-      "waypointRelativePos": 0.2,
+      "name": "Intake",
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,30 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Stop Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Arm to Amp Podium",
-      "waypointRelativePos": 0.1,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Warm Up Shooter"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Arm to Amp Podium"
+                "name": "Start Intake"
               }
             }
           ]
@@ -80,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -177.0,
+    "rotation": 155.2,
     "rotateFast": false
   },
   "reversed": false,

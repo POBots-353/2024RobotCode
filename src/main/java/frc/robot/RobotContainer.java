@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,7 +26,9 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.AutoClimb.AutoClimbCenter;
 import frc.robot.commands.AutoClimb.AutoClimbLeft;
@@ -265,17 +269,15 @@ public class RobotContainer implements Logged {
         .whileTrue(Commands.run(intake::feedToShooter));
 
     operatorStick
-        .button(OperatorConstants.outtakeNoteButton)
-        .whileTrue(Commands.run(intake::outtakeNoteInIntake, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+        .button(OperatorConstants.manualShootButton)
+        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
   }
+
   private void configureClimbingBindings() {
     operatorStick
-      .button(OperatorConstants.climberUpButton)
-      .whileTrue(Commands.run(climber::setClimberUp, climber));
-    operatorStick
-      .button(OperatorConstants.climberDownButton)
-      .whileTrue(Commands.run(climber::setClimberDown, climber));
+        .button(OperatorConstants.climberButton)
+        .whileTrue(Commands.run(climber::climb, climber))
+        .onFalse(climber.runOnce(climber::stopClimberMotors));
   }
 
   private void configureArmBindings() {
@@ -311,7 +313,8 @@ public class RobotContainer implements Logged {
   private void configureShooterBindings() {
     operatorStick
         .button(OperatorConstants.shootButton)
-        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(0.5), shooter))
+        .whileTrue(
+            Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
         .toggleOnFalse(Commands.run(() -> shooter.setMotorSpeed(0), shooter));
   }
 
@@ -327,6 +330,11 @@ public class RobotContainer implements Logged {
     autoChooser.addOption("[SysID] Arm Quasistatic Backward", arm.quasistaticBackward());
     autoChooser.addOption("[SysID] Arm Dynamic Forward", arm.dynamicForward());
     autoChooser.addOption("[SysID] Arm Dynamic Backward", arm.dynamicBackward());
+
+    autoChooser.addOption("[SysID] Shooter Quasistatic Forward", shooter.quasistaticForward());
+    autoChooser.addOption("[SysID] Shooter Quasistatic Backward", shooter.quasistaticBackward());
+    autoChooser.addOption("[SysID] Shooter Dynamic Forward", shooter.dynamicForward());
+    autoChooser.addOption("[SysID] Shooter Dynamic Backward", shooter.dynamicBackward());
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
@@ -387,6 +395,23 @@ public class RobotContainer implements Logged {
                       } else {
                         addInfo("Controller port 1 is the correct joystick type");
                       }
+                    }),
+                Commands.runOnce(
+                    () -> {
+                      NetworkTable rootTable = NetworkTableInstance.getDefault().getTable("");
+
+                      if (!rootTable.containsSubTable(VisionConstants.limelightName)) {
+                        addError("Limelight is not connected");
+                      } else {
+                        addInfo("Limelight is connected");
+                      }
+
+                      if (!rootTable.containsSubTable(
+                          "photonvision/" + VisionConstants.arducamName)) {
+                        addError("Arducam is not connected");
+                      } else {
+                        addInfo("Arudcam is connected");
+                      }
                     }))
             .until(this::errorsPresent)
             .andThen(
@@ -436,9 +461,10 @@ public class RobotContainer implements Logged {
                   }
                   addAlert(armPrematchAlert);
                 });
-      
+
     Command intakePrematch =
-        intake.buildPrematch(driverController, operatorStick)
+        intake
+            .buildPrematch(driverController, operatorStick)
             .finallyDo(
                 (interrupted) -> {
                   intakePrematchAlert.removeFromGroup();
@@ -450,8 +476,8 @@ public class RobotContainer implements Logged {
                     armPrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
                   }
                   addAlert(intakePrematchAlert);
-                });      
-    
+                });
+
     SmartDashboard.putData(
         "Full Pre-Match",
         Commands.sequence(

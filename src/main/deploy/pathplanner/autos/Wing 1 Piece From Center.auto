@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2757726569959797,
+      "y": 6.320766490997681
+    },
+    "rotation": -170.973773116674
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Warm Up Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm to Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Wing",
+  "choreoAuto": false
+}

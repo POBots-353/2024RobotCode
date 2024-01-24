@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6153838917364425,
-        "y": 7.414093916506922
+        "x": 1.28,
+        "y": 6.320766490997681
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.983899551849991,
-        "y": 7.156822518767367
+        "x": 1.2867371925770472,
+        "y": 6.327503683574728
       },
       "isLocked": false,
-      "linkedName": "Center 1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.8261782620431335,
-        "y": 6.291455090032687
+        "x": 2.3,
+        "y": 6.75
       },
       "prevControl": {
-        "x": 6.501920222100072,
-        "y": 6.780574360007493
+        "x": 2.312201268084798,
+        "y": 6.74893252736194
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp side shooting point"
+      "linkedName": "Wing 1"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Stop Intake",
-      "waypointRelativePos": 0.2,
+      "name": "Intake",
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,30 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Stop Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Arm to Amp Podium",
-      "waypointRelativePos": 0.1,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Warm Up Shooter"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Arm to Amp Podium"
+                "name": "Start Intake"
               }
             }
           ]
@@ -80,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -177.0,
+    "rotation": -154.94425368008316,
     "rotateFast": false
   },
   "reversed": false,

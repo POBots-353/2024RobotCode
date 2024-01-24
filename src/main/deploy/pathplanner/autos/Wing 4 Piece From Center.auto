@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0563812283116707,
-      "y": 6.616622648366552
+      "x": 1.2757726569959797,
+      "y": 6.320766490997681
     },
-    "rotation": -123.32825213432857
+    "rotation": -170.973773116674
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 1"
+                  "pathName": "Start to Wing 1"
                 }
               },
               {
@@ -51,7 +51,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 1"
+            "pathName": "Wing 1 to Shoot"
           }
         },
         {
@@ -67,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 2"
+                  "pathName": "Wing Shoot to Wing 2"
                 }
               },
               {
@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 2"
+            "pathName": "Wing 2 to Shoot"
           }
         },
         {
@@ -98,7 +98,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 3"
+                  "pathName": "Wing Shoot to Wing 3"
                 }
               },
               {
@@ -108,11 +108,23 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wing 3 to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
     }
   },
-  "folder": "Amp Side",
+  "folder": "Wing",
   "choreoAuto": false
 }

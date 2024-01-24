@@ -32,7 +32,6 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
 
     public static final int intakeNoteButton = 13;
-    public static final int outtakeNoteButton = 12;
 
     public static final int shootButton = 12;
 
@@ -45,8 +44,10 @@ public final class Constants {
     public static final int armManualUp = 10;
     public static final int armManualDown = 9;
 
-    public static final int climberUpButton = 4;
-    public static final int climberDownButton = 1;
+    public static final int climberButton = 1;
+
+    public static final int manualShootButton = 12;
+    public static final int manualFeedButton = 11;
   }
 
   public static final class FieldConstants {
@@ -132,7 +133,7 @@ public final class Constants {
     public static final class ArducamConstants {
       public static final double[] distances =
           new double[] {
-            0.50, 1.00, 1.50, 2.00,
+            0.50, 1.00, 1.50, 2.00, 4.95, 5.5,
           };
       public static final double[] xyStandardDeviations =
           new double[] {
@@ -140,6 +141,7 @@ public final class Constants {
             0.020, // 1.00
             0.150, // 1.50
             0.200, // 2.00
+            0.037, // 4.95
             1.15, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
@@ -188,8 +190,12 @@ public final class Constants {
 
   public static final class ArmConstants {
     public static final int mainMotorID = 10;
-    public static final int followerID = 11;
-    public static final int absoluteEncoderID = 9;
+    public static final int leftFollowerID = 11;
+    public static final int frontRightID = 12;
+    public static final int backRightID = 13;
+
+    public static final boolean mainMotorInverted = false;
+    public static final boolean absoluteEncoderInverted = false;
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 

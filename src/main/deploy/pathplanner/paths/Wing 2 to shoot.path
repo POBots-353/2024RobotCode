@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6153838917364425,
-        "y": 7.414093916506922
+        "x": 2.35,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.983899551849991,
-        "y": 7.156822518767367
+        "x": 2.0877218285557193,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": "Center 1"
+      "linkedName": "WIng 2"
     },
     {
       "anchor": {
-        "x": 5.8261782620431335,
-        "y": 6.291455090032687
+        "x": 1.9112722961537205,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 6.501920222100072,
-        "y": 6.780574360007493
+        "x": 2.1396848991332913,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp side shooting point"
+      "linkedName": "Wing Shooter"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -49,8 +49,8 @@
       }
     },
     {
-      "name": "Arm to Amp Podium",
-      "waypointRelativePos": 0.1,
+      "name": "Shooting Warm Up",
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -64,7 +64,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Arm to Amp Podium"
+                "name": "Arm to Subwoofer"
               }
             }
           ]
@@ -80,7 +80,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -177.0,
+    "rotation": 179.96000659416524,
     "rotateFast": false
   },
   "reversed": false,

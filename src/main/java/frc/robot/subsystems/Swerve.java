@@ -18,6 +18,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -355,6 +356,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return navx.getRotation2d().minus(angleOffset);
   }
 
+  @Log.NT(key = "Rotation3d")
+  public Rotation3d getHeading3d() {
+    return navx.getRotation3d();
+  }
+
   @Log.NT(key = "Chassis Speeds")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
@@ -470,7 +476,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets < 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(4.0), Units.inchesToMeters(4.0), Units.degreesToRadians(10.0));
+          Units.inchesToMeters(2.75), Units.inchesToMeters(2.75), Units.degreesToRadians(10.0));
     } else {
       double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);

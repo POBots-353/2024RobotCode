@@ -29,6 +29,11 @@ public class RSLSync extends Command {
     this(LEDConstants.rslColor, leds);
   }
 
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}

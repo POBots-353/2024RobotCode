@@ -49,6 +49,8 @@ public final class Constants {
 
     public static final int manualShootButton = 12;
     public static final int manualFeedButton = 11;
+
+    public static final int ledWarningButton = 2;
   }
 
   public static final class FieldConstants {

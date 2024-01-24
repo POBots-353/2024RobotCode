@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,6 +34,7 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.leds.RSLSync;
+import frc.robot.commands.leds.SolidColor;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
@@ -143,6 +145,10 @@ public class RobotContainer implements Logged {
     configureArmBindings();
     configureShooterBindings();
     configureClimbingBindings();
+
+    operatorStick
+        .button(OperatorConstants.ledWarningButton)
+        .whileTrue(new SolidColor(Color.kYellow, leds));
   }
 
   private void configureDriveBindings() {

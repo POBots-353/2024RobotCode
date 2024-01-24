@@ -217,10 +217,10 @@ public final class Constants {
 
   public static final class LEDConstants {
     public static final int ledPort = 0;
-    public static final int bufferLength = 50;
+    public static final int bufferLength = 100;
 
     public static final Color transparent = new Color(0, 0, 0);
-    public static final Color rslColor = new Color(255, 125, 25);
+    public static final Color rslColor = new Color(255, 25, 0);
   }
 
   public static final class SwerveConstants {

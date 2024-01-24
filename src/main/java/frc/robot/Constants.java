@@ -62,6 +62,62 @@ public final class Constants {
     public static Pose2d driverStationRedAlliance = new Pose2d();
   }
 
+  public static final class StationCoordinateConstants {
+    public static final Translation2d tag11Coordinates = new Translation2d(12.41, 2.87);
+    public static final double tag11LeftXCoordinate = 11.89;
+    public static final double tag11LeftYCoordinate = 2.59;
+    public static final double tag11RightXCoordinate = 12.94;
+    public static final double tag11RightYCoordinate = 3.18;
+    public static final double tag11CenterXCoordinate = 12.41;
+    public static final double tag11CenterYCoordinate = 2.87;
+    public static final double tag11AngleHeading = -59.30;
+
+    public static final Translation2d tag12Coordinates = new Translation2d(12.39, 5.32);
+    public static final double tag12LeftXCoordinate = 13.07;
+    public static final double tag12LeftYCoordinate = 5;
+    public static final double tag12RightXCoordinate = 11.98;
+    public static final double tag12RightYCoordinate = 5.6;
+    public static final double tag12CenterXCoordinate = 12.39;
+    public static final double tag12CenterYCoordinate = 5.32;
+    public static final double tag12AngleHeading = 60;
+
+    public static final Translation2d tag13Coordinates = new Translation2d(10.23, 4.06);
+    public static final double tag13LeftXCoordinate = 10.27;
+    public static final double tag13LeftYCoordinate = 4.69;
+    public static final double tag13RightXCoordinate = 10.27;
+    public static final double tag13RightYCoordinate = 3.41;
+    public static final double tag13CenterXCoordinate = 10.23;
+    public static final double tag13CenterYCoordinate = 4.06;
+    public static final double tag13AngleHeading = -180;
+
+    public static final Translation2d tag14Coordinates = new Translation2d(6.32, 3.99);
+    public static final double tag14LeftXCoordinate = 6.31;
+    public static final double tag14LeftYCoordinate = 3.57;
+    public static final double tag14RightXCoordinate = 6.31;
+    public static final double tag14RightYCoordinate = 4.63;
+    public static final double tag14CenterXCoordinate = 6.32;
+    public static final double tag14CenterYCoordinate = 3.99;
+    public static final double tag14AngleHeading = -2.01;
+
+    public static final Translation2d tag15Coordinates = new Translation2d(4.14, 5.29);
+    public static final double tag15LeftXCoordinate = 4.72;
+    public static final double tag15LeftYCoordinate = 5.70;
+    public static final double tag15RightXCoordinate = 3.60;
+    public static final double tag15RightYCoordinate = 5.05;
+    public static final double tag15CenterXCoordinate = 4.14;
+    public static final double tag15CenterYCoordinate = 5.29;
+    public static final double tag15AngleHeading = 120;
+
+    public static final Translation2d tag16Coordinates = new Translation2d(4.06, 2.89);
+    public static final double tag16LeftXCoordinate = 3.61;
+    public static final double tag16LeftYCoordinate = 3.16;
+    public static final double tagl6RightXCoordinate = 4.69;
+    public static final double tag16RightYCoordinate = 2.60;
+    public static final double tag16CenterXCoordinate = 4.06;
+    public static final double tag16CenterYCoordinate = 2.89;
+    public static final double tag16AngleHeading = -123.52;
+  }
+
   public static final class VisionConstants {
     public static final String limelightName = "limelight";
     public static final String arducamName = "Arducam_OV9281";

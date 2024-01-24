@@ -35,7 +35,7 @@ public class Shooter extends SubsystemBase {
 
     shooterPID.setP(ShooterConstants.shooterP);
   }
-
+ b 
   public void setMotorSpeed(double velocity) {
     double feedForward = shooterFeedforward.calculate(velocity);
 

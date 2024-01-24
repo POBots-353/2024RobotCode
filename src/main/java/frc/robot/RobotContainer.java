@@ -26,6 +26,9 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.AutoClimb.AutoClimbCenter;
+import frc.robot.commands.AutoClimb.AutoClimbLeft;
+import frc.robot.commands.AutoClimb.AutoClimbRight;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
@@ -236,6 +239,24 @@ public class RobotContainer implements Logged {
                 SwerveConstants.turboMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
+
+    driverController
+        .x()
+        .whileTrue(
+            new AutoClimbLeft()
+        );
+    
+    driverController
+        .y()
+        .whileTrue(
+            new AutoClimbCenter()
+        );
+
+    driverController
+        .b()
+        .whileTrue(
+            new AutoClimbRight()
+        );
   }
 
   private void configureIntakeBindings() {

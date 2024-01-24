@@ -43,10 +43,12 @@ public class RSLSync extends Command {
       for (int i = 0; i < buffer.getLength(); i++) {
         buffer.setLED(i, color);
       }
+      leds.updateBuffer();
     } else if (!rslOn && ledsOn) {
       for (int i = 0; i < buffer.getLength(); i++) {
         buffer.setLED(i, LEDConstants.transparent);
       }
+      leds.updateBuffer();
     }
 
     ledsOn = rslOn;

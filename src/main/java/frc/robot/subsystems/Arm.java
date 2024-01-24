@@ -109,6 +109,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureAbsoluteEncoder() {
+    absoluteEncoder.setZeroOffset(0.0);
     absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
     absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
   }

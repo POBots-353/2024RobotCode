@@ -41,13 +41,8 @@ import monologue.Logged;
 
 public class Arm extends VirtualSubsystem implements Logged {
   private CANSparkMax mainMotor = new CANSparkMax(ArmConstants.mainMotorID, MotorType.kBrushless);
-  private CANSparkMax backLeftFollower =
-      new CANSparkMax(ArmConstants.leftFollowerID, MotorType.kBrushless);
-
-  private CANSparkMax frontRightFollower =
-      new CANSparkMax(ArmConstants.frontRightID, MotorType.kBrushless);
-  private CANSparkMax backRightFollower =
-      new CANSparkMax(ArmConstants.backRightID, MotorType.kBrushless);
+  private CANSparkMax followerMotor =
+      new CANSparkMax(ArmConstants.followerID, MotorType.kBrushless);
 
   private SparkPIDController armPIDController = mainMotor.getPIDController();
   private RelativeEncoder armEncoder = mainMotor.getEncoder();
@@ -80,11 +75,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   /** Creates a new Arm. */
   public Arm() {
     configureMainMotor();
-
-    configureFollowerMotor(backLeftFollower);
-    configureFollowerMotor(frontRightFollower);
-    configureFollowerMotor(backRightFollower);
-
+    configureFollowerMotor();
     configureAbsoluteEncoder();
 
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
@@ -110,11 +101,11 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setCANTimeout(0);
   }
 
-  private void configureFollowerMotor(CANSparkMax follower) {
-    backLeftFollower.setCANTimeout(250);
-    backLeftFollower.follow(mainMotor);
-    SparkMaxUtil.configureFollower(follower);
-    follower.setCANTimeout(0);
+  private void configureFollowerMotor() {
+    followerMotor.setCANTimeout(250);
+    followerMotor.follow(mainMotor);
+    SparkMaxUtil.configureFollower(followerMotor);
+    followerMotor.setCANTimeout(0);
   }
 
   private void configureAbsoluteEncoder() {

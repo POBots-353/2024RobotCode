@@ -134,9 +134,7 @@ public final class Constants {
 
   public static final class ArmConstants {
     public static final int mainMotorID = 10;
-    public static final int leftFollowerID = 11;
-    public static final int frontRightID = 12;
-    public static final int backRightID = 13;
+    public static final int followerID = 11;
 
     public static final boolean mainMotorInverted = false;
     public static final boolean absoluteEncoderInverted = false;

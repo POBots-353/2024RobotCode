@@ -43,7 +43,7 @@ public class Climber extends VirtualSubsystem {
 
   public void stopClimberMotors() {
     mainMotor.set(0.0);
-  }n
+  }
 
   @Override
   public void periodic() {

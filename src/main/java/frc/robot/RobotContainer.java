@@ -30,9 +30,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.AutoClimb.AutoClimbCenter;
-import frc.robot.commands.AutoClimb.AutoClimbLeft;
-import frc.robot.commands.AutoClimb.AutoClimbRight;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.subsystems.Arm;
@@ -217,7 +214,7 @@ public class RobotContainer implements Logged {
                             180.0));
                   }
                 }));
-
+    
     driverController
         .leftTrigger()
         .whileTrue(
@@ -247,20 +244,47 @@ public class RobotContainer implements Logged {
     driverController
         .x()
         .whileTrue(
-            new AutoClimbLeft()
-        );
+            new ProxyCommand(
+              AutoBuilder.pathfindToPose(
+              new Pose2d(
+                  swerve.getLeftChainPose().getX(),
+                  swerve.getLeftChainPose().getY(),
+                  swerve.getAngleHeading()),
+              new PathConstraints(
+                  SwerveConstants.maxTranslationalSpeed,
+                  SwerveConstants.maxTranslationalAcceleration,
+                  Units.degreesToRadians(180.0),
+                    180.0))));
     
     driverController
         .y()
         .whileTrue(
-            new AutoClimbCenter()
-        );
-
+            new ProxyCommand(
+              AutoBuilder.pathfindToPose(
+              new Pose2d(
+                  swerve.getCenterChainPose().getX(),
+                  swerve.getCenterChainPose().getY(),
+                  swerve.getAngleHeading()),
+              new PathConstraints(
+                  SwerveConstants.maxTranslationalSpeed,
+                  SwerveConstants.maxTranslationalAcceleration,
+                  Units.degreesToRadians(180.0),
+                    180.0))));
+        
     driverController
         .b()
         .whileTrue(
-            new AutoClimbRight()
-        );
+            new ProxyCommand(
+              AutoBuilder.pathfindToPose(
+              new Pose2d(
+                  swerve.getRightChainPose().getX(),
+                  swerve.getRightChainPose().getY(),
+                  swerve.getAngleHeading()),
+              new PathConstraints(
+                  SwerveConstants.maxTranslationalSpeed,
+                  SwerveConstants.maxTranslationalAcceleration,
+                  Units.degreesToRadians(180.0),
+                    180.0))));
   }
 
   private void configureIntakeBindings() {

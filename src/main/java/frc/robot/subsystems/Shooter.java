@@ -54,7 +54,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     SparkMaxUtil.configureFollower(shooterFollower);
     shooterPID.setP(ShooterConstants.shooterP);
   }
- b 
+
   public void setMotorSpeed(double velocity) {
     double feedForward = shooterFeedforward.calculate(velocity);
     shooterPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);

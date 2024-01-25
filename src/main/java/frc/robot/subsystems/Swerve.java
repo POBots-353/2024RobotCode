@@ -617,171 +617,121 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Translation2d getNearestChain() {
-    List<Translation2d> chainCoordinates = List.of(StationCoordinateConstants.tag11Coordinates, 
-    StationCoordinateConstants.tag12Coordinates,
-    StationCoordinateConstants.tag13Coordinates,
-    StationCoordinateConstants.tag14Coordinates,
-    StationCoordinateConstants.tag15Coordinates,
-    StationCoordinateConstants.tag16Coordinates);
-
     Translation2d nearestChainPose = new Translation2d();
-
-    return nearestChainPose.nearest(chainCoordinates);
+    return nearestChainPose.nearest(StationCoordinateConstants.chainCoordinates);
   }
 
-  public double[] getCenterChainPose() {
-    double[] coordinates = new double[2];
-
+  public Rotation2d getAngleHeading() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag11CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag11CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag11AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag11AngleHeading;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag12CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag12CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag12AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag12AngleHeading;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag13CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag13CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag13AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag13AngleHeading;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag14CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag14CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag14AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag14AngleHeading;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag15CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag15CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag15AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag15AngleHeading;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag16CenterXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag16CenterYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag16AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag16AngleHeading;
     } else {
-      coordinates[0] = 1000;
-      coordinates[1] = 1000;
-      coordinates[2] = 1000;
-      return coordinates;
+      return StationCoordinateConstants.placeHolderAngleHeading;
     }
   }
 
-  public double[] getRightChainPose() {
-    double[] coordinates = new double[2];
-
+  public Translation2d getCenterChainPose() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag11RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag11RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag11AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag11Coordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag12RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag12RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag12AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag12Coordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag13RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag13RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag13AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag13Coordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag14RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag14RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag14AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag14Coordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag15RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag15RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag15AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag15Coordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tagl6RightXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag16RightYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag16AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag16Coordinates;
     } else {
-      coordinates[0] = 1000;
-      coordinates[1] = 1000;
-      coordinates[2] = 1000;
-      return coordinates;
+      return StationCoordinateConstants.placeHolderCoordinates;
     }
   }
 
-  public double[] getLeftChainPose() {
-    double[] coordinates = new double[2];
-
+  public Translation2d getRightChainPose() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag11LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag11LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag11AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag11RightCoordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag12LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag12LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag12AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag12RightCoordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag13LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag13LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag13AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag13RightCoordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag14LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag14LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag14AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag14RightCoordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag15LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag15LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag15AngleHeading;
-      return coordinates;
+      return StationCoordinateConstants.tag15RightCoordinates;
     }
 
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      coordinates[0] = StationCoordinateConstants.tag16LeftXCoordinate;
-      coordinates[1] = StationCoordinateConstants.tag16LeftYCoordinate;
-      coordinates[2] = StationCoordinateConstants.tag16AngleHeading;
-      return coordinates;
-    } else{
-      coordinates[0] = 1000;
-      coordinates[1] = 1000;
-      coordinates[2] = 1000;
-      return coordinates;
+      return StationCoordinateConstants.tag16RightCoordinates;
+    } else {
+      return StationCoordinateConstants.placeHolderCoordinates;
     }
   }
-  
+
+  public Translation2d getLeftChainPose() {
+    if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
+      return StationCoordinateConstants.tag11LeftCoordinates;
+    }
+
+    if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
+      return StationCoordinateConstants.tag12LeftCoordinates;
+    }
+
+    if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
+      return StationCoordinateConstants.tag13LeftCoordinates;
+    }
+
+    if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
+      return StationCoordinateConstants.tag14LeftCoordinates;
+    }
+
+    if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
+      return StationCoordinateConstants.tag15LeftCoordinates;
+    }
+
+    if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
+      return StationCoordinateConstants.tag16LeftCoordinates;
+    } else {
+      return StationCoordinateConstants.placeHolderCoordinates;
+    }
+  }
 
   public void updateVisionPoseEstimates() {
     detectedTargets.clear();

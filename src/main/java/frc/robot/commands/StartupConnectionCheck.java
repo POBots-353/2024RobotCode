@@ -25,9 +25,10 @@ public class StartupConnectionCheck extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new RadioPing()
-            .withTimeout(60.0)
-            .deadlineWith(whilePinging)
-            .finallyDo((interrupted) -> connectionFailed = interrupted),
+            .handleInterrupt(() -> connectionFailed = true)
+            .withTimeout(30.0)
+            .deadlineWith(whilePinging),
+        Commands.none(),
         Commands.either(onSuccess, onFailed, () -> !connectionFailed));
   }
 }

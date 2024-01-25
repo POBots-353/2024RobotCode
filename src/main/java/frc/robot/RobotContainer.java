@@ -67,6 +67,10 @@ public class RobotContainer implements Logged {
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
 
+  private Pose2d leftChainPose = swerve.getLeftChainPose();
+  private Pose2d rightChainPose = swerve.getRightChainPose();
+  private Pose2d centerChainPose = swerve.getCenterChainPose();
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
       new VirtualXboxController(OperatorConstants.driverControllerPort);
@@ -233,7 +237,7 @@ public class RobotContainer implements Logged {
                             180.0));
                   }
                 }));
-    
+
     driverController
         .leftTrigger()
         .whileTrue(
@@ -264,46 +268,40 @@ public class RobotContainer implements Logged {
         .x()
         .whileTrue(
             new ProxyCommand(
-              AutoBuilder.pathfindToPose(
-              new Pose2d(
-                  swerve.getLeftChainPose().getX(),
-                  swerve.getLeftChainPose().getY(),
-                  swerve.getLeftChainPose().getRotation()),
-              new PathConstraints(
-                  SwerveConstants.maxTranslationalSpeed,
-                  SwerveConstants.maxTranslationalAcceleration,
-                  Units.degreesToRadians(180.0),
-                    180.0))));
-    
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        leftChainPose,
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            SwerveConstants.maxAngularSpeed,
+                            SwerveConstants.maxAngularAcceleration))));
+
     driverController
         .y()
         .whileTrue(
             new ProxyCommand(
-              AutoBuilder.pathfindToPose(
-              new Pose2d(
-                  swerve.getCenterChainPose().getX(),
-                  swerve.getCenterChainPose().getY(),
-                  swerve.getCenterChainPose().getRotation()),
-              new PathConstraints(
-                  SwerveConstants.maxTranslationalSpeed,
-                  SwerveConstants.maxTranslationalAcceleration,
-                  Units.degreesToRadians(180.0),
-                    180.0))));
-        
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        centerChainPose,
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            SwerveConstants.maxAngularSpeed,
+                            SwerveConstants.maxAngularAcceleration))));
+
     driverController
         .b()
         .whileTrue(
             new ProxyCommand(
-              AutoBuilder.pathfindToPose(
-              new Pose2d(
-                  swerve.getRightChainPose().getX(),
-                  swerve.getRightChainPose().getY(),
-                  swerve.getRightChainPose().getRotation()),
-              new PathConstraints(
-                  SwerveConstants.maxTranslationalSpeed,
-                  SwerveConstants.maxTranslationalAcceleration,
-                  Units.degreesToRadians(180.0),
-                    180.0))));
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        rightChainPose,
+                        new PathConstraints(
+                            SwerveConstants.maxTranslationalSpeed,
+                            SwerveConstants.maxTranslationalAcceleration,
+                            SwerveConstants.maxAngularSpeed,
+                            SwerveConstants.maxAngularAcceleration))));
   }
 
   private void configureIntakeBindings() {

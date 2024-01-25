@@ -50,6 +50,9 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.StationCoordinateConstants;
+import frc.robot.Constants.StationCoordinateConstants.CenterChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.LeftChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.RightChainPoses;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ArducamConstants;
@@ -617,89 +620,94 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Pose2d getNearestChain() {
-    Pose2d nearestChainPose = new Pose2d();
-    return nearestChainPose.nearest(StationCoordinateConstants.chainCoordinates);
+    return getPose().nearest(StationCoordinateConstants.chainCoordinates);
   }
 
   public Pose2d getCenterChainPose() {
-    if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      return StationCoordinateConstants.tag11Coordinates;
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomRightChainRedStage) {
+      return CenterChainPoses.bottomRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      return StationCoordinateConstants.tag12Coordinates;
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return CenterChainPoses.topRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      return StationCoordinateConstants.tag13Coordinates;
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return CenterChainPoses.leftChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      return StationCoordinateConstants.tag14Coordinates;
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return CenterChainPoses.rightChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      return StationCoordinateConstants.tag15Coordinates;
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return CenterChainPoses.topLeftChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      return StationCoordinateConstants.tag16Coordinates;
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return CenterChainPoses.bottomLeftChainBlueStage;
     } else {
       return StationCoordinateConstants.placeHolderPose;
     }
   }
 
   public Pose2d getRightChainPose() {
-    if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      return StationCoordinateConstants.tag11RightCoordinates;
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomRightChainRedStage) {
+      return RightChainPoses.bottomRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      return StationCoordinateConstants.tag12RightCoordinates;
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return RightChainPoses.topRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      return StationCoordinateConstants.tag13RightCoordinates;
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return RightChainPoses.leftChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      return StationCoordinateConstants.tag14RightCoordinates;
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return RightChainPoses.rightChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      return StationCoordinateConstants.tag15RightCoordinates;
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return RightChainPoses.topLeftChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      return StationCoordinateConstants.tag16RightCoordinates;
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return RightChainPoses.bottomLeftChainBlueStage;
     } else {
       return StationCoordinateConstants.placeHolderPose;
     }
   }
 
   public Pose2d getLeftChainPose() {
-    if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      return StationCoordinateConstants.tag11LeftCoordinates;
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return LeftChainPoses.bottomRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      return StationCoordinateConstants.tag12LeftCoordinates;
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return LeftChainPoses.topRightChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      return StationCoordinateConstants.tag13LeftCoordinates;
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return LeftChainPoses.leftChainRedStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      return StationCoordinateConstants.tag14LeftCoordinates;
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return LeftChainPoses.rightChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      return StationCoordinateConstants.tag15LeftCoordinates;
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return LeftChainPoses.topLeftChainBlueStage;
     }
 
-    if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      return StationCoordinateConstants.tag16LeftCoordinates;
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return LeftChainPoses.bottomLeftChainBlueStage;
     } else {
       return StationCoordinateConstants.placeHolderPose;
     }

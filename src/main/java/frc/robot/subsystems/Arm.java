@@ -41,13 +41,8 @@ import monologue.Logged;
 
 public class Arm extends VirtualSubsystem implements Logged {
   private CANSparkMax mainMotor = new CANSparkMax(ArmConstants.mainMotorID, MotorType.kBrushless);
-  private CANSparkMax backLeftFollower =
-      new CANSparkMax(ArmConstants.leftFollowerID, MotorType.kBrushless);
-
-  private CANSparkMax frontRightFollower =
-      new CANSparkMax(ArmConstants.frontRightID, MotorType.kBrushless);
-  private CANSparkMax backRightFollower =
-      new CANSparkMax(ArmConstants.backRightID, MotorType.kBrushless);
+  private CANSparkMax followerMotor =
+      new CANSparkMax(ArmConstants.followerID, MotorType.kBrushless);
 
   private SparkPIDController armPIDController = mainMotor.getPIDController();
   private RelativeEncoder armEncoder = mainMotor.getEncoder();
@@ -80,11 +75,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   /** Creates a new Arm. */
   public Arm() {
     configureMainMotor();
-
-    configureFollowerMotor(backLeftFollower);
-    configureFollowerMotor(frontRightFollower);
-    configureFollowerMotor(backRightFollower);
-
+    configureFollowerMotor();
     configureAbsoluteEncoder();
 
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
@@ -94,6 +85,8 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureMainMotor() {
     mainMotor.setCANTimeout(250);
+    mainMotor.setInverted(ArmConstants.mainMotorInverted);
+
     armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
     armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
@@ -110,22 +103,23 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setCANTimeout(0);
   }
 
-  private void configureFollowerMotor(CANSparkMax follower) {
-    backLeftFollower.setCANTimeout(250);
-    backLeftFollower.follow(mainMotor);
-    SparkMaxUtil.configureFollower(follower);
-    follower.setCANTimeout(0);
+  private void configureFollowerMotor() {
+    followerMotor.setCANTimeout(250);
+    followerMotor.follow(mainMotor);
+    SparkMaxUtil.configureFollower(followerMotor);
+    followerMotor.setCANTimeout(0);
   }
 
   private void configureAbsoluteEncoder() {
-    absoluteEncoder.setZeroOffset(ArmConstants.absoluteOffset.getRotations());
+    absoluteEncoder.setZeroOffset(0.0);
+    absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
     absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
     absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
   }
 
   private void resetToAbsolute() {
     mainMotor.setCANTimeout(250);
-    double position = absoluteEncoder.getPosition();
+    double position = absoluteEncoder.getPosition() - ArmConstants.absoluteOffset.getRadians();
 
     boolean failed = true;
     for (int i = 0; i < 250; i++) {
@@ -153,7 +147,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         .until(
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
-                    < Units.degreesToRadians(0.5));
+                    <= Units.degreesToRadians(0.5));
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
@@ -180,7 +174,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Absolute Angle")
   public Rotation2d getAbsoluteAngle() {
-    return Rotation2d.fromRadians(absoluteEncoder.getPosition() - absoluteEncoder.getZeroOffset());
+    return Rotation2d.fromRadians(absoluteEncoder.getPosition());
   }
 
   @Log.NT(key = "Angle")

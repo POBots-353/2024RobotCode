@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.LinearInterpolation;
 import frc.robot.util.PolynomialRegression;
 import java.awt.geom.Point2D;
@@ -49,6 +50,8 @@ public final class Constants {
 
     public static final int manualShootButton = 12;
     public static final int manualFeedButton = 11;
+
+    public static final int ledWarningButton = 2;
   }
 
   public static final class FieldConstants {
@@ -178,9 +181,7 @@ public final class Constants {
 
   public static final class ArmConstants {
     public static final int mainMotorID = 10;
-    public static final int leftFollowerID = 11;
-    public static final int frontRightID = 12;
-    public static final int backRightID = 13;
+    public static final int followerID = 11;
 
     public static final boolean mainMotorInverted = false;
     public static final boolean absoluteEncoderInverted = false;
@@ -256,6 +257,14 @@ public final class Constants {
     public static final int followerMotorID = 16;
 
     public static final double climberMotorSpeed = 0.75;
+  }
+
+  public static final class LEDConstants {
+    public static final int ledPort = 0;
+    public static final int bufferLength = 100;
+
+    public static final Color transparent = new Color(0, 0, 0);
+    public static final Color rslColor = new Color(255, 25, 0);
   }
 
   public static final class SwerveConstants {

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,12 +30,17 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
+import frc.robot.commands.leds.LoadingAnimation;
+import frc.robot.commands.leds.RSLSync;
+import frc.robot.commands.leds.SolidColor;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
@@ -59,6 +65,7 @@ public class RobotContainer implements Logged {
   private Intake intake = new Intake();
   private Shooter shooter = new Shooter();
   private Climber climber = new Climber();
+  private LEDs leds = new LEDs();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -109,6 +116,8 @@ public class RobotContainer implements Logged {
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
 
+    leds.setDefaultCommand(new RSLSync(leds));
+
     arm.setDefaultCommand(new ArmHold(arm));
 
     swerve.setDefaultCommand(
@@ -121,6 +130,12 @@ public class RobotContainer implements Logged {
             SwerveConstants.maxTranslationalSpeed,
             SwerveConstants.maxAngularSpeed,
             swerve));
+
+    new StartupConnectionCheck(
+            new LoadingAnimation(Color.kBlue, leds),
+            new SolidColor(Color.kGreen, leds).withTimeout(5.0),
+            new SolidColor(Color.kRed, leds).withTimeout(5.0))
+        .schedule();
   }
 
   /**
@@ -138,6 +153,10 @@ public class RobotContainer implements Logged {
     configureArmBindings();
     configureShooterBindings();
     configureClimbingBindings();
+
+    operatorStick
+        .button(OperatorConstants.ledWarningButton)
+        .whileTrue(new SolidColor(Color.kYellow, leds));
   }
 
   private void configureDriveBindings() {

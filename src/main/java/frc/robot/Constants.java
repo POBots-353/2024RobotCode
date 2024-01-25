@@ -68,46 +68,40 @@ public final class Constants {
   }
 
   public static final class StationCoordinateConstants {
-    public static final List<Translation2d> chainCoordinates = List.of(
-    StationCoordinateConstants.tag11Coordinates, 
-    StationCoordinateConstants.tag12Coordinates,
-    StationCoordinateConstants.tag13Coordinates,
-    StationCoordinateConstants.tag14Coordinates,
-    StationCoordinateConstants.tag15Coordinates,
-    StationCoordinateConstants.tag16Coordinates);
 
-    public static final Translation2d tag11Coordinates = new Translation2d(12.41, 2.87);
-    public static final Translation2d tag11LeftCoordinates = new Translation2d(11.89, 2.59);
-    public static final Translation2d tag11RightCoordinates = new Translation2d(12.94, 3.18);
-    public static final Rotation2d tag11AngleHeading = Rotation2d.fromDegrees(-59.30);
+    public static final Pose2d tag11Coordinates = new Pose2d(new Translation2d(12.41, 2.87), new Rotation2d(-59.30));
+    public static final Pose2d tag11LeftCoordinates = new Pose2d(new Translation2d(11.89, 2.59), new Rotation2d(-59.30));
+    public static final Pose2d tag11RightCoordinates = new Pose2d(new Translation2d(12.94, 3.18), new Rotation2d(-59.30));
 
-    public static final Translation2d tag12Coordinates = new Translation2d(12.39, 5.32);
-    public static final Translation2d tag12LeftCoordinates = new Translation2d(13.07, 5);
-    public static final Translation2d tag12RightCoordinates = new Translation2d(11.98, 5.6);
-    public static final Rotation2d tag12AngleHeading = Rotation2d.fromDegrees(60);
-  
-    public static final Translation2d tag13Coordinates = new Translation2d(10.23, 4.06);
-    public static final Translation2d tag13LeftCoordinates = new Translation2d(10.27, 4.69);
-    public static final Translation2d tag13RightCoordinates = new Translation2d(10.27, 3.41);
-    public static final Rotation2d tag13AngleHeading = Rotation2d.fromDegrees(-180);
+    public static final Pose2d tag12Coordinates = new Pose2d(new Translation2d(12.39, 5.32), new Rotation2d(60));
+    public static final Pose2d tag12LeftCoordinates = new Pose2d(new Translation2d(13.07, 5), new Rotation2d(60));
+    public static final Pose2d tag12RightCoordinates = new Pose2d(new Translation2d(11.98, 5.6), new Rotation2d(60));
 
-    public static final Translation2d tag14Coordinates = new Translation2d(6.32, 3.99);
-    public static final Translation2d tag14LeftCoordinates = new Translation2d(6.31, 3.57);
-    public static final Translation2d tag14RightCoordinates = new Translation2d(6.31, 4.63);
-    public static final Rotation2d tag14AngleHeading = Rotation2d.fromDegrees(-2.01);
+    public static final Pose2d tag13Coordinates = new Pose2d(new Translation2d(10.23, 4.06), new Rotation2d(-180));
+    public static final Pose2d tag13LeftCoordinates = new Pose2d(new Translation2d(10.27, 4.69), new Rotation2d(-180));
+    public static final Pose2d tag13RightCoordinates = new Pose2d(new Translation2d(10.27, 3.41), new Rotation2d(-180));
 
-    public static final Translation2d tag15Coordinates = new Translation2d(4.14, 5.29);
-    public static final Translation2d tag15LeftCoordinates = new Translation2d(4.72, 5.70);
-    public static final Translation2d tag15RightCoordinates = new Translation2d(3.60, 5.05);
-    public static final Rotation2d tag15AngleHeading = Rotation2d.fromDegrees(120);
+    public static final Pose2d tag14Coordinates = new Pose2d(new Translation2d(6.32, 3.99), new Rotation2d(-2.01));
+    public static final Pose2d tag14LeftCoordinates = new Pose2d(new Translation2d(6.31, 3.57), new Rotation2d(-2.01));
+    public static final Pose2d tag14RightCoordinates = new Pose2d(new Translation2d(6.31, 4.63), new Rotation2d(-2.01));
 
-    public static final Translation2d tag16Coordinates = new Translation2d(4.06, 2.89);
-    public static final Translation2d tag16LeftCoordinates = new Translation2d(3.61, 3.16);
-    public static final Translation2d tag16RightCoordinates = new Translation2d(4.69, 2.60);
-    public static final Rotation2d tag16AngleHeading = Rotation2d.fromDegrees(-123.52);
+    public static final Pose2d tag15Coordinates = new Pose2d(new Translation2d(4.14, 5.29), new Rotation2d(120));
+    public static final Pose2d tag15LeftCoordinates = new Pose2d(new Translation2d(4.72, 5.70), new Rotation2d(120));
+    public static final Pose2d tag15RightCoordinates = new Pose2d(new Translation2d(3.60, 5.05), new Rotation2d(120));
 
-    public static final Translation2d placeHolderCoordinates = new Translation2d(353, 353);
-    public static final Rotation2d placeHolderAngleHeading = Rotation2d.fromDegrees(353);
+    public static final Pose2d tag16Coordinates = new Pose2d(new Translation2d(4.06, 2.89), new Rotation2d(-123.52));
+    public static final Pose2d tag16LeftCoordinates = new Pose2d(new Translation2d(3.61, 3.16), new Rotation2d(-123.52));
+    public static final Pose2d tag16RightCoordinates = new Pose2d(new Translation2d(4.69, 2.60), new Rotation2d(-123.52));
+
+    public static final Pose2d placeHolderPose = new Pose2d(new Translation2d(353, 353), new Rotation2d(353));
+
+    public static final List<Pose2d> chainCoordinates = List.of(
+    tag11Coordinates, 
+    tag12Coordinates,
+    tag13Coordinates,
+    tag14Coordinates,
+    tag15Coordinates,
+    tag16Coordinates);
   }
 
   public static final class VisionConstants {

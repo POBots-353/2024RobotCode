@@ -268,7 +268,7 @@ public class RobotContainer implements Logged {
               new Pose2d(
                   swerve.getLeftChainPose().getX(),
                   swerve.getLeftChainPose().getY(),
-                  swerve.getAngleHeading()),
+                  swerve.getLeftChainPose().getRotation()),
               new PathConstraints(
                   SwerveConstants.maxTranslationalSpeed,
                   SwerveConstants.maxTranslationalAcceleration,
@@ -283,7 +283,7 @@ public class RobotContainer implements Logged {
               new Pose2d(
                   swerve.getCenterChainPose().getX(),
                   swerve.getCenterChainPose().getY(),
-                  swerve.getAngleHeading()),
+                  swerve.getCenterChainPose().getRotation()),
               new PathConstraints(
                   SwerveConstants.maxTranslationalSpeed,
                   SwerveConstants.maxTranslationalAcceleration,
@@ -298,7 +298,7 @@ public class RobotContainer implements Logged {
               new Pose2d(
                   swerve.getRightChainPose().getX(),
                   swerve.getRightChainPose().getY(),
-                  swerve.getAngleHeading()),
+                  swerve.getRightChainPose().getRotation()),
               new PathConstraints(
                   SwerveConstants.maxTranslationalSpeed,
                   SwerveConstants.maxTranslationalAcceleration,

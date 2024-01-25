@@ -616,40 +616,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
   }
 
-  public Translation2d getNearestChain() {
-    Translation2d nearestChainPose = new Translation2d();
+  public Pose2d getNearestChain() {
+    Pose2d nearestChainPose = new Pose2d();
     return nearestChainPose.nearest(StationCoordinateConstants.chainCoordinates);
   }
 
-  public Rotation2d getAngleHeading() {
-    if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
-      return StationCoordinateConstants.tag11AngleHeading;
-    }
-
-    if (getNearestChain() == StationCoordinateConstants.tag12Coordinates) {
-      return StationCoordinateConstants.tag12AngleHeading;
-    }
-
-    if (getNearestChain() == StationCoordinateConstants.tag13Coordinates) {
-      return StationCoordinateConstants.tag13AngleHeading;
-    }
-
-    if (getNearestChain() == StationCoordinateConstants.tag14Coordinates) {
-      return StationCoordinateConstants.tag14AngleHeading;
-    }
-
-    if (getNearestChain() == StationCoordinateConstants.tag15Coordinates) {
-      return StationCoordinateConstants.tag15AngleHeading;
-    }
-
-    if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
-      return StationCoordinateConstants.tag16AngleHeading;
-    } else {
-      return StationCoordinateConstants.placeHolderAngleHeading;
-    }
-  }
-
-  public Translation2d getCenterChainPose() {
+  public Pose2d getCenterChainPose() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
       return StationCoordinateConstants.tag11Coordinates;
     }
@@ -673,11 +645,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
       return StationCoordinateConstants.tag16Coordinates;
     } else {
-      return StationCoordinateConstants.placeHolderCoordinates;
+      return StationCoordinateConstants.placeHolderPose;
     }
   }
 
-  public Translation2d getRightChainPose() {
+  public Pose2d getRightChainPose() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
       return StationCoordinateConstants.tag11RightCoordinates;
     }
@@ -701,11 +673,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
       return StationCoordinateConstants.tag16RightCoordinates;
     } else {
-      return StationCoordinateConstants.placeHolderCoordinates;
+      return StationCoordinateConstants.placeHolderPose;
     }
   }
 
-  public Translation2d getLeftChainPose() {
+  public Pose2d getLeftChainPose() {
     if (getNearestChain() == StationCoordinateConstants.tag11Coordinates) {
       return StationCoordinateConstants.tag11LeftCoordinates;
     }
@@ -729,7 +701,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     if (getNearestChain() == StationCoordinateConstants.tag16Coordinates) {
       return StationCoordinateConstants.tag16LeftCoordinates;
     } else {
-      return StationCoordinateConstants.placeHolderCoordinates;
+      return StationCoordinateConstants.placeHolderPose;
     }
   }
 

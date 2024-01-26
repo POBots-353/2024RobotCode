@@ -3,8 +3,9 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Source Side",
-    "Amp Side"
+    "Amp Side",
+    "Wing Paths",
+    "Source Side"
   ],
   "autoFolders": [
     "Amp Side",

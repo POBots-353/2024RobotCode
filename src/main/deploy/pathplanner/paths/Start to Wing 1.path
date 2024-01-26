@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.28,
-        "y": 6.320766490997681
+        "x": 0.7753211512129142,
+        "y": 6.640044321458116
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2867371925770472,
-        "y": 6.327503683574728
+        "x": 1.1969112668610487,
+        "y": 6.710309340732804
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Wing Start"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 6.75
       },
       "prevControl": {
-        "x": 2.312201268084798,
-        "y": 6.74893252736194
+        "x": 1.8878506230621577,
+        "y": 6.768863523461712
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,9 +61,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Side",
+  "folder": "Wing Paths",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -123.17597309483759,
     "velocity": 0
   },
   "useDefaultConstraints": true

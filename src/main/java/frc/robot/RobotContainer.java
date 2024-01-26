@@ -67,6 +67,13 @@ public class RobotContainer implements Logged {
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
 
+  private PathConstraints pathConstraints =
+      new PathConstraints(
+          SwerveConstants.maxTranslationalSpeed,
+          SwerveConstants.maxTranslationalAcceleration,
+          SwerveConstants.maxAngularSpeed,
+          SwerveConstants.maxAngularAcceleration);
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
       new VirtualXboxController(OperatorConstants.driverControllerPort);
@@ -259,6 +266,24 @@ public class RobotContainer implements Logged {
                 SwerveConstants.turboMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
+
+    driverController
+        .x()
+        .whileTrue(
+            new ProxyCommand(
+                () -> AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathConstraints)));
+
+    driverController
+        .y()
+        .whileTrue(
+            new ProxyCommand(
+                () -> AutoBuilder.pathfindToPose(swerve.getCenterChainPose(), pathConstraints)));
+
+    driverController
+        .b()
+        .whileTrue(
+            new ProxyCommand(
+                () -> AutoBuilder.pathfindToPose(swerve.getRightChainPose(), pathConstraints)));
   }
 
   private void configureIntakeBindings() {

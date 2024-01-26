@@ -49,6 +49,9 @@ import frc.robot.Constants.BackRightModule;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
+import frc.robot.Constants.StationCoordinateConstants.CenterChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.LeftChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.RightChainPoses;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ArducamConstants;
@@ -613,6 +616,22 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       detectedTargets.add(tagPose.get().toPose2d());
     }
+  }
+
+  public Pose2d getNearestChain(List<Pose2d> chainPoses) {
+    return getPose().nearest(chainPoses);
+  }
+
+  public Pose2d getCenterChainPose() {
+    return getNearestChain(CenterChainPoses.poses);
+  }
+
+  public Pose2d getRightChainPose() {
+    return getNearestChain(RightChainPoses.poses);
+  }
+
+  public Pose2d getLeftChainPose() {
+    return getNearestChain(LeftChainPoses.poses);
   }
 
   public void updateVisionPoseEstimates() {

@@ -627,27 +627,27 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Pose2d nearestChain = getNearestChain();
 
     if (nearestChain == CenterChainPoses.bottomRightChainRedStage) {
-      return CenterChainPoses.bottomRightChainRedStage;
+      return nearestChain;
     }
 
     if (nearestChain == CenterChainPoses.topRightChainRedStage) {
-      return CenterChainPoses.topRightChainRedStage;
+      return nearestChain;
     }
 
     if (nearestChain == CenterChainPoses.leftChainRedStage) {
-      return CenterChainPoses.leftChainRedStage;
+      return nearestChain;
     }
 
     if (nearestChain == CenterChainPoses.rightChainBlueStage) {
-      return CenterChainPoses.rightChainBlueStage;
+      return nearestChain;
     }
 
     if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
-      return CenterChainPoses.topLeftChainBlueStage;
+      return nearestChain;
     }
 
     if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
-      return CenterChainPoses.bottomLeftChainBlueStage;
+      return nearestChain;
     } else {
       return StationCoordinateConstants.placeHolderPose;
     }

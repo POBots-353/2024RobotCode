@@ -67,9 +67,11 @@ public class RobotContainer implements Logged {
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
 
-  private Pose2d leftChainPose = swerve.getLeftChainPose();
-  private Pose2d rightChainPose = swerve.getRightChainPose();
-  private Pose2d centerChainPose = swerve.getCenterChainPose();
+  private PathConstraints pathConstraints = 
+  new PathConstraints(SwerveConstants.maxTranslationalSpeed, 
+  SwerveConstants.maxTranslationalAcceleration, 
+  SwerveConstants.maxAngularSpeed, 
+  SwerveConstants.maxAngularAcceleration);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -270,12 +272,8 @@ public class RobotContainer implements Logged {
             new ProxyCommand(
                 () ->
                     AutoBuilder.pathfindToPose(
-                        leftChainPose,
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            SwerveConstants.maxAngularSpeed,
-                            SwerveConstants.maxAngularAcceleration))));
+                        swerve.getLeftChainPose(),
+                        pathConstraints)));
 
     driverController
         .y()
@@ -283,12 +281,8 @@ public class RobotContainer implements Logged {
             new ProxyCommand(
                 () ->
                     AutoBuilder.pathfindToPose(
-                        centerChainPose,
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            SwerveConstants.maxAngularSpeed,
-                            SwerveConstants.maxAngularAcceleration))));
+                        swerve.getCenterChainPose(),
+                        pathConstraints)));
 
     driverController
         .b()
@@ -296,12 +290,8 @@ public class RobotContainer implements Logged {
             new ProxyCommand(
                 () ->
                     AutoBuilder.pathfindToPose(
-                        rightChainPose,
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            SwerveConstants.maxAngularSpeed,
-                            SwerveConstants.maxAngularAcceleration))));
+                        swerve.getRightChainPose(),
+                        pathConstraints)));
   }
 
   private void configureIntakeBindings() {

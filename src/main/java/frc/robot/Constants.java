@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.LinearInterpolation;
 import frc.robot.util.PolynomialRegression;
 import java.awt.geom.Point2D;
+import java.util.List;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -64,6 +65,66 @@ public final class Constants {
 
     public static Pose2d driverStationBlueAlliance = new Pose2d();
     public static Pose2d driverStationRedAlliance = new Pose2d();
+  }
+
+  public static final class StationCoordinateConstants {
+
+    public static final class CenterChainPoses {
+      public static final Pose2d bottomRightChainRedStage =
+          new Pose2d(new Translation2d(12.41, 2.87), new Rotation2d(-59.30));
+      public static final Pose2d topRightChainRedStage =
+          new Pose2d(new Translation2d(12.39, 5.32), new Rotation2d(60));
+      public static final Pose2d leftChainRedStage =
+          new Pose2d(new Translation2d(10.23, 4.06), new Rotation2d(-180));
+      public static final Pose2d rightChainBlueStage =
+          new Pose2d(new Translation2d(6.32, 3.99), new Rotation2d(-2.01));
+      public static final Pose2d topLeftChainBlueStage =
+          new Pose2d(new Translation2d(4.14, 5.29), new Rotation2d(120));
+      public static final Pose2d bottomLeftChainBlueStage =
+          new Pose2d(new Translation2d(4.06, 2.89), new Rotation2d(-123.52));
+    }
+
+    public static final class LeftChainPoses {
+      public static final Pose2d bottomRightChainRedStage =
+          new Pose2d(new Translation2d(11.89, 2.59), new Rotation2d(-59.30));
+      public static final Pose2d topRightChainRedStage =
+          new Pose2d(new Translation2d(13.07, 5), new Rotation2d(60));
+      public static final Pose2d leftChainRedStage =
+          new Pose2d(new Translation2d(10.27, 4.69), new Rotation2d(-180));
+      public static final Pose2d rightChainBlueStage =
+          new Pose2d(new Translation2d(6.31, 3.57), new Rotation2d(-2.01));
+      public static final Pose2d topLeftChainBlueStage =
+          new Pose2d(new Translation2d(4.72, 5.70), new Rotation2d(120));
+      public static final Pose2d bottomLeftChainBlueStage =
+          new Pose2d(new Translation2d(3.61, 3.16), new Rotation2d(-123.52));
+    }
+
+    public static final class RightChainPoses {
+      public static final Pose2d bottomRightChainRedStage =
+          new Pose2d(new Translation2d(12.94, 3.18), new Rotation2d(-59.30));
+      public static final Pose2d topRightChainRedStage =
+          new Pose2d(new Translation2d(11.98, 5.6), new Rotation2d(60));
+      public static final Pose2d leftChainRedStage =
+          new Pose2d(new Translation2d(10.27, 3.41), new Rotation2d(-180));
+      public static final Pose2d rightChainBlueStage =
+          new Pose2d(new Translation2d(6.31, 4.63), new Rotation2d(-2.01));
+      public static final Pose2d topLeftChainBlueStage =
+          new Pose2d(new Translation2d(3.60, 5.05), new Rotation2d(120));
+      public static final Pose2d bottomLeftChainBlueStage =
+          new Pose2d(new Translation2d(4.69, 2.60), new Rotation2d(-123.52));
+    }
+
+    public static final Pose2d placeHolderPose =
+        new Pose2d(new Translation2d(353, 353), new Rotation2d(353));
+
+    public static final List<Pose2d> chainCoordinates =
+        List.of(
+            CenterChainPoses.bottomRightChainRedStage,
+            CenterChainPoses.topRightChainRedStage,
+            CenterChainPoses.leftChainRedStage,
+            CenterChainPoses.rightChainBlueStage,
+            CenterChainPoses.topLeftChainBlueStage,
+            CenterChainPoses.bottomLeftChainBlueStage);
   }
 
   public static final class VisionConstants {

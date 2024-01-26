@@ -49,6 +49,10 @@ import frc.robot.Constants.BackRightModule;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
+import frc.robot.Constants.StationCoordinateConstants;
+import frc.robot.Constants.StationCoordinateConstants.CenterChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.LeftChainPoses;
+import frc.robot.Constants.StationCoordinateConstants.RightChainPoses;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ArducamConstants;
@@ -612,6 +616,100 @@ public class Swerve extends VirtualSubsystem implements Logged {
       }
 
       detectedTargets.add(tagPose.get().toPose2d());
+    }
+  }
+
+  public Pose2d getNearestChain() {
+    return getPose().nearest(StationCoordinateConstants.chainCoordinates);
+  }
+
+  public Pose2d getCenterChainPose() {
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomRightChainRedStage) {
+      return nearestChain;
+    }
+
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return nearestChain;
+    }
+
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return nearestChain;
+    }
+
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return nearestChain;
+    }
+
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return nearestChain;
+    }
+
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return nearestChain;
+    } else {
+      return StationCoordinateConstants.placeHolderPose;
+    }
+  }
+
+  public Pose2d getRightChainPose() {
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomRightChainRedStage) {
+      return RightChainPoses.bottomRightChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return RightChainPoses.topRightChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return RightChainPoses.leftChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return RightChainPoses.rightChainBlueStage;
+    }
+
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return RightChainPoses.topLeftChainBlueStage;
+    }
+
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return RightChainPoses.bottomLeftChainBlueStage;
+    } else {
+      return StationCoordinateConstants.placeHolderPose;
+    }
+  }
+
+  public Pose2d getLeftChainPose() {
+    Pose2d nearestChain = getNearestChain();
+
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return LeftChainPoses.bottomRightChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.topRightChainRedStage) {
+      return LeftChainPoses.topRightChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.leftChainRedStage) {
+      return LeftChainPoses.leftChainRedStage;
+    }
+
+    if (nearestChain == CenterChainPoses.rightChainBlueStage) {
+      return LeftChainPoses.rightChainBlueStage;
+    }
+
+    if (nearestChain == CenterChainPoses.topLeftChainBlueStage) {
+      return LeftChainPoses.topLeftChainBlueStage;
+    }
+
+    if (nearestChain == CenterChainPoses.bottomLeftChainBlueStage) {
+      return LeftChainPoses.bottomLeftChainBlueStage;
+    } else {
+      return StationCoordinateConstants.placeHolderPose;
     }
   }
 

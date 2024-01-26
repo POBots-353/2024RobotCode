@@ -215,8 +215,8 @@ public final class Constants {
     public static final int mainMotorID = 10;
     public static final int followerID = 11;
 
-    public static final boolean mainMotorInverted = false;
-    public static final boolean absoluteEncoderInverted = false;
+    public static final boolean mainMotorInverted = true;
+    public static final boolean absoluteEncoderInverted = true;
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 

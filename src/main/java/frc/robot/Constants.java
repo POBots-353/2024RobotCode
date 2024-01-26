@@ -220,10 +220,10 @@ public final class Constants {
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 
-    public static final double armKg = 0.353;
-    public static final double armKs = 0.353;
-    public static final double armKv = 0.353;
-    public static final double armKa = 0.353;
+    public static final double armKg = 0.30;
+    public static final double armKs = 0.05;
+    public static final double armKv = 7.8;
+    public static final double armKa = 0.02;
 
     public static final double armKp = 0.1;
     public static final double armKi = 0.0;

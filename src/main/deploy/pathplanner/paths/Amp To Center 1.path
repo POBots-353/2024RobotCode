@@ -20,8 +20,8 @@
         "y": 7.414093916506922
       },
       "prevControl": {
-        "x": 5.896343188697772,
-        "y": 6.9346335843668845
+        "x": 5.928089231356779,
+        "y": 6.862550215827963
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,6 +29,11 @@
     }
   ],
   "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    },
     {
       "waypointRelativePos": 0.35,
       "rotationDegrees": 180.0,

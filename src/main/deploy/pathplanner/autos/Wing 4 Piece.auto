@@ -51,6 +51,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -76,13 +82,44 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Wing 2 to Wing 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Wing 2 to Wing 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

@@ -100,7 +100,9 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", Commands.run(() -> intake.intake(), intake));
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
+    NamedCommands.registerCommand(
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -114,8 +116,14 @@ public class RobotContainer implements Logged {
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
 
     NamedCommands.registerCommand(
-        "Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
-    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
+        "Warm Up Shooter",
+        Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter));
+    NamedCommands.registerCommand(
+        "Shoot",
+        intake
+            .autoFeedToShooter()
+            .withTimeout(1.0)
+            .andThen(() -> intake.stopIntakeMotor(), intake));
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);

@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.controllers.VirtualJoystick;
@@ -22,19 +21,28 @@ import monologue.Logged;
 
 public class Intake extends VirtualSubsystem implements Logged {
   /** Creates a new Intake. */
-  CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
+  private CANSparkMax intakeMotor =
+      new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
 
-  RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
+  private RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
 
-  DigitalInput irBreakBeam = new DigitalInput(IntakeConstants.intakeMotorOneID);
+  private DigitalInput irBreakBeam = new DigitalInput(IntakeConstants.beamBreakID);
 
   private final double prematchDelay = 2.5;
 
   public Intake() {}
 
-  @Log.NT(key = "IR Break Beam State")
-  public boolean isIRBeamBreakBroken() {
+  @Log.NT(key = "Break Broken")
+  public boolean beamBroken() {
     return !irBreakBeam.get();
+  }
+
+  public Command intakeUntilBeamBreak() {
+    return run(this::intake).until(this::beamBroken).finallyDo(this::stopIntakeMotor);
+  }
+
+  public Command autoFeedToShooter() {
+    return run(this::feedToShooter).until(() -> !beamBroken());
   }
 
   public void feedToShooter() {
@@ -50,14 +58,14 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public void intake() {
-    if (!isIRBeamBreakBroken()) {
-      feedToShooter();
+    if (!beamBroken()) {
+      intakeMotor.set(IntakeConstants.intakeMotorSpeed);
     } else {
       stopIntakeMotor();
     }
   }
 
-  @Log.NT(key = "Intake Motor Velocity")
+  @Log.NT(key = "Velocity")
   public double getVelocity() {
     return intakeEncoder.getVelocity();
   }
@@ -65,8 +73,6 @@ public class Intake extends VirtualSubsystem implements Logged {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Intake Note?", isIRBeamBreakBroken());
-    SmartDashboard.putNumber("Intake Motor Velocity", getVelocity());
   }
 
   @Override
@@ -91,8 +97,8 @@ public class Intake extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (getVelocity() == 0) {
-                addError("Intake Motor isn't working");
+              if (Math.abs(intakeEncoder.getVelocity()) <= 1e-4) {
+                addError("Intake Motor is not moving");
               } else {
                 addInfo("Intake Motor is moving");
               }
@@ -107,7 +113,7 @@ public class Intake extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (isIRBeamBreakBroken() && getVelocity() != 0) {
+              if (beamBroken() && getVelocity() != 0) {
                 addError("IR Break Beam isn't stopping the motor");
               } else {
                 addInfo("IR Break Beak is functioning");

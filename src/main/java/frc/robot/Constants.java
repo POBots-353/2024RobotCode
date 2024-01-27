@@ -272,6 +272,8 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int intakeMotorOneID = 5;
     public static final double intakeMotorSpeed = 0.80;
+
+    public static final int beamBreakID = 0;
   }
 
   public static class ShooterConstants {

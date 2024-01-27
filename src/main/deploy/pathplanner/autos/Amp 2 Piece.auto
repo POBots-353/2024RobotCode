@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0563812283116707,
+      "x": 0.8924295166707293,
       "y": 6.616622648366552
     },
-    "rotation": -123.32825213432857
+    "rotation": -120.01836742760905
   },
   "command": {
     "type": "sequential",
@@ -58,43 +58,6 @@
           "type": "path",
           "data": {
             "pathName": "Amp Shoot Center 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp To Center 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Until Beam Break"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Shoot Center 2"
           }
         },
         {

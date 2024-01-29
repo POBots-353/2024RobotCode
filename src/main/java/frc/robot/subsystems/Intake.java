@@ -22,7 +22,7 @@ import monologue.Logged;
 public class Intake extends VirtualSubsystem implements Logged {
   /** Creates a new Intake. */
   private CANSparkMax intakeMotor =
-      new CANSparkMax(IntakeConstants.intakeMotorOneID, MotorType.kBrushless);
+      new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
 
   private RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
 

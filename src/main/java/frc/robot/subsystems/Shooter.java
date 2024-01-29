@@ -29,7 +29,7 @@ import monologue.Logged;
 
 public class Shooter extends VirtualSubsystem implements Logged {
   private CANSparkMax shooterMain =
-      new CANSparkMax(ShooterConstants.shooterMainId, MotorType.kBrushless);
+      new CANSparkMax(ShooterConstants.shooterMainID, MotorType.kBrushless);
   private CANSparkMax shooterFollower =
       new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
 

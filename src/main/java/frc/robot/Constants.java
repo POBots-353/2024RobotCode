@@ -380,6 +380,11 @@ public final class Constants {
   public static final class AutoConstants {
     public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
     public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0.0, 0.0);
+
+    public static final double pathfindingMaxVelocity = Units.feetToMeters(13.0);
+    public static final double pathfindingMaxAcceleration = Units.feetToMeters(20.0);
+    public static final double pathfindingMaxAngularVelocity = Units.degreesToRadians(180.0);
+    public static final double pathfindingMaxAngularAcceleration = Units.degreesToRadians(180.0);
   }
 
   public static final class FrontLeftModule {

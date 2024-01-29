@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7392210795817603,
-      "y": 4.397002070357417
+      "x": 0.8924295166707293,
+      "y": 6.616622648366552
     },
-    "rotation": 122.27564431457763
+    "rotation": -123.02386755579664
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source To Center 5"
+                  "pathName": "Amp To Center 1"
                 }
               },
               {
@@ -49,9 +49,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Source Shoot Center 5"
+            "pathName": "Amp Shoot Center 1"
           }
         },
         {
@@ -67,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source To Center 4"
+                  "pathName": "Amp To Center 2"
                 }
               },
               {
@@ -80,9 +86,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Source Shoot Center 4"
+            "pathName": "Amp Shoot Center 2"
           }
         },
         {
@@ -98,7 +110,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source To Center 3"
+                  "pathName": "Amp To Center 3"
                 }
               },
               {
@@ -111,9 +123,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Source Shoot Center 3"
+            "pathName": "Amp Shoot Center 3"
           }
         },
         {
@@ -125,6 +143,6 @@
       ]
     }
   },
-  "folder": "Source Side",
+  "folder": "Amp Side",
   "choreoAuto": false
 }

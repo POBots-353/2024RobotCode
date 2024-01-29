@@ -49,6 +49,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Wing 1 to Shoot"
@@ -77,6 +83,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
           }
         },
         {

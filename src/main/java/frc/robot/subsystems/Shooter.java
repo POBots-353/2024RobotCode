@@ -14,6 +14,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,7 +29,7 @@ import monologue.Logged;
 
 public class Shooter extends VirtualSubsystem implements Logged {
   private CANSparkMax shooterMain =
-      new CANSparkMax(ShooterConstants.shooterMainId, MotorType.kBrushless);
+      new CANSparkMax(ShooterConstants.shooterMainID, MotorType.kBrushless);
   private CANSparkMax shooterFollower =
       new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
 
@@ -67,6 +68,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Shooter/Velocity", mainShooterEncoder.getVelocity());
   }
 
   @Override

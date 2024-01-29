@@ -49,6 +49,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source Shoot Center 5"

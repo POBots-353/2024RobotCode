@@ -51,6 +51,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -76,6 +82,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -84,25 +96,24 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Wing 2 to Wing 3"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Arm to Pickup"
-                      }
-                    }
-                  ]
+                  "pathName": "Wing 2 to Wing 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
           }
         },
         {
@@ -128,6 +139,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
           }
         },
         {
@@ -162,15 +179,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Source Shoot Center 4"
+            "name": "Intake Until Beam Break"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Shoot Center 4"
           }
         },
         {
@@ -190,6 +213,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
           }
         },
         {
@@ -224,6 +253,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp Shoot Center 2"
@@ -252,6 +287,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
           }
         },
         {

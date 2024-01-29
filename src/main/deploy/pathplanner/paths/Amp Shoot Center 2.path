@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.239702924484309,
-        "y": 6.113056676897948
+        "x": 7.134305395572274,
+        "y": 6.089635003806385
       },
       "isLocked": false,
       "linkedName": "Center 2"
@@ -20,8 +20,8 @@
         "y": 6.291455090032687
       },
       "prevControl": {
-        "x": 6.431655202825382,
-        "y": 6.440960100179829
+        "x": 6.384811856642258,
+        "y": 6.230165042355762
       },
       "nextControl": null,
       "isLocked": false,
@@ -86,7 +86,7 @@
   "reversed": false,
   "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 166.99291682529798,
     "velocity": 0
   },
   "useDefaultConstraints": true

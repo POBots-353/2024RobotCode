@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.3,
       "command": {
         "type": "parallel",
         "data": {

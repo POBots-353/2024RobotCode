@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0563812283116707,
-      "y": 6.616622648366552
+      "x": 0.7392210795817603,
+      "y": 4.397002070357417
     },
-    "rotation": -123.32825213432857
+    "rotation": 122.27564431457763
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 1"
+                  "pathName": "Source To Center 5"
                 }
               },
               {
@@ -49,9 +49,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 1"
+            "pathName": "Source Shoot Center 5"
           }
         },
         {
@@ -67,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 2"
+                  "pathName": "Source To Center 4"
                 }
               },
               {
@@ -80,9 +86,52 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 2"
+            "pathName": "Source Shoot Center 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Shoot Center 3"
           }
         },
         {
@@ -94,6 +143,6 @@
       ]
     }
   },
-  "folder": "Amp Side",
+  "folder": "Source Side",
   "choreoAuto": false
 }

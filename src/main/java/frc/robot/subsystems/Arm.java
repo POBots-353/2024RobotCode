@@ -95,6 +95,8 @@ public class Arm extends VirtualSubsystem implements Logged {
     armPIDController.setD(ArmConstants.armKd);
     armPIDController.setOutputRange(-1.0, 1.0);
 
+    mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
+
     mainMotor.setIdleMode(IdleMode.kBrake);
 
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position

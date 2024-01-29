@@ -32,6 +32,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -488,7 +489,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   private boolean isValidPose(Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
-    if (targetPose.getTranslation().getNorm() > 3.5) {
+    double distance = targetPose.getTranslation().getNorm();
+
+    if (distance > 6.5) {
+      return false;
+    }
+
+    if (distance > 3.5 && detectedTargets < 2) {
       return false;
     }
 
@@ -505,8 +512,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Rotation2d angleDifference = getHeading().minus(visionPose.getRotation().toRotation2d());
 
-    // // If the angle is too different from our gyro angle
-    if (Math.abs(MathUtil.inputModulus(angleDifference.getDegrees(), -180.0, 180.0)) > 20.0) {
+    double angleTolerance = (DriverStation.isAutonomous()) ? 10.0 : 20.0;
+
+    // If the angle is too different from our gyro angle
+    if (Math.abs(MathUtil.inputModulus(angleDifference.getDegrees(), -180.0, 180.0))
+        > angleTolerance) {
       return false;
     }
 

@@ -212,22 +212,24 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int mainMotorID = 10;
-    public static final int followerID = 11;
+    public static final int mainMotorID = 9;
+    public static final int followerID = 10;
 
     public static final boolean mainMotorInverted = true;
     public static final boolean absoluteEncoderInverted = true;
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 
-    public static final double armKg = 0.353;
-    public static final double armKs = 0.353;
-    public static final double armKv = 0.353;
-    public static final double armKa = 0.353;
+    public static final double armKg = 0.30;
+    public static final double armKs = 0.05;
+    public static final double armKv = 7.8;
+    public static final double armKa = 0.02;
 
     public static final double armKp = 0.1;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
+
+    public static final int currentLimit = 60;
 
     public static final double armGearRatio = 1.0 / 400.0;
     public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
@@ -270,23 +272,26 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int intakeMotorOneID = 5;
+    public static final int intakeMotorID = 13;
     public static final double intakeMotorSpeed = 0.80;
+
+    public static final int beamBreakID = 0;
   }
 
   public static class ShooterConstants {
+    public static final int shooterMainID = 11;
+    public static final int shooterFollowerId = 12;
+
     public static final double shooterVelocity = 0;
     public static final double shooterKs = 0.353;
     public static final double shooterKv = 0.353;
     public static final double shooterKa = 0.353;
     public static final double shooterP = 0.353;
-    public static final int shooterMainId = 0;
-    public static final int shooterFollowerId = 0;
   }
 
   public static final class ClimberConstants {
-    public static final int mainMotorID = 15;
-    public static final int followerMotorID = 16;
+    public static final int mainMotorID = 14;
+    public static final int followerMotorID = 15;
 
     public static final double climberMotorSpeed = 0.75;
   }
@@ -375,6 +380,11 @@ public final class Constants {
   public static final class AutoConstants {
     public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
     public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0.0, 0.0);
+
+    public static final double pathfindingMaxVelocity = Units.feetToMeters(13.0);
+    public static final double pathfindingMaxAcceleration = Units.feetToMeters(20.0);
+    public static final double pathfindingMaxAngularVelocity = Units.degreesToRadians(180.0);
+    public static final double pathfindingMaxAngularAcceleration = Units.degreesToRadians(180.0);
   }
 
   public static final class FrontLeftModule {

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -67,12 +68,12 @@ public class RobotContainer implements Logged {
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
 
-  private PathConstraints pathConstraints =
+  private final PathConstraints pathfindingConstraints =
       new PathConstraints(
-          SwerveConstants.maxTranslationalSpeed,
-          SwerveConstants.maxTranslationalAcceleration,
-          SwerveConstants.maxAngularSpeed,
-          SwerveConstants.maxAngularAcceleration);
+          AutoConstants.pathfindingMaxVelocity,
+          AutoConstants.pathfindingMaxAcceleration,
+          AutoConstants.pathfindingMaxAngularVelocity,
+          AutoConstants.pathfindingMaxAngularAcceleration);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -96,11 +97,12 @@ public class RobotContainer implements Logged {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    configureAutoChooser();
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", Commands.run(() -> intake.intake(), intake));
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
+    NamedCommands.registerCommand(
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -114,8 +116,16 @@ public class RobotContainer implements Logged {
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
 
     NamedCommands.registerCommand(
-        "Warm Up Shooter", Commands.run(() -> shooter.setMotorSpeed(1.0), shooter));
-    NamedCommands.registerCommand("Shoot", Commands.run(() -> intake.feedToShooter(), intake));
+        "Warm Up Shooter",
+        Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter));
+    NamedCommands.registerCommand(
+        "Shoot",
+        intake
+            .autoFeedToShooter()
+            .withTimeout(1.0)
+            .andThen(() -> intake.stopIntakeMotor(), intake));
+
+    configureAutoChooser();
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
@@ -271,19 +281,24 @@ public class RobotContainer implements Logged {
         .x()
         .whileTrue(
             new ProxyCommand(
-                () -> AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathConstraints)));
+                () ->
+                    AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathfindingConstraints)));
 
     driverController
         .y()
         .whileTrue(
             new ProxyCommand(
-                () -> AutoBuilder.pathfindToPose(swerve.getCenterChainPose(), pathConstraints)));
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        swerve.getCenterChainPose(), pathfindingConstraints)));
 
     driverController
         .b()
         .whileTrue(
             new ProxyCommand(
-                () -> AutoBuilder.pathfindToPose(swerve.getRightChainPose(), pathConstraints)));
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        swerve.getRightChainPose(), pathfindingConstraints)));
   }
 
   private void configureIntakeBindings() {

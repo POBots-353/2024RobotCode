@@ -96,7 +96,6 @@ public class RobotContainer implements Logged {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    configureAutoChooser();
     configureBatteryChooser();
     configurePrematchChecklist();
 
@@ -124,6 +123,8 @@ public class RobotContainer implements Logged {
             .autoFeedToShooter()
             .withTimeout(1.0)
             .andThen(() -> intake.stopIntakeMotor(), intake));
+
+    configureAutoChooser();
 
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);

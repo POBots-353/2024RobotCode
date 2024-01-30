@@ -218,7 +218,7 @@ public final class Constants {
     public static final boolean mainMotorInverted = true;
     public static final boolean absoluteEncoderInverted = true;
 
-    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
 
     public static final double armKg = 0.30;
     public static final double armKs = 0.05;

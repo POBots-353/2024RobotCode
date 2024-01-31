@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -57,6 +58,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.ArducamConstants;
 import frc.robot.Constants.VisionConstants.LimelightConstants;
+import frc.robot.util.AStarPathfinder;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
@@ -170,6 +172,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
             new ReplanningConfig(false, true)),
         AllianceUtil::isRedAlliance,
         this);
+
+    Pathfinding.setPathfinder(new AStarPathfinder(this::getPose));
 
     PathPlannerLogging.setLogActivePathCallback(
         path -> {

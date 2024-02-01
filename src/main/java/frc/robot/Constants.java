@@ -273,7 +273,9 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final int intakeMotorID = 13;
-    public static final double intakeMotorSpeed = 0.80;
+
+    public static final double intakeSpeed = 0.80;
+    public static final int intakeCurrentLimit = 30; // Amps
 
     public static final int beamBreakID = 0;
   }

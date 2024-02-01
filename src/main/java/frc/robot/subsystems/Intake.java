@@ -30,7 +30,18 @@ public class Intake extends VirtualSubsystem implements Logged {
 
   private final double prematchDelay = 2.5;
 
-  public Intake() {}
+  public Intake() {
+    intakeMotor.setCANTimeout(250);
+    for (int i = 0; i < 5; i++) {
+      intakeMotor.setInverted(true);
+      intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
+
+      if (intakeMotor.getLastError() == REVLibError.kOk) {
+        break;
+      }
+    }
+    intakeMotor.setCANTimeout(0);
+  }
 
   @Log.NT(key = "Break Broken")
   public boolean beamBroken() {
@@ -46,11 +57,11 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public void feedToShooter() {
-    intakeMotor.set(IntakeConstants.intakeMotorSpeed);
+    intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
   public void outtakeNoteInIntake() {
-    intakeMotor.set(-IntakeConstants.intakeMotorSpeed);
+    intakeMotor.set(-IntakeConstants.intakeSpeed);
   }
 
   public void stopIntakeMotor() {
@@ -59,7 +70,7 @@ public class Intake extends VirtualSubsystem implements Logged {
 
   public void intake() {
     if (!beamBroken()) {
-      intakeMotor.set(IntakeConstants.intakeMotorSpeed);
+      intakeMotor.set(IntakeConstants.intakeSpeed);
     } else {
       stopIntakeMotor();
     }

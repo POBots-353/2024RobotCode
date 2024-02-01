@@ -297,6 +297,8 @@ public final class Constants {
     public static final int mainMotorID = 14;
     public static final int followerMotorID = 15;
 
+    public static final int climberCurrentLimit = 60;
+
     public static final double climberMotorSpeed = 0.75;
   }
 

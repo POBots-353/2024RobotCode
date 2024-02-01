@@ -29,8 +29,19 @@ public class Climber extends VirtualSubsystem {
   private final double prematchDelay = 2.5;
 
   public Climber() {
+    mainMotor.setCANTimeout(250);
+    for (int i = 0; i < 5; i++) {
+      mainMotor.setInverted(true);
+      mainMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
+
+      if (mainMotor.getLastError() == REVLibError.kOk) {
+        break;
+      }
+    }
     followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
+
+    mainMotor.setCANTimeout(0);
   }
 
   public double getVelocity() {

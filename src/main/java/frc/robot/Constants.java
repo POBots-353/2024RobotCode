@@ -68,7 +68,6 @@ public final class Constants {
   }
 
   public static final class StationCoordinateConstants {
-
     public static final class CenterChainPoses {
       public static final Pose2d bottomRightChainRedStage =
           new Pose2d(new Translation2d(12.41, 2.87), Rotation2d.fromDegrees(-59.30));
@@ -231,14 +230,17 @@ public final class Constants {
 
     public static final int currentLimit = 60;
 
-    public static final double armGearRatio = 1.0 / 400.0;
+    public static final double armGearRatio =
+        (12.0 / 60.0) * (18.0 / 68.0) * (18.0 / 72.0) * (12.0 / 64.0);
     public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
     public static final double armVelocityConversionFactor = armPositionConversionFactor / 60.0;
 
-    public static final double maxVelocity = Units.degreesToRadians(180.0);
+    // Assuming 90% gearbox efficiency
+    public static final double maxVelocity =
+        Units.rotationsToRadians(5800 * armGearRatio) * 0.90 / 60;
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
 
-    public static final double manualSpeed = 0.60;
+    public static final double manualSpeed = 0.80;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);

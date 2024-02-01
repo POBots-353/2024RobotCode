@@ -50,6 +50,7 @@ public final class Constants {
 
     public static final int manualShootButton = 12;
     public static final int manualFeedButton = 11;
+    public static final int manualOuttakeButton = 15;
 
     public static final int ledWarningButton = 2;
   }
@@ -241,6 +242,8 @@ public final class Constants {
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
 
     public static final double manualSpeed = 0.80;
+    public static final double angleTolerance = Units.degreesToRadians(0.25);
+    public static final double debounceTime = 0.50;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);

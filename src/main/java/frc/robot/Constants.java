@@ -68,6 +68,7 @@ public final class Constants {
   }
 
   public static final class StationCoordinateConstants {
+
     public static final class CenterChainPoses {
       public static final Pose2d bottomRightChainRedStage =
           new Pose2d(new Translation2d(12.41, 2.87), Rotation2d.fromDegrees(-59.30));
@@ -217,7 +218,7 @@ public final class Constants {
     public static final boolean mainMotorInverted = true;
     public static final boolean absoluteEncoderInverted = true;
 
-    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
+    public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(0.0);
 
     public static final double armKg = 0.30;
     public static final double armKs = 0.05;
@@ -230,20 +231,19 @@ public final class Constants {
 
     public static final int currentLimit = 60;
 
-    public static final double armGearRatio =
-        (12.0 / 60.0) * (18.0 / 68.0) * (18.0 / 72.0) * (12.0 / 64.0);
+    public static final double armGearRatio = 1.0 / 400.0;
     public static final double armPositionConversionFactor = 2 * Math.PI * armGearRatio;
     public static final double armVelocityConversionFactor = armPositionConversionFactor / 60.0;
 
-    // Assuming 90% gearbox efficiency
-    public static final double maxVelocity =
-        Units.rotationsToRadians(5800 * armGearRatio) * 0.90 / 60;
+    public static final double maxVelocity = Units.degreesToRadians(180.0);
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
 
-    public static final double manualSpeed = 0.80;
+    public static final double manualSpeed = 0.60;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+
+    public static final double driverStaionHeight = 10; // Dummy Variable
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(0.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(60.0);
@@ -275,9 +275,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final int intakeMotorID = 13;
-
-    public static final double intakeSpeed = 0.80;
-    public static final int intakeCurrentLimit = 30; // Amps
+    public static final double intakeMotorSpeed = 1.00;
 
     public static final int beamBreakID = 0;
   }

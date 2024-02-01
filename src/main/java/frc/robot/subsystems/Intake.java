@@ -57,11 +57,11 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public void feedToShooter() {
-    intakeMotor.set(IntakeConstants.intakeSpeed);
+    intakeMotor.set(IntakeConstants.intakeMotorSpeed);
   }
 
   public void outtakeNoteInIntake() {
-    intakeMotor.set(-IntakeConstants.intakeSpeed);
+    intakeMotor.set(-IntakeConstants.intakeMotorSpeed);
   }
 
   public void stopIntakeMotor() {
@@ -70,7 +70,7 @@ public class Intake extends VirtualSubsystem implements Logged {
 
   public void intake() {
     if (!beamBroken()) {
-      intakeMotor.set(IntakeConstants.intakeSpeed);
+      intakeMotor.set(IntakeConstants.intakeMotorSpeed);
     } else {
       stopIntakeMotor();
     }

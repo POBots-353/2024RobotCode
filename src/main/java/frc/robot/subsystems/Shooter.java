@@ -49,9 +49,10 @@ public class Shooter extends VirtualSubsystem implements Logged {
   /** Creates a new Shooter. */
   public Shooter() {
     shooterMain.restoreFactoryDefaults();
-    shooterFollower.follow(shooterMain, true);
     shooterMain.setIdleMode(IdleMode.kCoast);
+    shooterMain.setInverted(false);
 
+    shooterFollower.follow(shooterMain);
     SparkMaxUtil.configureFollower(shooterFollower);
     shooterPID.setP(ShooterConstants.shooterP);
   }

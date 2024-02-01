@@ -149,7 +149,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         .until(
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
-                    <= Units.degreesToRadians(0.5));
+                    <= ArmConstants.angleTolerance);
   }
 
   public void setProfileState(TrapezoidProfile.State state) {

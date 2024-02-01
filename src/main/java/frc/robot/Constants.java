@@ -289,11 +289,13 @@ public final class Constants {
     public static final int shooterMainID = 11;
     public static final int shooterFollowerId = 12;
 
-    public static final double shooterVelocity = 0;
+    public static final double shooterVelocity = 5000.0;
     public static final double shooterKs = 0.353;
     public static final double shooterKv = 0.353;
     public static final double shooterKa = 0.353;
     public static final double shooterP = 0.353;
+
+    public static final double velocityTolerance = 100.0;
   }
 
   public static final class ClimberConstants {

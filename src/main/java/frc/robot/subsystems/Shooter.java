@@ -66,6 +66,10 @@ public class Shooter extends VirtualSubsystem implements Logged {
     shooterMain.set(0);
   }
 
+  public double getVelocity() {
+    return mainShooterEncoder.getVelocity();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

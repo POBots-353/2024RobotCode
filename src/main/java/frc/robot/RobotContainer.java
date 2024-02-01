@@ -354,7 +354,7 @@ public class RobotContainer implements Logged {
 
     operatorStick
         .button(OperatorConstants.armAutoShoot)
-        .whileTrue(new AutoShoot(arm, intake, swerve));
+        .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
   }
 
   private void configureShooterBindings() {

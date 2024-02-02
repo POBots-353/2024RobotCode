@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,10 +48,10 @@ public class ShootWhileMoving extends Command {
 
   private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
 
-  private int setpointCount = 0;
-
-  private final int minimumSetpointCount = 10;
+  private final double setpointDebounceTime = 0.50;
   private final double feedTime = 0.250;
+
+  private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
   /** Creates a new ShootWhileMoving. */
   public ShootWhileMoving(
@@ -86,8 +87,6 @@ public class ShootWhileMoving extends Command {
     }
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
-
-    setpointCount = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -183,15 +182,9 @@ public class ShootWhileMoving extends Command {
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
 
-    double armAngleErrorWrapped = MathUtil.inputModulus(armAngleError.getDegrees(), -180.0, 180.0);
-    double driveAngleErrorWrapped =
-        MathUtil.inputModulus(driveAngleError.getDegrees(), -180.0, 180.0);
-
-    if (Math.abs(armAngleErrorWrapped) < 1.00 && Math.abs(driveAngleErrorWrapped) < 1.00) {
-      setpointCount++;
-    }
-
-    if (setpointCount >= minimumSetpointCount) {
+    if (setpointDebouncer.calculate(
+        Math.abs(armAngleError.getRadians()) < ArmConstants.angleTolerance
+            && Math.abs(driveAngleError.getRadians()) < Units.degreesToRadians(1.00))) {
       intake.feedToShooter();
     }
 
@@ -202,6 +195,7 @@ public class ShootWhileMoving extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.stopIntakeMotor();
+    shooter.stopMotor();
 
     forwardRateLimiter.reset(0.0);
     strafeRateLimiter.reset(0.0);

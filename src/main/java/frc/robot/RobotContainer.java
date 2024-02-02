@@ -259,7 +259,7 @@ public class RobotContainer implements Logged {
                 driverController::getLeftX,
                 driverController::getRightX,
                 driverController::getRightY,
-                () -> driverController.getHID().getLeftBumper(),
+                () -> driverController.getLeftBumper(),
                 SwerveConstants.slowMotionMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
@@ -272,7 +272,7 @@ public class RobotContainer implements Logged {
                 driverController::getLeftX,
                 driverController::getRightX,
                 driverController::getRightY,
-                () -> driverController.getHID().getLeftBumper(),
+                () -> driverController.getLeftBumper(),
                 SwerveConstants.turboMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
@@ -304,17 +304,24 @@ public class RobotContainer implements Logged {
   private void configureIntakeBindings() {
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(Commands.run(intake::feedToShooter));
+        .whileTrue(intake.run(intake::feedToShooter))
+        .onFalse(intake.runOnce(intake::stopIntakeMotor));
+
+    operatorStick
+        .button(OperatorConstants.manualOuttakeButton)
+        .whileTrue(intake.run(intake::outtakeNoteInIntake))
+        .onFalse(intake.runOnce(intake::stopIntakeMotor));
 
     operatorStick
         .button(OperatorConstants.manualShootButton)
-        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
+        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)))
+        .onFalse(shooter.runOnce(shooter::stopMotor));
   }
 
   private void configureClimbingBindings() {
     operatorStick
         .button(OperatorConstants.climberButton)
-        .whileTrue(Commands.run(climber::climb, climber))
+        .whileTrue(climber.run(climber::climb))
         .onFalse(climber.runOnce(climber::stopClimberMotors));
   }
 
@@ -345,7 +352,9 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
 
-    operatorStick.button(OperatorConstants.armAutoShoot).whileTrue(new AutoShoot(arm, swerve));
+    operatorStick
+        .button(OperatorConstants.armAutoShoot)
+        .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
   }
 
   private void configureShooterBindings() {

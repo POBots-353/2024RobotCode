@@ -50,6 +50,7 @@ public final class Constants {
 
     public static final int manualShootButton = 12;
     public static final int manualFeedButton = 11;
+    public static final int manualOuttakeButton = 15;
 
     public static final int ledWarningButton = 2;
   }
@@ -238,7 +239,9 @@ public final class Constants {
     public static final double maxVelocity = Units.degreesToRadians(180.0);
     public static final double maxAcceleration = Units.degreesToRadians(180.0);
 
-    public static final double manualSpeed = 0.60;
+    public static final double manualSpeed = 0.80;
+    public static final double angleTolerance = Units.degreesToRadians(0.25);
+    public static final double debounceTime = 0.50;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
@@ -284,16 +287,20 @@ public final class Constants {
     public static final int shooterMainID = 11;
     public static final int shooterFollowerId = 12;
 
-    public static final double shooterVelocity = 0;
+    public static final double shooterVelocity = 5000.0;
     public static final double shooterKs = 0.353;
     public static final double shooterKv = 0.353;
     public static final double shooterKa = 0.353;
     public static final double shooterP = 0.353;
+
+    public static final double velocityTolerance = 100.0;
   }
 
   public static final class ClimberConstants {
     public static final int mainMotorID = 14;
     public static final int followerMotorID = 15;
+
+    public static final int climberCurrentLimit = 60;
 
     public static final double climberMotorSpeed = 0.75;
   }

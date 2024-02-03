@@ -57,6 +57,9 @@ public class Arm extends VirtualSubsystem implements Logged {
   private final double prematchDelay = 2.5;
   private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
 
+  private double positionSetpoint = 0.0;
+  private double velocitySetpoint = 0.0;
+
   @Log.NT
   private ArmFeedforward armFeedforward =
       new ArmFeedforward(
@@ -155,6 +158,11 @@ public class Arm extends VirtualSubsystem implements Logged {
   public void setProfileState(TrapezoidProfile.State state) {
     double feedforward = armFeedforward.calculate(state.position, state.velocity);
 
+    positionSetpoint = state.position;
+    velocitySetpoint = state.velocity;
+
+    log("Feedforward Voltage", feedforward);
+
     armPIDController.setReference(
         state.position, ControlType.kPosition, 0, feedforward, ArbFFUnits.kVoltage);
   }
@@ -195,6 +203,12 @@ public class Arm extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber("Arm/Velocity", Units.radiansToDegrees(armEncoder.getVelocity()));
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Velocity", Units.radiansToDegrees(absoluteEncoder.getVelocity()));
+
+    SmartDashboard.putNumber("Arm/Position Setpoint", positionSetpoint);
+    SmartDashboard.putNumber("Arm/Velocity Setpoint", velocitySetpoint);
+
+    SmartDashboard.putNumber("Arm/Position Error", positionSetpoint - armEncoder.getPosition());
+    SmartDashboard.putNumber("Arm/Velocity Error", velocitySetpoint - armEncoder.getVelocity());
   }
 
   @Override

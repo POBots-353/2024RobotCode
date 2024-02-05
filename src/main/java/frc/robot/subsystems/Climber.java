@@ -38,8 +38,8 @@ public class Climber extends VirtualSubsystem {
         break;
       }
     }
-    followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
+    followerMotor.follow(mainMotor, true);
 
     mainMotor.setCANTimeout(0);
   }

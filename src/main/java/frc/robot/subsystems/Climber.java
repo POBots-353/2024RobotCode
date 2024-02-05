@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,6 +33,7 @@ public class Climber extends VirtualSubsystem {
   public Climber() {
     mainMotor.setCANTimeout(250);
     for (int i = 0; i < 5; i++) {
+      mainMotor.setIdleMode(IdleMode.kBrake);
       mainMotor.setInverted(true);
       mainMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
 
@@ -38,6 +41,8 @@ public class Climber extends VirtualSubsystem {
         break;
       }
     }
+    followerMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
+    followerMotor.setIdleMode(IdleMode.kBrake);
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.follow(mainMotor, true);
 

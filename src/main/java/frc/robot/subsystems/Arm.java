@@ -110,7 +110,9 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureFollowerMotor() {
     followerMotor.setCANTimeout(250);
-    followerMotor.follow(mainMotor);
+    followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
+    followerMotor.setIdleMode(IdleMode.kBrake);
+    followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.setCANTimeout(0);
   }

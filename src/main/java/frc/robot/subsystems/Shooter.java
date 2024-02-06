@@ -55,9 +55,12 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
     shooterFollower.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
     shooterFollower.setIdleMode(IdleMode.kCoast);
+
     shooterPID.setP(ShooterConstants.shooterP);
-    SparkMaxUtil.configureFollower(shooterFollower);
+    shooterPID.setOutputRange(0.0, 1.0);
+    
     shooterFollower.follow(shooterMain);
+    SparkMaxUtil.configureFollower(shooterFollower);
   }
 
   public void setMotorSpeed(double velocity) {

@@ -100,30 +100,34 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak().asProxy());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
-    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0).asProxy());
+    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor).asProxy());
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
-        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
+        "Arm to Subwoofer",
+        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+        "Arm to Amp Podium",
+        arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter));
+        Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter)
+            .asProxy());
     NamedCommands.registerCommand(
         "Shoot",
         intake
             .autoFeedToShooter()
             .withTimeout(1.0)
-            .andThen(() -> intake.stopIntakeMotor(), intake));
+            .asProxy()
+            .andThen(intake.runOnce(() -> intake.stopIntakeMotor()).asProxy()));
 
     configureAutoChooser();
 
@@ -315,7 +319,7 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.manualShootButton)
         .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)))
-        .onFalse(shooter.runOnce(shooter::stopMotor));
+        .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
   }
 
   private void configureClimbingBindings() {

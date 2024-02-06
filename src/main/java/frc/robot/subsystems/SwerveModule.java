@@ -229,7 +229,7 @@ public class SwerveModule implements Logged {
 
     turnMotor.setCANTimeout(250);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 5; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {
         failed = false;
       }
@@ -251,7 +251,7 @@ public class SwerveModule implements Logged {
   }
 
   private boolean waitForCANCoder() {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 5; i++) {
       absoluteAngleSignal.waitForUpdate(0.1);
 
       if (absoluteAngleSignal.getStatus().isOK()) {

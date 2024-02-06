@@ -296,6 +296,8 @@ public final class Constants {
     public static final double shooterP = 0.01;
 
     public static final double velocityTolerance = 100.0;
+
+    public static final int shooterCurrentLimit = 60;
   }
 
   public static final class ClimberConstants {

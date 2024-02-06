@@ -34,7 +34,7 @@ import monologue.Annotations.Log;
 import monologue.Logged;
 
 public class SwerveModule implements Logged {
-  private String moduleName;
+  @Log.NT.Once private String moduleName;
 
   private CANSparkMax driveMotor;
   private CANSparkMax turnMotor;
@@ -50,7 +50,7 @@ public class SwerveModule implements Logged {
       new SimpleMotorFeedforward(
           SwerveConstants.driveKs, SwerveConstants.driveKv, SwerveConstants.driveKa);
 
-  private Rotation2d angleOffset;
+  @Log.NT.Once private Rotation2d angleOffset;
 
   private StatusSignal<Double> absoluteAngleSignal;
 
@@ -66,23 +66,26 @@ public class SwerveModule implements Logged {
   @Log.NT private double characterizationVolts = 0.0;
   @Log.NT private boolean characterizing = false;
 
-  private Alert driveConfigFailed =
-      new Alert("Failed to configure drive motor for " + moduleName, AlertType.ERROR);
-  private Alert turnConfigFailed =
-      new Alert("Failed to configure turn motor for " + moduleName, AlertType.ERROR);
+  private Alert driveConfigFailed;
+  private Alert turnConfigFailed;
 
-  private Alert noAbsoluteValue =
-      new Alert("No absolute angle received for " + moduleName + ".", AlertType.ERROR);
-  private Alert motorPositionNotSet =
-      new Alert("Turn motor position not set for " + moduleName + ".", AlertType.ERROR);
+  private Alert noAbsoluteValue;
+  private Alert motorPositionNotSet;
 
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
     this.angleOffset = angleOffset;
 
-    log("Module Name", moduleName);
-    log("Angle Offset", angleOffset);
+    driveConfigFailed =
+        new Alert("Failed to configure drive motor for " + moduleName, AlertType.ERROR);
+    turnConfigFailed =
+        new Alert("Failed to configure turn motor for " + moduleName, AlertType.ERROR);
+
+    noAbsoluteValue =
+        new Alert("No absolute angle received for " + moduleName + ".", AlertType.ERROR);
+    motorPositionNotSet =
+        new Alert("Turn motor position not set for " + moduleName + ".", AlertType.ERROR);
 
     driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
     turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);

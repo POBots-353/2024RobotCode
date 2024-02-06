@@ -140,9 +140,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
           new SysIdRoutine.Mechanism(
               (volts) -> {
                 frontLeftModule.setCharacterizationVolts(volts.in(Volts));
-                backLeftModule.setCharacterizationVolts(volts.in(Volts));
-
                 frontRightModule.setCharacterizationVolts(volts.in(Volts));
+
+                backLeftModule.setCharacterizationVolts(volts.in(Volts));
                 backRightModule.setCharacterizationVolts(volts.in(Volts));
               },
               null,
@@ -400,7 +400,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       frontLeftModule.getModulePosition(),
       frontRightModule.getModulePosition(),
       backLeftModule.getModulePosition(),
-      backRightModule.getModulePosition()
+      backRightModule.getModulePosition(),
     };
   }
 
@@ -410,7 +410,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       frontLeftModule.getModuleState(),
       frontRightModule.getModuleState(),
       backLeftModule.getModuleState(),
-      backRightModule.getModuleState()
+      backRightModule.getModuleState(),
     };
   }
 
@@ -420,7 +420,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       frontLeftModule.getDesiredState(),
       frontRightModule.getDesiredState(),
       backLeftModule.getDesiredState(),
-      backRightModule.getDesiredState()
+      backRightModule.getDesiredState(),
     };
   }
 

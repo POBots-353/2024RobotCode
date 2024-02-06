@@ -58,7 +58,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
     shooterPID.setP(ShooterConstants.shooterP);
     shooterPID.setOutputRange(0.0, 1.0);
-    
+
     shooterFollower.follow(shooterMain);
     SparkMaxUtil.configureFollower(shooterFollower);
   }

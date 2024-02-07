@@ -90,9 +90,6 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setCANTimeout(250);
     mainMotor.setInverted(ArmConstants.mainMotorInverted);
 
-    armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
-    armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
-
     armPIDController.setP(ArmConstants.armKp);
     armPIDController.setI(ArmConstants.armKi);
     armPIDController.setD(ArmConstants.armKd);
@@ -154,7 +151,8 @@ public class Arm extends VirtualSubsystem implements Logged {
         .until(
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
-                    <= ArmConstants.angleTolerance);
+                    <= ArmConstants.angleTolerance)
+        .finallyDo(() -> setSpeed(0.0));
   }
 
   public void setProfileState(TrapezoidProfile.State state) {

@@ -220,12 +220,12 @@ public final class Constants {
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
 
-    public static final double armKg = 0.30;
-    public static final double armKs = 0.05;
-    public static final double armKv = 7.8;
-    public static final double armKa = 0.02;
+    public static final double armKg = 0.39871;
+    public static final double armKs = 0.50845;
+    public static final double armKv = 6.6509;
+    public static final double armKa = 1.1968;
 
-    public static final double armKp = 0.1;
+    public static final double armKp = 0.3;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
@@ -239,9 +239,9 @@ public final class Constants {
     // Assuming 90% gearbox efficiency
     public static final double maxVelocity =
         Units.rotationsToRadians(5800 * armGearRatio) * 0.90 / 60;
-    public static final double maxAcceleration = Units.degreesToRadians(180.0);
+    public static final double maxAcceleration = Units.degreesToRadians(900.0);
 
-    public static final double manualSpeed = 0.80;
+    public static final double manualSpeed = 0.25;
     public static final double angleTolerance = Units.degreesToRadians(0.25);
     public static final double debounceTime = 0.50;
 

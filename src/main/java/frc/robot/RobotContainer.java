@@ -349,12 +349,12 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.armManualUp)
         .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
-        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
     operatorStick
         .button(OperatorConstants.armManualDown)
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
-        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)));
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
     operatorStick
         .button(OperatorConstants.armAutoShoot)

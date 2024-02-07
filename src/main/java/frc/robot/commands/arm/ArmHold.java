@@ -7,6 +7,7 @@ package frc.robot.commands.arm;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 
 public class ArmHold extends Command {
@@ -32,7 +33,12 @@ public class ArmHold extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setProfileState(holdState);
+    if (Math.abs(arm.getPosition().getRadians() - holdState.position)
+        < ArmConstants.angleTolerance) {
+      arm.setSpeed(0.0);
+    } else {
+      arm.setProfileState(holdState);
+    }
   }
 
   // Called once the command ends or is interrupted.

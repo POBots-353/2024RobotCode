@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -15,8 +14,8 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -50,6 +49,8 @@ public class Arm extends VirtualSubsystem implements Logged {
       mainMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
   private TrapezoidProfile armProfile = new TrapezoidProfile(ArmConstants.profileConstraints);
+  private PIDController pidController =
+      new PIDController(ArmConstants.armKp, ArmConstants.armKi, ArmConstants.armKd);
 
   private Alert absolutePositionNotSet =
       new Alert("Arm failed to set to absolute position", AlertType.ERROR);
@@ -94,6 +95,11 @@ public class Arm extends VirtualSubsystem implements Logged {
     armPIDController.setI(ArmConstants.armKi);
     armPIDController.setD(ArmConstants.armKd);
     armPIDController.setOutputRange(-1.0, 1.0);
+
+    armPIDController.setFeedbackDevice(armEncoder);
+
+    armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
+    armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
     mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
 
@@ -156,15 +162,16 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
-    double feedforward = armFeedforward.calculate(state.position, state.velocity);
+    double feedforward = armFeedforward.calculate(state.position, state.velocity) * 0.50;
 
     positionSetpoint = state.position;
     velocitySetpoint = state.velocity;
 
     log("Feedforward Voltage", feedforward);
 
-    armPIDController.setReference(
-        state.position, ControlType.kPosition, 0, feedforward, ArbFFUnits.kVoltage);
+    double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
+
+    mainMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
   }
 
   public void setDesiredPosition(Rotation2d position) {

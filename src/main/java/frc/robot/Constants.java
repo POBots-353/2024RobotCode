@@ -225,11 +225,11 @@ public final class Constants {
     public static final double armKv = 6.6509;
     public static final double armKa = 1.1968;
 
-    public static final double armKp = 0.3;
+    public static final double armKp = 30.0;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
-    public static final int currentLimit = 60;
+    public static final int currentLimit = 40;
 
     public static final double armGearRatio =
         (12.0 / 60.0) * (18.0 / 68.0) * (18.0 / 72.0) * (12.0 / 64.0);
@@ -239,9 +239,9 @@ public final class Constants {
     // Assuming 90% gearbox efficiency
     public static final double maxVelocity =
         Units.rotationsToRadians(5800 * armGearRatio) * 0.90 / 60;
-    public static final double maxAcceleration = Units.degreesToRadians(900.0);
+    public static final double maxAcceleration = Units.degreesToRadians(360.0);
 
-    public static final double manualSpeed = 0.25;
+    public static final double manualSpeed = 0.75;
     public static final double angleTolerance = Units.degreesToRadians(0.25);
     public static final double debounceTime = 0.50;
 
@@ -249,7 +249,7 @@ public final class Constants {
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(0.0);
-    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(45.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(15.0);
@@ -415,8 +415,8 @@ public final class Constants {
   }
 
   public static class BackLeftModule {
-    public static final int driveID = 2;
-    public static final int turnID = 6;
+    public static final int driveID = 6; // 2
+    public static final int turnID = 2; // 6
     public static final int encoderID = 10;
     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(128.759765625);
   }

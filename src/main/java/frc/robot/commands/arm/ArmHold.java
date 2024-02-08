@@ -37,7 +37,7 @@ public class ArmHold extends Command {
         < ArmConstants.angleTolerance) {
       arm.setSpeed(0.0);
     } else {
-      arm.setProfileState(holdState);
+      arm.setDesiredPosition(holdPosition);
     }
   }
 

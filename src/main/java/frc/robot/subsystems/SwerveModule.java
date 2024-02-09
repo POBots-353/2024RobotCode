@@ -103,6 +103,7 @@ public class SwerveModule implements Logged {
     configureAngleEncoder();
 
     absoluteAngleSignal = canCoder.getAbsolutePosition();
+    absoluteAngleSignal.setUpdateFrequency(50);
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());

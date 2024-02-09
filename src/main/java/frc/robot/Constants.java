@@ -301,12 +301,12 @@ public final class Constants {
   }
 
   public static final class ClimberConstants {
-    public static final int mainMotorID = 14;
-    public static final int followerMotorID = 15;
+    public static final int leftMotorID = 14;
+    public static final int rightMotorID = 15;
 
-    public static final int climberCurrentLimit = 60;
+    public static final int climberCurrentLimit = 40;
 
-    public static final double climberMotorSpeed = 0.75;
+    public static final double climberMotorSpeed = 0.50;
   }
 
   public static final class LEDConstants {

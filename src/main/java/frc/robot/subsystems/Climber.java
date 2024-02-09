@@ -17,54 +17,75 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.util.SparkMaxUtil;
 
 public class Climber extends VirtualSubsystem {
-  private CANSparkMax mainMotor =
-      new CANSparkMax(ClimberConstants.mainMotorID, MotorType.kBrushless);
-  private CANSparkMax followerMotor =
-      new CANSparkMax(ClimberConstants.followerMotorID, MotorType.kBrushless);
+  private CANSparkMax leftMotor =
+      new CANSparkMax(ClimberConstants.leftMotorID, MotorType.kBrushless);
+  private CANSparkMax rightMotor =
+      new CANSparkMax(ClimberConstants.rightMotorID, MotorType.kBrushless);
 
-  private RelativeEncoder climberEncoder = mainMotor.getEncoder();
+  private RelativeEncoder climberEncoder = leftMotor.getEncoder();
 
   private final double prematchDelay = 2.5;
 
   public Climber() {
-    mainMotor.setCANTimeout(250);
+    leftMotor.setCANTimeout(250);
     for (int i = 0; i < 5; i++) {
-      mainMotor.setIdleMode(IdleMode.kBrake);
-      mainMotor.setInverted(true);
-      mainMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
+      leftMotor.setIdleMode(IdleMode.kBrake);
+      leftMotor.setInverted(true);
+      leftMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
 
-      if (mainMotor.getLastError() == REVLibError.kOk) {
+      if (leftMotor.getLastError() == REVLibError.kOk) {
         break;
       }
     }
-    followerMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
-    followerMotor.setIdleMode(IdleMode.kBrake);
-    SparkMaxUtil.configureFollower(followerMotor);
-    followerMotor.follow(mainMotor, true);
+    leftMotor.setCANTimeout(0);
 
-    mainMotor.setCANTimeout(0);
+    for (int i = 0; i < 5; i++) {
+      rightMotor.setIdleMode(IdleMode.kBrake);
+      rightMotor.setInverted(false);
+      rightMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
+
+      if (rightMotor.getLastError() == REVLibError.kOk) {
+        break;
+      }
+    }
+    rightMotor.setCANTimeout(0);
   }
 
   public double getVelocity() {
     return climberEncoder.getVelocity();
   }
 
-  public void climb() {
-    mainMotor.set(ClimberConstants.climberMotorSpeed);
+  public void climbBoth() {
+    leftMotor.set(ClimberConstants.climberMotorSpeed);
+  }
+
+  public void climbLeft() {
+    leftMotor.set(ClimberConstants.climberMotorSpeed);
+  }
+
+  public void climbRight() {
+    rightMotor.set(ClimberConstants.climberMotorSpeed);
   }
 
   public void stopClimberMotors() {
-    mainMotor.set(0.0);
+    leftMotor.set(0.0);
+  }
+
+  public void stopLeft() {
+    leftMotor.set(0.0);
+  }
+
+  public void stopRight() {
+    rightMotor.set(0.0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Climber/Temperature", mainMotor.getMotorTemperature());
-    SmartDashboard.putNumber("Climber/Current", mainMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Climber/Applied Output", mainMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber/Temperature", leftMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Climber/Current", leftMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/Applied Output", leftMotor.getAppliedOutput());
   }
 
   @Override
@@ -74,7 +95,7 @@ public class Climber extends VirtualSubsystem {
         // Check for hardware motors
         Commands.runOnce(
             () -> {
-              REVLibError error = mainMotor.getLastError();
+              REVLibError error = leftMotor.getLastError();
               if (error != REVLibError.kOk) {
                 addError("Climber motor error: " + error.name());
               } else {

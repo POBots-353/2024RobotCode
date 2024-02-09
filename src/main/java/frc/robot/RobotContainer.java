@@ -324,7 +324,7 @@ public class RobotContainer implements Logged {
   private void configureClimbingBindings() {
     operatorStick
         .button(OperatorConstants.climberButton)
-        .whileTrue(climber.run(climber::climb))
+        .whileTrue(climber.run(climber::climbBoth))
         .onFalse(climber.runOnce(climber::stopClimberMotors));
   }
 

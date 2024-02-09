@@ -162,7 +162,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
-    double feedforward = armFeedforward.calculate(state.position, state.velocity) * 0.50;
+    double feedforward = armFeedforward.calculate(state.position, state.velocity);
 
     positionSetpoint = state.position;
     velocitySetpoint = state.velocity;

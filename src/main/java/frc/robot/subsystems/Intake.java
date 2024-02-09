@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -35,6 +36,7 @@ public class Intake extends VirtualSubsystem implements Logged {
     for (int i = 0; i < 5; i++) {
       intakeMotor.setInverted(true);
       intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
+      intakeMotor.setIdleMode(IdleMode.kBrake);
 
       if (intakeMotor.getLastError() == REVLibError.kOk) {
         break;

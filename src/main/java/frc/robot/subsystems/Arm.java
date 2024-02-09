@@ -269,7 +269,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         // Move to subwoofer shooting angle
         Commands.runOnce(
             () -> {
-              joystick.setButton(OperatorConstants.armShootSubwoofer, true);
+              joystick.setButton(OperatorConstants.armToSubwoofer, true);
             }),
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
@@ -286,7 +286,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         // Move to podium shooting angle
         Commands.runOnce(
             () -> {
-              joystick.setButton(OperatorConstants.armShootPodium, true);
+              joystick.setButton(OperatorConstants.armToPodium, true);
             }),
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(

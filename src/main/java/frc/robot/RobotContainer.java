@@ -338,11 +338,11 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.moveToPosition(ArmConstants.ampAngle));
 
     operatorStick
-        .button(OperatorConstants.armShootSubwoofer)
+        .button(OperatorConstants.armToSubwoofer)
         .whileTrue(arm.moveToPosition(ArmConstants.subwooferAngle));
 
     operatorStick
-        .button(OperatorConstants.armShootPodium)
+        .button(OperatorConstants.armToPodium)
         .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
     operatorStick

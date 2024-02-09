@@ -38,9 +38,9 @@ public final class Constants {
     public static final int shootButton = 12;
 
     public static final int armToPickup = 5;
-    public static final int armShootSubwoofer = 7;
-    public static final int armShootPodium = 8;
-    public static final int armToAmp = 6;
+    public static final int armToSubwoofer = 6;
+    public static final int armToPodium = 7;
+    public static final int armToAmp = 8;
     public static final int armAutoShoot = 14;
 
     public static final int armManualUp = 10;

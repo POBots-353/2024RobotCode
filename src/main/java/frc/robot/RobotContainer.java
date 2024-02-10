@@ -323,6 +323,16 @@ public class RobotContainer implements Logged {
 
   private void configureClimbingBindings() {
     operatorStick
+        .button(OperatorConstants.leftClimberButton)
+        .whileTrue(climber.run(climber::climbLeft))
+        .onFalse(climber.runOnce(climber::stopLeft));
+
+    operatorStick
+        .button(OperatorConstants.rightClimberButton)
+        .whileTrue(climber.run(climber::climbRight))
+        .onFalse(climber.runOnce(climber::stopRight));
+
+    operatorStick
         .button(OperatorConstants.climberButton)
         .whileTrue(climber.run(climber::climbBoth))
         .onFalse(climber.runOnce(climber::stopClimberMotors));

@@ -12,7 +12,6 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -514,13 +513,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return false;
     }
 
-    Rotation2d angleDifference = getHeading().minus(visionPose.getRotation().toRotation2d());
+    Rotation2d angleDifference =
+        getPose().getRotation().minus(visionPose.getRotation().toRotation2d());
 
-    double angleTolerance = (DriverStation.isAutonomous()) ? 10.0 : 20.0;
+    double angleTolerance = DriverStation.isAutonomous() ? 3.5 : 10.0;
 
     // If the angle is too different from our gyro angle
-    if (Math.abs(MathUtil.inputModulus(angleDifference.getDegrees(), -180.0, 180.0))
-        > angleTolerance) {
+    if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {
       return false;
     }
 

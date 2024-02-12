@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -78,6 +79,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
   public void setMotorSpeed(double velocity) {
     double feedForward = shooterFeedforward.calculate(velocity);
     double pidOutput = velocityPIDController.calculate(filteredVelocity, velocity);
+    pidOutput = MathUtil.clamp(pidOutput, 0.0, 1.0);
 
     shooterMain.setVoltage(pidOutput * 12.0 + feedForward);
     shooterFollower.setVoltage(pidOutput * 12.0 + feedForward);

@@ -58,7 +58,7 @@ public class AutoShoot extends Command {
     shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
 
     Rotation2d armAngleError = desiredAngle.minus(arm.getPosition());
-    double shooterError = Math.abs(shooter.getVelocity() - ShooterConstants.shooterVelocity);
+    double shooterError = ShooterConstants.shooterVelocity - shooter.getVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.angleTolerance

@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.05,
       "command": {
         "type": "parallel",
         "data": {
@@ -49,8 +49,8 @@
       }
     },
     {
-      "name": "Shooting Warm Up",
-      "waypointRelativePos": 0.05,
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
@@ -60,7 +60,18 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arm to Amp Podium",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {

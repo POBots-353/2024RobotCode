@@ -49,8 +49,8 @@
       }
     },
     {
-      "name": "Warm up Shooter",
-      "waypointRelativePos": 0.05,
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -60,7 +60,18 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arm to Source Podium",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {

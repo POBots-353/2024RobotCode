@@ -32,7 +32,7 @@ public class Intake extends VirtualSubsystem implements Logged {
   private final double prematchDelay = 2.5;
 
   public Intake() {
-    intakeMotor.setCANTimeout(250);
+    intakeMotor.setCANTimeout(100);
     for (int i = 0; i < 5; i++) {
       intakeMotor.setInverted(true);
       intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);

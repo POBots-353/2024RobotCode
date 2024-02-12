@@ -29,7 +29,7 @@ public class Climber extends VirtualSubsystem {
   private final double prematchDelay = 2.5;
 
   public Climber() {
-    leftMotor.setCANTimeout(250);
+    leftMotor.setCANTimeout(100);
     for (int i = 0; i < 5; i++) {
       leftMotor.setIdleMode(IdleMode.kBrake);
       leftMotor.setInverted(true);

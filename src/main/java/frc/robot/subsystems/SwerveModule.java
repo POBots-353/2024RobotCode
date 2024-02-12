@@ -140,7 +140,7 @@ public class SwerveModule implements Logged {
   private void configureDriveMotor() {
     driveMotor.restoreFactoryDefaults();
 
-    driveMotor.setCANTimeout(250);
+    driveMotor.setCANTimeout(100);
 
     driveMotor.setInverted(SwerveConstants.driveMotorInverted);
 
@@ -172,7 +172,7 @@ public class SwerveModule implements Logged {
   private void configureTurnMotor() {
     turnMotor.restoreFactoryDefaults();
 
-    turnMotor.setCANTimeout(250);
+    turnMotor.setCANTimeout(100);
 
     turnMotor.setInverted(SwerveConstants.turnMotorInverted);
 
@@ -231,7 +231,7 @@ public class SwerveModule implements Logged {
 
     boolean failed = true;
 
-    turnMotor.setCANTimeout(250);
+    turnMotor.setCANTimeout(100);
 
     for (int i = 0; i < 5; i++) {
       if (turnEncoder.setPosition(position.getRadians()) == REVLibError.kOk) {

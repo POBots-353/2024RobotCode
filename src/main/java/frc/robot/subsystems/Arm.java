@@ -88,7 +88,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureMainMotor() {
-    mainMotor.setCANTimeout(250);
+    mainMotor.setCANTimeout(100);
     mainMotor.setInverted(ArmConstants.mainMotorInverted);
 
     armPIDController.setP(ArmConstants.armKp);
@@ -112,7 +112,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureFollowerMotor() {
-    followerMotor.setCANTimeout(250);
+    followerMotor.setCANTimeout(100);
     followerMotor.restoreFactoryDefaults();
     followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
     followerMotor.setIdleMode(IdleMode.kBrake);
@@ -130,11 +130,11 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void resetToAbsolute() {
-    mainMotor.setCANTimeout(250);
+    mainMotor.setCANTimeout(100);
     double position = absoluteEncoder.getPosition() - ArmConstants.absoluteOffset.getRadians();
 
     boolean failed = true;
-    for (int i = 0; i < 250; i++) {
+    for (int i = 0; i < 5; i++) {
       if (armEncoder.setPosition(position) == REVLibError.kOk) {
         failed = false;
       }

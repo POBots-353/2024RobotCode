@@ -113,9 +113,11 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureFollowerMotor() {
     followerMotor.setCANTimeout(250);
+    followerMotor.restoreFactoryDefaults();
     followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
     followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.follow(mainMotor, true);
+    followerMotor.setInverted(!ArmConstants.mainMotorInverted);
+
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.setCANTimeout(0);
   }
@@ -172,6 +174,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
 
     mainMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
+    followerMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
   }
 
   public void setDesiredPosition(Rotation2d position) {

@@ -4,15 +4,15 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,10 +33,17 @@ public class Shooter extends VirtualSubsystem implements Logged {
   private CANSparkMax shooterFollower =
       new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
 
+  private RelativeEncoder mainShooterEncoder = shooterMain.getEncoder();
+
   private SimpleMotorFeedforward shooterFeedforward =
       new SimpleMotorFeedforward(
           ShooterConstants.shooterKs, ShooterConstants.shooterKv, ShooterConstants.shooterKa);
-  private RelativeEncoder mainShooterEncoder = shooterMain.getEncoder();
+  private PIDController velocityPIDController =
+      new PIDController(ShooterConstants.shooterP, 0.0, 0.0);
+
+  private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.08, 0.02);
+
+  private double filteredVelocity = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -48,24 +55,32 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
   /** Creates a new Shooter. */
   public Shooter() {
+    shooterMain.setCANTimeout(100);
     shooterMain.restoreFactoryDefaults();
     shooterMain.setIdleMode(IdleMode.kCoast);
     shooterMain.setInverted(false);
     shooterMain.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
-
-    shooterFollower.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
-    shooterFollower.setIdleMode(IdleMode.kCoast);
+    mainShooterEncoder.setAverageDepth(4);
 
     shooterPID.setP(ShooterConstants.shooterP);
     shooterPID.setOutputRange(0.0, 1.0);
+    shooterMain.setCANTimeout(0);
 
-    shooterFollower.follow(shooterMain);
+    shooterFollower.setCANTimeout(100);
+    shooterFollower.restoreFactoryDefaults();
+    shooterFollower.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    shooterFollower.setIdleMode(IdleMode.kCoast);
+
     SparkMaxUtil.configureFollower(shooterFollower);
+    shooterFollower.setCANTimeout(0);
   }
 
   public void setMotorSpeed(double velocity) {
     double feedForward = shooterFeedforward.calculate(velocity);
-    shooterPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+    double pidOutput = velocityPIDController.calculate(filteredVelocity, velocity);
+
+    shooterMain.setVoltage(pidOutput * 12.0 + feedForward);
+    shooterFollower.setVoltage(pidOutput * 12.0 + feedForward);
   }
 
   public void stopMotor() {
@@ -73,13 +88,16 @@ public class Shooter extends VirtualSubsystem implements Logged {
   }
 
   public double getVelocity() {
-    return mainShooterEncoder.getVelocity();
+    return filteredVelocity;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter/Velocity", mainShooterEncoder.getVelocity());
+    filteredVelocity = velocityFilter.calculate(mainShooterEncoder.getVelocity());
+
+    SmartDashboard.putNumber("Shooter/Velocity Raw", mainShooterEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter/Velocity Filtered", filteredVelocity);
   }
 
   @Override
@@ -103,9 +121,9 @@ public class Shooter extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(10),
         Commands.runOnce(
             () -> {
-              double velocity = mainShooterEncoder.getVelocity();
-              double velocityDifference = Math.abs(velocity - ShooterConstants.shooterVelocity);
-              if (velocityDifference > 10) {
+              double velocityDifference =
+                  Math.abs(getVelocity() - ShooterConstants.shooterVelocity);
+              if (velocityDifference > ShooterConstants.velocityTolerance) {
                 addError("Shooter Motor not near desired velocity");
               } else {
                 addInfo("Shooter motors at desired velocity");

@@ -7,8 +7,10 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -112,6 +114,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
+    mainMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.forwardMovementLimitAngle);
+    mainMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.reverseMovementLimitAngle);
+
     mainMotor.setCANTimeout(0);
   }
 
@@ -122,6 +127,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setInverted(!ArmConstants.mainMotorInverted);
     followerMotor.enableVoltageCompensation(12.3);
+
+    followerMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.forwardMovementLimitAngle);
+    followerMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.reverseMovementLimitAngle);
 
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.setCANTimeout(0);

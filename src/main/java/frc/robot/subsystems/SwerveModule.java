@@ -219,13 +219,10 @@ public class SwerveModule implements Logged {
     configuration.FutureProofConfigs = true;
 
     canCoder.getConfigurator().apply(configuration, 0.100);
+    canCoder.clearStickyFaults();
 
     absoluteAngleSignal.setUpdateFrequency(50);
-    canCoder.getFault_BadMagnet().setUpdateFrequency(4);
-    canCoder.getFault_BootDuringEnable().setUpdateFrequency(4);
-    canCoder.getFault_Hardware().setUpdateFrequency(4);
-    canCoder.getFault_Undervoltage().setUpdateFrequency(4);
-    canCoder.getFault_UnlicensedFeatureInUse().setUpdateFrequency(4);
+    canCoder.getFaultField().setUpdateFrequency(4);
     canCoder.optimizeBusUtilization(0.100);
   }
 

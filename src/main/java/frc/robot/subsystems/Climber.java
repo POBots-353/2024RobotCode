@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -17,6 +18,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.util.SparkMaxUtil;
 
 public class Climber extends VirtualSubsystem {
   private CANSparkMax leftMotor =
@@ -35,6 +37,13 @@ public class Climber extends VirtualSubsystem {
       leftMotor.setInverted(true);
       leftMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
 
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+      leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+
       if (leftMotor.getLastError() == REVLibError.kOk) {
         break;
       }
@@ -45,6 +54,13 @@ public class Climber extends VirtualSubsystem {
       rightMotor.setIdleMode(IdleMode.kBrake);
       rightMotor.setInverted(false);
       rightMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
+
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+      rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
       if (rightMotor.getLastError() == REVLibError.kOk) {
         break;

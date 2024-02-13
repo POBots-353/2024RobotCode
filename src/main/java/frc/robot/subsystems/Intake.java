@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -18,6 +19,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.Logged;
 
@@ -38,6 +40,13 @@ public class Intake extends VirtualSubsystem implements Logged {
       intakeMotor.setInverted(true);
       intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
       intakeMotor.setIdleMode(IdleMode.kBrake);
+
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
       if (intakeMotor.getLastError() == REVLibError.kOk) {
         break;

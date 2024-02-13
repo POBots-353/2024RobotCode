@@ -106,8 +106,11 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     mainMotor.setIdleMode(IdleMode.kBrake);
 
+    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
+    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
     mainMotor.setCANTimeout(0);
   }

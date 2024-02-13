@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.SparkMaxUtil;
 import java.util.function.Consumer;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -99,11 +100,10 @@ public class SwerveModule implements Logged {
 
     Timer.delay(0.10);
 
+    absoluteAngleSignal = canCoder.getAbsolutePosition();
+
     configureMotors();
     configureAngleEncoder();
-
-    absoluteAngleSignal = canCoder.getAbsolutePosition();
-    absoluteAngleSignal.setUpdateFrequency(50);
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
@@ -152,19 +152,20 @@ public class SwerveModule implements Logged {
 
     driveMotor.setIdleMode(IdleMode.kBrake);
 
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    driveMotor.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
-
     drivePID.setP(SwerveConstants.driveP);
     drivePID.setOutputRange(-1, 1);
 
     driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
     driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
+
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    driveMotor.setPeriodicFramePeriod(
+        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
     driveMotor.setCANTimeout(0);
   }
@@ -181,15 +182,6 @@ public class SwerveModule implements Logged {
 
     turnMotor.setIdleMode(IdleMode.kCoast);
 
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65535);
-    turnMotor.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535);
-
     turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
 
     turnPID.setP(SwerveConstants.turnP);
@@ -199,6 +191,16 @@ public class SwerveModule implements Logged {
     turnPID.setPositionPIDWrappingEnabled(true);
     turnPID.setPositionPIDWrappingMinInput(-Math.PI);
     turnPID.setPositionPIDWrappingMaxInput(Math.PI);
+
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
+    turnMotor.setPeriodicFramePeriod(
+        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
     turnMotor.setCANTimeout(0);
   }
@@ -217,6 +219,14 @@ public class SwerveModule implements Logged {
     configuration.FutureProofConfigs = true;
 
     canCoder.getConfigurator().apply(configuration, 0.100);
+
+    absoluteAngleSignal.setUpdateFrequency(50);
+    canCoder.getFault_BadMagnet().setUpdateFrequency(4);
+    canCoder.getFault_BootDuringEnable().setUpdateFrequency(4);
+    canCoder.getFault_Hardware().setUpdateFrequency(4);
+    canCoder.getFault_Undervoltage().setUpdateFrequency(4);
+    canCoder.getFault_UnlicensedFeatureInUse().setUpdateFrequency(4);
+    canCoder.optimizeBusUtilization(0.100);
   }
 
   public void resetToAbsolute() {

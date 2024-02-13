@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -61,6 +62,12 @@ public class Shooter extends VirtualSubsystem implements Logged {
     shooterMain.setIdleMode(IdleMode.kCoast);
     shooterMain.setInverted(false);
     shooterMain.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+
+    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
     mainShooterEncoder.setAverageDepth(4);
 
     shooterPID.setP(ShooterConstants.shooterP);

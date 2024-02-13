@@ -222,12 +222,12 @@ public final class Constants {
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
 
-    public static final double armKg = 0.39871;
-    public static final double armKs = 0.50845;
-    public static final double armKv = 3.6509;
-    public static final double armKa = 1.1968;
+    public static final double armKg = 0.21434;
+    public static final double armKs = 0.11941;
+    public static final double armKv = 6.58235;
+    public static final double armKa = 0.3758;
 
-    public static final double armKp = 2.0;
+    public static final double armKp = 3.0;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
@@ -284,7 +284,7 @@ public final class Constants {
     public static final double intakeSpeed = 0.80;
     public static final int intakeCurrentLimit = 30; // Amps
 
-    public static final int beamBreakID = 0;
+    public static final int beamBreakID = 9;
   }
 
   public static class ShooterConstants {

@@ -307,7 +307,7 @@ public class RobotContainer implements Logged {
   private void configureIntakeBindings() {
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
-        .whileTrue(intake.run(intake::feedToShooter))
+        .whileTrue(intake.intakeUntilBeamBreak())
         .onFalse(intake.runOnce(intake::stopIntakeMotor));
 
     operatorStick
@@ -316,8 +316,16 @@ public class RobotContainer implements Logged {
         .onFalse(intake.runOnce(intake::stopIntakeMotor));
 
     operatorStick
+        .button(OperatorConstants.manualFeedButton)
+        .whileTrue(intake.autoFeedToShooter())
+        .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
+
+    operatorStick
         .button(OperatorConstants.manualShootButton)
-        .whileTrue(shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)))
+        .whileTrue(
+            shooter
+                .run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity))
+                .finallyDo(shooter::stopMotor))
         .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
   }
 
@@ -334,7 +342,8 @@ public class RobotContainer implements Logged {
 
     operatorStick
         .button(OperatorConstants.climberButton)
-        .whileTrue(climber.run(climber::climbBoth))
+        .whileTrue(
+            climber.run(climber::climbBoth).onlyIf(() -> DriverStation.getMatchTime() <= 20.0))
         .onFalse(climber.runOnce(climber::stopClimberMotors));
   }
 

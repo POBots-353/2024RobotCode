@@ -72,6 +72,7 @@ public class Arm extends VirtualSubsystem implements Logged {
           new SysIdRoutine.Mechanism(
               (volts) -> {
                 mainMotor.setVoltage(volts.in(Volts));
+                followerMotor.setVoltage(volts.in(Volts));
               },
               null,
               this));
@@ -102,6 +103,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
     mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
+    mainMotor.enableVoltageCompensation(12.3);
 
     mainMotor.setIdleMode(IdleMode.kBrake);
 
@@ -117,6 +119,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setInverted(!ArmConstants.mainMotorInverted);
+    followerMotor.enableVoltageCompensation(12.3);
 
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.setCANTimeout(0);
@@ -164,12 +167,19 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
-    double feedforward = armFeedforward.calculate(state.position, state.velocity);
+    double feedforward =
+        armFeedforward.calculate(
+            state.position, state.velocity, (state.velocity - velocitySetpoint) / 0.020);
 
     positionSetpoint = state.position;
     velocitySetpoint = state.velocity;
 
     log("Feedforward Voltage", feedforward);
+
+    SmartDashboard.putNumber(
+        "Arm/Position Error", Units.radiansToDegrees(state.position - armEncoder.getPosition()));
+    SmartDashboard.putNumber(
+        "Arm/Velocity Error", Units.radiansToDegrees(state.velocity - armEncoder.getVelocity()));
 
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
 
@@ -186,6 +196,9 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   public void setSpeed(double speed) {
     mainMotor.set(speed);
+    followerMotor.set(speed);
+
+    velocitySetpoint = 0.0;
   }
 
   public TrapezoidProfile.State getCurrentState() {
@@ -214,11 +227,8 @@ public class Arm extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Velocity", Units.radiansToDegrees(absoluteEncoder.getVelocity()));
 
-    SmartDashboard.putNumber("Arm/Position Setpoint", positionSetpoint);
-    SmartDashboard.putNumber("Arm/Velocity Setpoint", velocitySetpoint);
-
-    SmartDashboard.putNumber("Arm/Position Error", positionSetpoint - armEncoder.getPosition());
-    SmartDashboard.putNumber("Arm/Velocity Error", velocitySetpoint - armEncoder.getVelocity());
+    SmartDashboard.putNumber("Arm/Position Setpoint", Units.radiansToDegrees(positionSetpoint));
+    SmartDashboard.putNumber("Arm/Velocity Setpoint", Units.radiansToDegrees(velocitySetpoint));
   }
 
   @Override

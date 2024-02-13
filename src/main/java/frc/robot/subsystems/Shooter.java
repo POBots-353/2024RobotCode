@@ -86,7 +86,8 @@ public class Shooter extends VirtualSubsystem implements Logged {
   }
 
   public void stopMotor() {
-    shooterMain.set(0);
+    shooterMain.set(0.0);
+    shooterFollower.set(0.0);
   }
 
   public double getVelocity() {

@@ -58,8 +58,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   private final double prematchDelay = 2.5;
   private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
 
-  private double positionSetpoint = 0.0;
-  private double velocitySetpoint = 0.0;
+  private TrapezoidProfile.State previousSetpoint = new TrapezoidProfile.State();
 
   @Log.NT
   private ArmFeedforward armFeedforward =
@@ -169,17 +168,11 @@ public class Arm extends VirtualSubsystem implements Logged {
   public void setProfileState(TrapezoidProfile.State state) {
     double feedforward =
         armFeedforward.calculate(
-            state.position, state.velocity, (state.velocity - velocitySetpoint) / 0.020);
+            state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
 
-    positionSetpoint = state.position;
-    velocitySetpoint = state.velocity;
+    previousSetpoint = state;
 
     log("Feedforward Voltage", feedforward);
-
-    SmartDashboard.putNumber(
-        "Arm/Position Error", Units.radiansToDegrees(state.position - armEncoder.getPosition()));
-    SmartDashboard.putNumber(
-        "Arm/Velocity Error", Units.radiansToDegrees(state.velocity - armEncoder.getVelocity()));
 
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
 
@@ -188,17 +181,25 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setDesiredPosition(Rotation2d position) {
-    TrapezoidProfile.State currentState = getCurrentState();
-    TrapezoidProfile.State desiredState = new TrapezoidProfile.State(position.getRadians(), 0.0);
+    TrapezoidProfile.State currentState = previousSetpoint;
+    TrapezoidProfile.State goalState = new TrapezoidProfile.State(position.getRadians(), 0.0);
 
-    setProfileState(armProfile.calculate(0.020, currentState, desiredState));
+    TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
+
+    // Replan profile if it's too far from position or if it's finished
+    if (Math.abs(setpoint.position - armEncoder.getPosition()) > ArmConstants.replanningError
+        || armProfile.isFinished(0.0)) {
+      setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
+    }
+
+    setProfileState(setpoint);
   }
 
   public void setSpeed(double speed) {
     mainMotor.set(speed);
     followerMotor.set(speed);
 
-    velocitySetpoint = 0.0;
+    previousSetpoint = getCurrentState();
   }
 
   public TrapezoidProfile.State getCurrentState() {
@@ -227,8 +228,17 @@ public class Arm extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Velocity", Units.radiansToDegrees(absoluteEncoder.getVelocity()));
 
-    SmartDashboard.putNumber("Arm/Position Setpoint", Units.radiansToDegrees(positionSetpoint));
-    SmartDashboard.putNumber("Arm/Velocity Setpoint", Units.radiansToDegrees(velocitySetpoint));
+    SmartDashboard.putNumber(
+        "Arm/Position Setpoint", Units.radiansToDegrees(previousSetpoint.position));
+    SmartDashboard.putNumber(
+        "Arm/Velocity Setpoint", Units.radiansToDegrees(previousSetpoint.velocity));
+
+    SmartDashboard.putNumber(
+        "Arm/Position Error",
+        Units.radiansToDegrees(previousSetpoint.position - armEncoder.getPosition()));
+    SmartDashboard.putNumber(
+        "Arm/Velocity Error",
+        Units.radiansToDegrees(previousSetpoint.velocity - armEncoder.getVelocity()));
   }
 
   @Override

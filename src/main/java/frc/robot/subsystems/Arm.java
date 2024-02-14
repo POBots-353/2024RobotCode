@@ -73,7 +73,7 @@ public class Arm extends VirtualSubsystem implements Logged {
           new SysIdRoutine.Mechanism(
               (volts) -> {
                 mainMotor.setVoltage(volts.in(Volts));
-                followerMotor.setVoltage(volts.in(Volts));
+                // followerMotor.setVoltage(volts.in(Volts));
               },
               null,
               this));
@@ -125,12 +125,15 @@ public class Arm extends VirtualSubsystem implements Logged {
     followerMotor.restoreFactoryDefaults();
     followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
     followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.setInverted(!ArmConstants.mainMotorInverted);
-    followerMotor.enableVoltageCompensation(12.3);
+    // followerMotor.setInverted(!ArmConstants.mainMotorInverted);
+    // followerMotor.enableVoltageCompensation(12.3);
 
-    followerMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.forwardMovementLimitAngle);
-    followerMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.reverseMovementLimitAngle);
+    // followerMotor.setSoftLimit(SoftLimitDirection.kForward,
+    // ArmConstants.forwardMovementLimitAngle);
+    // followerMotor.setSoftLimit(SoftLimitDirection.kReverse,
+    // ArmConstants.reverseMovementLimitAngle);
 
+    followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
     followerMotor.setCANTimeout(0);
   }
@@ -191,7 +194,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
 
     mainMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
-    followerMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
+    // followerMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
   }
 
   public void setDesiredPosition(Rotation2d position) {
@@ -212,7 +215,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   public void setSpeed(double speed) {
     mainMotor.set(speed);
-    followerMotor.set(speed);
+    // followerMotor.set(speed);
   }
 
   public TrapezoidProfile.State getCurrentState() {

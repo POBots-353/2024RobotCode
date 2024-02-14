@@ -182,7 +182,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     previousSetpoint = state;
 
-    log("Feedforward Voltage", feedforward);
+    log("FeedForward Voltage", feedforward);
 
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
 
@@ -199,6 +199,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     // Replan profile if it's too far from position or if it's finished
     if (Math.abs(setpoint.position - armEncoder.getPosition()) > ArmConstants.replanningError
         || armProfile.isFinished(0.0)) {
+      DataLogManager.log("Replanning Arm Profile");
       setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
     }
 

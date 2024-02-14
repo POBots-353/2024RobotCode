@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.controllers.VirtualJoystick;
@@ -167,12 +168,15 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public Command moveToPosition(Rotation2d position) {
-    return run(() -> setDesiredPosition(position))
-        .until(
+    return new FunctionalCommand(
+            () -> previousSetpoint = getCurrentState(),
+            () -> setDesiredPosition(position),
+            (interrupted) -> setSpeed(0.0),
             () ->
                 Math.abs(armEncoder.getPosition() - position.getRadians())
-                    <= ArmConstants.angleTolerance)
-        .finallyDo(() -> setSpeed(0.0));
+                    <= ArmConstants.angleTolerance,
+            this)
+        .withName("Arm Move to " + position.getDegrees() + " Degrees");
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
@@ -209,8 +213,6 @@ public class Arm extends VirtualSubsystem implements Logged {
   public void setSpeed(double speed) {
     mainMotor.set(speed);
     followerMotor.set(speed);
-
-    previousSetpoint = getCurrentState();
   }
 
   public TrapezoidProfile.State getCurrentState() {

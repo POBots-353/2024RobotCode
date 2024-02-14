@@ -5,22 +5,29 @@
       "x": 0.7753211512129142,
       "y": 6.640044321458116
     },
-    "rotation": -122.31961650818016
+    "rotation": -120.01836742760909
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Warm Up Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Arm to Subwoofer"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -58,6 +65,43 @@
           "type": "path",
           "data": {
             "pathName": "Wing 1 to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Wing Shoot to Wing 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wing 2 to Shoot"
           }
         },
         {

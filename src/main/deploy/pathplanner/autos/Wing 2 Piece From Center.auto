@@ -2,25 +2,32 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8924295166707293,
-      "y": 6.616622648366552
+      "x": 0.7753211512129142,
+      "y": 6.640044321458116
     },
-    "rotation": -122.00538320808353
+    "rotation": -120.01836742760909
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Warm Up Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Arm to Subwoofer"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp To Center 1"
+                  "pathName": "Start to Wing 1"
                 }
               },
               {
@@ -57,44 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Shoot Center 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp To Center 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Until Beam Break"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Shoot Center 2"
+            "pathName": "Wing 1 to Shoot"
           }
         },
         {
@@ -106,6 +76,6 @@
       ]
     }
   },
-  "folder": "Amp Side",
+  "folder": "Wing",
   "choreoAuto": false
 }

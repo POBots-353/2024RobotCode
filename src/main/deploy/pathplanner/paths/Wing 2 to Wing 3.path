@@ -60,12 +60,6 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Arm to Subwoofer"
-              }
             }
           ]
         }

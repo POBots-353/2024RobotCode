@@ -2,25 +2,32 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7753211512129142,
-      "y": 6.640044321458116
+      "x": 0.8924295166707293,
+      "y": 6.616622648366552
     },
-    "rotation": -123.42481118260379
+    "rotation": -123.02386755579664
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Warm Up Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Arm to Subwoofer"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start to Wing 1"
+                  "pathName": "Amp To Center 1"
                 }
               },
               {
@@ -57,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 1 to Shoot"
+            "pathName": "Amp Shoot Center 1"
           }
         },
         {
@@ -73,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Wing Shoot to Wing 2"
+                  "pathName": "Amp To Center 2"
                 }
               },
               {
@@ -94,7 +101,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Wing 2 to Shoot"
+            "pathName": "Amp Shoot Center 2"
           }
         },
         {
@@ -106,6 +113,6 @@
       ]
     }
   },
-  "folder": "Wing",
+  "folder": "Amp Side",
   "choreoAuto": false
 }

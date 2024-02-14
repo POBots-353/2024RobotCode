@@ -99,34 +99,34 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak().asProxy());
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0).asProxy());
-    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor).asProxy());
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
+    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0).asProxy());
+        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Amp Podium",
-        arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
+        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter)
-            .asProxy());
+        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
     NamedCommands.registerCommand(
         "Shoot",
         intake
             .autoFeedToShooter()
             .withTimeout(1.0)
-            .asProxy()
-            .andThen(intake.runOnce(() -> intake.stopIntakeMotor()).asProxy()));
+            .finallyDo(
+                () -> {
+                  intake.stopIntakeMotor();
+                  shooter.stopMotor();
+                }));
 
     configureAutoChooser();
 

@@ -5,22 +5,29 @@
       "x": 0.8924295166707293,
       "y": 6.616622648366552
     },
-    "rotation": -120.01836742760905
+    "rotation": -123.02386755579664
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Warm Up Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Arm to Subwoofer"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
           }
         },
         {

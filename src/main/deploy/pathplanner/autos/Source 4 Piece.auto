@@ -12,15 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Warm Up Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Arm to Subwoofer"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
           }
         },
         {

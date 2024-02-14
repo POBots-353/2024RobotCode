@@ -20,8 +20,8 @@
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.9464048057910655,
-        "y": 5.890550782528099
+        "x": 1.6715283654782562,
+        "y": 5.853265159445117
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,7 +50,7 @@
     },
     {
       "name": "Shooting Warm Up",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.3,
       "command": {
         "type": "parallel",
         "data": {
@@ -60,12 +60,6 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Arm to Subwoofer"
-              }
             }
           ]
         }
@@ -73,7 +67,7 @@
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {

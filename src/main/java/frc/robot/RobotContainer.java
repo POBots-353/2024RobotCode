@@ -433,8 +433,7 @@ public class RobotContainer implements Logged {
         Commands.sequence(
                 Commands.runOnce(
                     () -> {
-                      alerts.clear();
-                      Alert.clearGroup("Alerts");
+                      clearPrematchAlerts();
                     }),
                 Commands.runOnce(
                     () -> {
@@ -475,8 +474,7 @@ public class RobotContainer implements Logged {
                         addInfo("Limelight is connected");
                       }
 
-                      if (!rootTable.containsSubTable(
-                          "photonvision/" + VisionConstants.arducamName)) {
+                      if (!swerve.arducamConnected()) {
                         addError("Arducam is not connected");
                       } else {
                         addInfo("Arudcam is connected");

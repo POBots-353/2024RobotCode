@@ -249,6 +249,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backRightModule.resetToAbsolute();
   }
 
+  @Log.NT
+  public boolean arducamConnected() {
+    return arducam.isConnected();
+  }
+
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
     if (isOpenLoop) {
       return ChassisSpeeds.fromFieldRelativeSpeeds(

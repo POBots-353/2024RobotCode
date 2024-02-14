@@ -138,9 +138,9 @@ public class SwerveModule implements Logged {
   }
 
   private void configureDriveMotor() {
-    driveMotor.restoreFactoryDefaults();
-
     driveMotor.setCANTimeout(100);
+
+    driveMotor.restoreFactoryDefaults();
 
     driveMotor.setInverted(SwerveConstants.driveMotorInverted);
 
@@ -171,9 +171,9 @@ public class SwerveModule implements Logged {
   }
 
   private void configureTurnMotor() {
-    turnMotor.restoreFactoryDefaults();
-
     turnMotor.setCANTimeout(100);
+
+    turnMotor.restoreFactoryDefaults();
 
     turnMotor.setInverted(SwerveConstants.turnMotorInverted);
 

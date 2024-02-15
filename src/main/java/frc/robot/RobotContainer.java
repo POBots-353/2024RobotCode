@@ -349,6 +349,10 @@ public class RobotContainer implements Logged {
   }
 
   private void configureArmBindings() {
+    Trigger armManualUp = operatorStick.button(OperatorConstants.armManualUp);
+    Trigger armManualDown = operatorStick.button(OperatorConstants.armManualDown);
+    Trigger armPreciseManualAdjustment = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
+
     operatorStick
         .button(OperatorConstants.armToPickup)
         .whileTrue(arm.moveToPosition(ArmConstants.pickupAngle));
@@ -365,19 +369,27 @@ public class RobotContainer implements Logged {
         .button(OperatorConstants.armToPodium)
         .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
-    operatorStick
-        .button(OperatorConstants.armManualUp)
+    armManualUp
         .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
-    operatorStick
-        .button(OperatorConstants.armManualDown)
+    armManualDown
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
     operatorStick
         .button(OperatorConstants.armAutoShoot)
         .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
+
+    armPreciseManualAdjustment
+        .and(armManualUp.negate())
+        .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.preciseManualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
+
+    armPreciseManualAdjustment
+        .and(armManualDown.negate())
+        .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.preciseManualSpeed)))
+        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
   }
 
   private void configureShooterBindings() {

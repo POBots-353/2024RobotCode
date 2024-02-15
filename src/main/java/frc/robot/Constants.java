@@ -46,6 +46,8 @@ public final class Constants {
     public static final int armManualUp = 10;
     public static final int armManualDown = 9;
 
+    public static final int armPreciseManualAdjustment = 16;
+
     public static final int climberButton = 1;
     public static final int leftClimberButton = 3;
     public static final int rightClimberButton = 4;
@@ -245,6 +247,7 @@ public final class Constants {
     public static final double maxAcceleration = Units.degreesToRadians(360.0);
 
     public static final double manualSpeed = 0.60;
+    public static final double preciseManualSpeed = 0.20;
     public static final double angleTolerance = Units.degreesToRadians(0.25);
     public static final double replanningError = Units.degreesToRadians(20.0);
     public static final double debounceTime = 0.50;

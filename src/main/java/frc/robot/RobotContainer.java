@@ -351,7 +351,8 @@ public class RobotContainer implements Logged {
   private void configureArmBindings() {
     Trigger armManualUp = operatorStick.button(OperatorConstants.armManualUp);
     Trigger armManualDown = operatorStick.button(OperatorConstants.armManualDown);
-    Trigger armPreciseManualAdjustment = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
+    Trigger armPreciseManualAdjustment =
+        operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
 
     operatorStick
         .button(OperatorConstants.armToPickup)

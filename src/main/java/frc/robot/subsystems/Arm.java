@@ -121,14 +121,19 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     mainMotor.setIdleMode(IdleMode.kBrake);
 
+    mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    mainMotor.setSoftLimit(
+        SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle);
+
+    mainMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    mainMotor.setSoftLimit(
+        SoftLimitDirection.kReverse, (float) ArmConstants.reverseMovementLimitAngle);
+
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
     mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-
-    mainMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.forwardMovementLimitAngle);
-    mainMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.reverseMovementLimitAngle);
 
     mainMotor.setCANTimeout(0);
   }

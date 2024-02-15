@@ -264,8 +264,8 @@ public final class Constants {
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.5);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(33.79285610735291);
 
-    public static final float reverseMovementLimitAngle = -15;
-    public static final float forwardMovementLimitAngle = 100;
+    public static final double reverseMovementLimitAngle = Units.degreesToRadians(-15.0);
+    public static final double forwardMovementLimitAngle = Units.degreesToRadians(100.0);
 
     // (distance, angle)
     // Stubbed with fake values for now

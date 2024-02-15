@@ -55,14 +55,13 @@ public class PolynomialRegression implements Comparable<PolynomialRegression> {
     this.degree = degree;
     this.variableName = variableName;
 
-    int n = x.length;
+    int n = Math.min(x.length, y.length);
     QRDecomposition qr = null;
     Matrix matrixX = null;
 
     // in case Vandermonde matrix does not have full rank, reduce degree until it
     // does
     while (true) {
-
       // build Vandermonde matrix
       double[][] vandermonde = new double[n][this.degree + 1];
       for (int i = 0; i < n; i++) {

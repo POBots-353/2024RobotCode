@@ -346,20 +346,33 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void zeroYaw() {
-    odometryLock.lock();
     Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
 
-    setHeading(Rotation2d.fromDegrees(0.0));
+    if (SwerveConstants.zeroWithIntakeForward) {
+      setHeading(Rotation2d.fromDegrees(180.0));
+    } else {
+      setHeading(Rotation2d.fromDegrees(0.0));
+    }
 
+    Rotation2d orientationOffset =
+        SwerveConstants.zeroWithIntakeForward
+            ? Rotation2d.fromDegrees(180.0)
+            : Rotation2d.fromDegrees(0.0);
+
+    odometryLock.lock();
     poseEstimator.resetPosition(
         getHeading(),
         getModulePositions(),
-        new Pose2d(originalOdometryPosition.getTranslation(), AllianceUtil.getZeroRotation()));
+        new Pose2d(
+            originalOdometryPosition.getTranslation(),
+            AllianceUtil.getZeroRotation().plus(orientationOffset)));
     odometryLock.unlock();
   }
 
   public void setHeading(Rotation2d rotation) {
+    odometryLock.lock();
     angleOffset = navx.getRotation2d().minus(rotation);
+    odometryLock.unlock();
   }
 
   @Log.NT(key = "Heading")
@@ -457,7 +470,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
     //     || !backRightModule.motorsValid()) {
     //   return;
     // }
+    odometryLock.lock();
     Rotation2d heading = getHeading();
+    odometryLock.unlock();
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
 
     if (!odometryUpdateValid(positions, heading)) {

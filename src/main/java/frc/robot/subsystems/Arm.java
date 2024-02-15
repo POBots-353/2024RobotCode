@@ -17,6 +17,7 @@ import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -59,6 +60,8 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private final double prematchDelay = 2.5;
   private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
+
+  private Debouncer setpointDebouncer = new Debouncer(ArmConstants.movementDebounceTime);
 
   private TrapezoidProfile.State previousSetpoint = new TrapezoidProfile.State();
 
@@ -185,19 +188,17 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> previousSetpoint = getCurrentState(),
             () -> setDesiredPosition(position),
             (interrupted) -> setSpeed(0.0),
-            () ->
-                Math.abs(armEncoder.getPosition() - position.getRadians())
-                    <= ArmConstants.angleTolerance,
+            () -> {
+              double positionError = armEncoder.getPosition() - position.getRadians();
+              return setpointDebouncer.calculate(
+                  Math.abs(positionError) <= ArmConstants.angleTolerance);
+            },
             this)
         .withName("Arm Move to " + position.getDegrees() + " Degrees");
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
-    double feedforward =
-        armFeedforward.calculate(
-            state.position,
-            state.velocity,
-            0.0 * (state.velocity - previousSetpoint.velocity) / 0.020);
+    double feedforward = armFeedforward.calculate(state.position, state.velocity);
 
     previousSetpoint = state;
 
@@ -216,9 +217,11 @@ public class Arm extends VirtualSubsystem implements Logged {
     TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
 
     // Replan profile if it's too far from position or if it's finished
-    if (Math.abs(setpoint.position - armEncoder.getPosition()) > ArmConstants.replanningError
-        || armProfile.isFinished(0.0)) {
-      DataLogManager.log("Replanning Arm Profile");
+    if (Math.abs(setpoint.position - armEncoder.getPosition()) > ArmConstants.replanningError) {
+      DataLogManager.log("Replanning arm profile: Position error too high");
+      setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
+    } else if (armProfile.isFinished(0.0)) {
+      DataLogManager.log("Raplanning arm profile: current profile is finished");
       setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
     }
 

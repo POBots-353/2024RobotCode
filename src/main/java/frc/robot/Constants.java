@@ -248,6 +248,8 @@ public final class Constants {
     public static final double angleTolerance = Units.degreesToRadians(0.25);
     public static final double replanningError = Units.degreesToRadians(20.0);
     public static final double debounceTime = 0.50;
+    public static final double movementDebounceTime = 0.50;
+    public static final double holdDebounceTime = 0.50;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);

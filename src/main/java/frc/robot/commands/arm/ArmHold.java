@@ -4,6 +4,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,8 @@ public class ArmHold extends Command {
 
   private Rotation2d holdPosition;
   private TrapezoidProfile.State holdState;
+
+  private Debouncer holdingDebounce = new Debouncer(ArmConstants.holdDebounceTime);
 
   /** Creates a new ArmHold. */
   public ArmHold(Arm arm) {
@@ -35,9 +38,11 @@ public class ArmHold extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(arm.getPosition().getRadians() - holdState.position)
-        < ArmConstants.angleTolerance) {
+    double positionError = arm.getPosition().getRadians() - holdState.position;
+
+    if (holdingDebounce.calculate(Math.abs(positionError) < ArmConstants.angleTolerance)) {
       arm.setSpeed(0.0);
+      arm.setProfileSetpoint(arm.getCurrentState());
     } else {
       arm.setDesiredPosition(holdPosition);
     }

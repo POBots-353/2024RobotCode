@@ -84,6 +84,16 @@ public class Arm extends VirtualSubsystem implements Logged {
     configureFollowerMotor();
     configureAbsoluteEncoder();
 
+    for (int i = 0; i < 5; i++) {
+      if (mainMotor.getInverted() == ArmConstants.mainMotorInverted) {
+        break;
+      }
+
+      mainMotor.setInverted(ArmConstants.mainMotorInverted);
+
+      Timer.delay(0.005);
+    }
+
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
         .ignoringDisable(true)
         .schedule();

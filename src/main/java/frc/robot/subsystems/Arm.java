@@ -185,7 +185,9 @@ public class Arm extends VirtualSubsystem implements Logged {
   public void setProfileState(TrapezoidProfile.State state) {
     double feedforward =
         armFeedforward.calculate(
-            state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
+            state.position,
+            state.velocity,
+            0.0 * (state.velocity - previousSetpoint.velocity) / 0.020);
 
     previousSetpoint = state;
 
@@ -220,6 +222,10 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   public TrapezoidProfile.State getCurrentState() {
     return new TrapezoidProfile.State(armEncoder.getPosition(), armEncoder.getVelocity());
+  }
+
+  public void setProfileSetpoint(TrapezoidProfile.State state) {
+    previousSetpoint = state;
   }
 
   @Log.NT(key = "Absolute Angle")

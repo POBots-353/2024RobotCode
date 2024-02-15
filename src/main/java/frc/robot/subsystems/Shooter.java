@@ -68,7 +68,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-    mainShooterEncoder.setAverageDepth(4);
+    mainShooterEncoder.setAverageDepth(2);
 
     shooterPID.setP(ShooterConstants.shooterP);
     shooterPID.setOutputRange(0.0, 1.0);

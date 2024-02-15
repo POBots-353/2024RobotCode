@@ -33,6 +33,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
@@ -138,7 +139,7 @@ public class RobotContainer implements Logged {
 
     leds.setDefaultCommand(new RSLSync(leds));
 
-    // arm.setDefaultCommand(new ArmHold(arm));
+    arm.setDefaultCommand(new ArmHold(arm));
 
     swerve.setDefaultCommand(
         new TeleopSwerve(

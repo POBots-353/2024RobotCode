@@ -597,6 +597,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return;
     }
 
+    odometryLock.lock();
+    arducamPoseEstimator.setReferencePose(poseEstimator.getEstimatedPosition());
+    odometryLock.unlock();
+
     Optional<EstimatedRobotPose> optionalVisionPose = arducamPoseEstimator.update(result);
     if (optionalVisionPose.isEmpty()) {
       return;
@@ -620,8 +624,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.lock();
     poseEstimator.addVisionMeasurement(
         visionPose.estimatedPose.toPose2d(), visionPose.timestampSeconds, standardDevs);
-
-    arducamPoseEstimator.setReferencePose(poseEstimator.getEstimatedPosition());
     odometryLock.unlock();
 
     for (PhotonTrackedTarget target : visionPose.targetsUsed) {

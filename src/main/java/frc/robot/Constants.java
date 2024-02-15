@@ -225,9 +225,9 @@ public final class Constants {
     public static final double armKg = 0.21434;
     public static final double armKs = 0.11941;
     public static final double armKv = 6.58235;
-    public static final double armKa = 0.3758;
+    public static final double armKa = 0.3358;
 
-    public static final double armKp = 3.0;
+    public static final double armKp = 2.25;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
@@ -251,12 +251,12 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
-    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-18.5);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(45.0);
-    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(15.0);
-    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.5);
+    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(33.79285610735291);
 
     public static final float reverseMovementLimitAngle = -15;
     public static final float forwardMovementLimitAngle = 100;
@@ -265,8 +265,8 @@ public final class Constants {
     // Stubbed with fake values for now
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
-          new Point2D.Double(0.25, Units.degreesToRadians(3.53)),
-          new Point2D.Double(0.5, Units.degreesToRadians(3.53)),
+          new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),
+          new Point2D.Double(Units.feetToMeters(13.0), Units.degreesToRadians(33.79285610735291)),
         };
 
     public static final LinearInterpolation autoShootInterpolation =
@@ -285,7 +285,7 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int intakeMotorID = 13;
 
-    public static final double intakeSpeed = 0.80;
+    public static final double intakeSpeed = 0.90;
     public static final int intakeCurrentLimit = 30; // Amps
 
     public static final int beamBreakID = 9;
@@ -295,7 +295,7 @@ public final class Constants {
     public static final int shooterMainID = 11;
     public static final int shooterFollowerId = 12;
 
-    public static final double shooterVelocity = 5000.0;
+    public static final double shooterVelocity = 3535.3;
     public static final double shooterKs = 0.33307;
     public static final double shooterKv = 0.0020945;
     public static final double shooterKa = 0.00072307;
@@ -410,27 +410,27 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(81.5625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(87.1875);
   }
 
   public static class FrontRightModule {
     public static final int driveID = 1;
     public static final int turnID = 5;
     public static final int encoderID = 9;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-126.474609375);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-126.73828125);
   }
 
   public static class BackLeftModule {
-    public static final int driveID = 6; // 2
-    public static final int turnID = 2; // 6
+    public static final int driveID = 2;
+    public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.525390625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-52.3828125);
   }
 
   public static final class BackRightModule {
     public static final int driveID = 4;
     public static final int turnID = 8;
     public static final int encoderID = 12;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-77.6953125);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-77.255859375);
   }
 }

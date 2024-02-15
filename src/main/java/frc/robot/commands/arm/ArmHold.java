@@ -28,6 +28,8 @@ public class ArmHold extends Command {
   public void initialize() {
     holdPosition = arm.getPosition();
     holdState = new TrapezoidProfile.State(holdPosition.getRadians(), 0);
+
+    arm.setProfileSetpoint(holdState);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

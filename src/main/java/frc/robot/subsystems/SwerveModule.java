@@ -159,6 +159,7 @@ public class SwerveModule implements Logged {
     driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
 
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
     driveMotor.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);

@@ -30,6 +30,12 @@ public class ArmHold extends Command {
   @Override
   public void initialize() {
     holdPosition = arm.getPosition();
+    if (holdPosition.getRadians() <= ArmConstants.reverseMovementLimitAngle) {
+      holdPosition = Rotation2d.fromRadians(ArmConstants.reverseMovementLimitAngle);
+    } else if (holdPosition.getRadians() >= ArmConstants.forwardMovementLimitAngle) {
+      holdPosition = Rotation2d.fromRadians(ArmConstants.forwardMovementLimitAngle);
+    }
+
     holdState = new TrapezoidProfile.State(holdPosition.getRadians(), 0);
 
     arm.setProfileSetpoint(holdState);

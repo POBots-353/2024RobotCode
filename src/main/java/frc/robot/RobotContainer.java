@@ -331,13 +331,17 @@ public class RobotContainer implements Logged {
   }
 
   private void configureClimbingBindings() {
+    Trigger reverseDirection = operatorStick.povUp();
+
     operatorStick
         .button(OperatorConstants.leftClimberButton)
+        .and(reverseDirection.negate())
         .whileTrue(climber.run(climber::climbLeft))
         .onFalse(climber.runOnce(climber::stopLeft));
 
     operatorStick
         .button(OperatorConstants.rightClimberButton)
+        .and(reverseDirection.negate())
         .whileTrue(climber.run(climber::climbRight))
         .onFalse(climber.runOnce(climber::stopRight));
 
@@ -346,13 +350,24 @@ public class RobotContainer implements Logged {
         .whileTrue(
             climber.run(climber::climbBoth).onlyIf(() -> DriverStation.getMatchTime() <= 20.0))
         .onFalse(climber.runOnce(climber::stopClimberMotors));
+
+    operatorStick
+        .button(OperatorConstants.rightClimberButton)
+        .and(reverseDirection)
+        .whileTrue(climber.run(climber::rightReverse))
+        .onFalse(climber.runOnce(climber::stopRight));
+
+    operatorStick
+        .button(OperatorConstants.leftClimberButton)
+        .and(reverseDirection)
+        .whileTrue(climber.run(climber::leftReverse))
+        .onFalse(climber.runOnce(climber::stopLeft));
   }
 
   private void configureArmBindings() {
     Trigger armManualUp = operatorStick.button(OperatorConstants.armManualUp);
     Trigger armManualDown = operatorStick.button(OperatorConstants.armManualDown);
-    Trigger armPreciseManualAdjustment =
-        operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
+    Trigger armSlowAdjustment = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
 
     operatorStick
         .button(OperatorConstants.armToPickup)
@@ -371,10 +386,12 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
     armManualUp
+        .and(armSlowAdjustment.negate())
         .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
     armManualDown
+        .and(armSlowAdjustment.negate())
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
@@ -382,22 +399,31 @@ public class RobotContainer implements Logged {
         .button(OperatorConstants.armAutoShoot)
         .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
 
-    armPreciseManualAdjustment
-        .and(armManualUp.negate())
+    armManualUp
+        .and(armSlowAdjustment)
         .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.preciseManualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
-    armPreciseManualAdjustment
-        .and(armManualDown.negate())
+    armManualDown
+        .and(armSlowAdjustment)
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.preciseManualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
   }
 
   private void configureShooterBindings() {
+    Trigger ampShooter = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
+
     operatorStick
         .button(OperatorConstants.shootButton)
+        .and(ampShooter.negate())
         .whileTrue(
             Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
+        .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
+
+    operatorStick
+        .button(OperatorConstants.shootButton)
+        .and(ampShooter)
+        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.ampVelocity), shooter))
         .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
   }
 

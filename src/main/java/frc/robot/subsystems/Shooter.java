@@ -43,7 +43,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
   private PIDController velocityPIDController =
       new PIDController(ShooterConstants.shooterP, 0.0, 0.0);
 
-  private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.08, 0.02);
+  private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.04, 0.02);
 
   private double filteredVelocity = 0.0;
 
@@ -68,7 +68,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
     shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-    mainShooterEncoder.setAverageDepth(2);
+    // mainShooterEncoder.setAverageDepth(1);
 
     shooterPID.setP(ShooterConstants.shooterP);
     shooterPID.setOutputRange(0.0, 1.0);
@@ -98,13 +98,18 @@ public class Shooter extends VirtualSubsystem implements Logged {
   }
 
   public double getVelocity() {
-    return filteredVelocity;
+    return mainShooterEncoder.getVelocity();
+    // return filteredVelocity;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     filteredVelocity = velocityFilter.calculate(mainShooterEncoder.getVelocity());
+
+    // if (Math.abs(filteredVelocity) < 1e-5) {
+    //   filteredVelocity = 0.0;
+    // }
 
     SmartDashboard.putNumber("Shooter/Velocity Raw", mainShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Shooter/Velocity Filtered", filteredVelocity);

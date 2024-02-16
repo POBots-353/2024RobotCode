@@ -87,6 +87,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     configureFollowerMotor();
     configureAbsoluteEncoder();
 
+    mainMotor.setCANTimeout(100);
     for (int i = 0; i < 5; i++) {
       if (mainMotor.getInverted() == ArmConstants.mainMotorInverted) {
         break;
@@ -96,6 +97,17 @@ public class Arm extends VirtualSubsystem implements Logged {
 
       Timer.delay(0.005);
     }
+
+    for (int i = 0; i < 25; i++) {
+      if (absoluteEncoder.getInverted() == ArmConstants.absoluteEncoderInverted) {
+        break;
+      }
+
+      absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
+
+      Timer.delay(0.005);
+    }
+    mainMotor.setCANTimeout(0);
 
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
         .ignoringDisable(true)
@@ -157,10 +169,12 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureAbsoluteEncoder() {
+    mainMotor.setCANTimeout(100);
     absoluteEncoder.setZeroOffset(0.0);
     absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
     absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
     absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
+    mainMotor.setCANTimeout(0);
   }
 
   private void resetToAbsolute() {
@@ -203,7 +217,9 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setProfileState(TrapezoidProfile.State state) {
-    double feedforward = armFeedforward.calculate(state.position, state.velocity);
+    double feedforward =
+        armFeedforward.calculate(
+            state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
 
     previousSetpoint = state;
 
@@ -221,12 +237,15 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
 
+    double positionError = Math.abs(setpoint.position - armEncoder.getPosition());
+
     // Replan profile if it's too far from position or if it's finished
-    if (Math.abs(setpoint.position - armEncoder.getPosition()) > ArmConstants.replanningError) {
+    if (positionError > ArmConstants.replanningError) {
       DataLogManager.log("Replanning arm profile: Position error too high");
       setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
-    } else if (armProfile.isFinished(0.0)) {
-      DataLogManager.log("Raplanning arm profile: current profile is finished");
+    } else if (armProfile.isFinished(0.0) && positionError > Units.degreesToRadians(7.5)) {
+      DataLogManager.log(
+          "Raplanning arm profile: current profile is finished but too far from setpoint");
       setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
     }
 

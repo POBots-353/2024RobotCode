@@ -52,7 +52,7 @@ public class Climber extends VirtualSubsystem {
 
     for (int i = 0; i < 5; i++) {
       rightMotor.setIdleMode(IdleMode.kBrake);
-      rightMotor.setInverted(false);
+      rightMotor.setInverted(true);
       rightMotor.setSmartCurrentLimit(ClimberConstants.climberCurrentLimit);
 
       rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
@@ -95,6 +95,14 @@ public class Climber extends VirtualSubsystem {
 
   public void stopRight() {
     rightMotor.set(0.0);
+  }
+
+  public void leftReverse() {
+    leftMotor.set(-ClimberConstants.climberMotorSpeed);
+  }
+
+  public void rightReverse() {
+    rightMotor.set(-ClimberConstants.climberMotorSpeed);
   }
 
   @Override

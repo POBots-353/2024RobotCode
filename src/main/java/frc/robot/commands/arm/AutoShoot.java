@@ -7,6 +7,7 @@ package frc.robot.commands.arm;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
@@ -57,11 +58,13 @@ public class AutoShoot extends Command {
     arm.setDesiredPosition(Rotation2d.fromRadians(angle));
     shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
 
+    SmartDashboard.putNumber("Auto Shoot/Desired Angle", desiredAngle.getDegrees());
+
     Rotation2d armAngleError = desiredAngle.minus(arm.getPosition());
     double shooterError = ShooterConstants.shooterVelocity - shooter.getVelocity();
 
     if (setpointDebouncer.calculate(
-        Math.abs(armAngleError.getRadians()) < ArmConstants.angleTolerance
+        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
             && shooterError < ShooterConstants.velocityTolerance)) {
       intake.feedToShooter();
     }

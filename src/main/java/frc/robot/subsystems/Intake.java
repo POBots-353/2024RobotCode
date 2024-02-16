@@ -10,7 +10,6 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -84,7 +83,6 @@ public class Intake extends VirtualSubsystem implements Logged {
     if (!beamBroken()) {
       intakeMotor.set(IntakeConstants.intakeSpeed);
     } else {
-      DataLogManager.log("AAAAAAAAAAAAAAAA");
       stopIntakeMotor();
     }
   }

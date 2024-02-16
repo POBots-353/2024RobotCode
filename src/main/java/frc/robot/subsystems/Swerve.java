@@ -571,7 +571,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     LimelightTarget_Fiducial closestTag = detectedTags[0];
     Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
-    Pose3d visionPose = results.getBotPose3d_wpiBlue();
+    Pose3d visionPose;
+
+    // if (detectedTags.length >= 2) {
+    visionPose = results.getBotPose3d_wpiBlue();
+    // } else {
+    // visionPose = closestTag.getRobotPose_FieldSpace();
+    // }
 
     if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
       return;

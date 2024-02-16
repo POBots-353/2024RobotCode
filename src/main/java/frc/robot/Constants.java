@@ -63,9 +63,9 @@ public final class Constants {
     public static final AprilTagFieldLayout aprilTagLayout =
         AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-    public static final Pose2d speakerBlueAlliance =
-        new Pose2d(0.25, 5.5, Rotation2d.fromDegrees(180.0));
     public static final Pose2d speakerRedAlliance =
+        new Pose2d(0.25, 5.5, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d speakerBlueAlliance =
         new Pose2d(16.3, 5.5, Rotation2d.fromDegrees(0.0));
 
     public static Pose2d driverStationBlueAlliance = new Pose2d();
@@ -227,10 +227,10 @@ public final class Constants {
 
     public static final double armKg = 0.21434;
     public static final double armKs = 0.11941;
-    public static final double armKv = 6.58235;
-    public static final double armKa = 0.3358;
+    public static final double armKv = 6.88235;
+    public static final double armKa = 0.000001358;
 
-    public static final double armKp = 2.25;
+    public static final double armKp = 1.55;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
@@ -244,34 +244,38 @@ public final class Constants {
     // Assuming 90% gearbox efficiency
     public static final double maxVelocity =
         Units.rotationsToRadians(5800 * armGearRatio) * 0.90 / 60;
-    public static final double maxAcceleration = Units.degreesToRadians(360.0);
+    public static final double maxAcceleration = Units.degreesToRadians(480.0);
 
     public static final double manualSpeed = 0.60;
     public static final double preciseManualSpeed = 0.20;
-    public static final double angleTolerance = Units.degreesToRadians(0.25);
+    public static final double angleTolerance = Units.degreesToRadians(0.15);
+    public static final double autoShootAngleTolerance = Units.degreesToRadians(0.3);
     public static final double replanningError = Units.degreesToRadians(20.0);
     public static final double debounceTime = 0.50;
-    public static final double movementDebounceTime = 0.50;
-    public static final double holdDebounceTime = 0.50;
+    public static final double movementDebounceTime = 0.70;
+    public static final double holdDebounceTime = 1.5;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
-    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-18.5);
+    public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
-    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(45.0);
+    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.5);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(33.79285610735291);
 
-    public static final double reverseMovementLimitAngle = Units.degreesToRadians(-15.0);
-    public static final double forwardMovementLimitAngle = Units.degreesToRadians(100.0);
+    public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);
+    public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
 
     // (distance, angle)
     // Stubbed with fake values for now
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
           new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),
+          new Point2D.Double(Units.feetToMeters(8.5), Units.degreesToRadians(24.087830070398038)),
+          new Point2D.Double(Units.feetToMeters(10), Units.degreesToRadians(29.450690500655108)),
+          new Point2D.Double(Units.feetToMeters(12.0), Units.degreesToRadians(32.771899214290307)),
           new Point2D.Double(Units.feetToMeters(13.0), Units.degreesToRadians(33.79285610735291)),
         };
 
@@ -302,12 +306,13 @@ public final class Constants {
     public static final int shooterFollowerId = 12;
 
     public static final double shooterVelocity = 3535.3;
+    public static final double ampVelocity = 750.0;
     public static final double shooterKs = 0.33307;
     public static final double shooterKv = 0.0020945;
     public static final double shooterKa = 0.00072307;
     public static final double shooterP = 0.01;
 
-    public static final double velocityTolerance = 100.0;
+    public static final double velocityTolerance = 100.0; // 100.0
 
     public static final int shooterCurrentLimit = 60;
   }
@@ -350,7 +355,7 @@ public final class Constants {
 
     public static final double maxTranslationalSpeed = Units.feetToMeters(12.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
-    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(5.0);
+    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(3.53);
     public static final double turboMaxTranslationalSpeed = Units.feetToMeters(14.5);
 
     public static final double maxTranslationalAcceleration = Units.feetToMeters(25.0);

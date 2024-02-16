@@ -68,7 +68,7 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public void feedToShooter() {
-    intakeMotor.set(IntakeConstants.intakeSpeed);
+    intakeMotor.set(1.0);
   }
 
   public void outtakeNoteInIntake() {

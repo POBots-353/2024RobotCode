@@ -5,6 +5,7 @@ package frc.robot.util;
 
 import Jama.Matrix;
 import Jama.QRDecomposition;
+import java.awt.geom.Point2D;
 
 /**
  * The {@code PolynomialRegression} class performs a polynomial regression on an set of <em>N</em>
@@ -28,6 +29,30 @@ public class PolynomialRegression implements Comparable<PolynomialRegression> {
   private Matrix beta; // the polynomial regression coefficients
   private double sse; // sum of squares due to error
   private double sst; // total sum of squares
+
+  private static double[] point2DXValues(Point2D[] points) {
+    double[] values = new double[points.length];
+
+    for (int i = 0; i < points.length; i++) {
+      values[i] = points[i].getX();
+    }
+
+    return values;
+  }
+
+  private static double[] point2DYValues(Point2D[] points) {
+    double[] values = new double[points.length];
+
+    for (int i = 0; i < points.length; i++) {
+      values[i] = points[i].getY();
+    }
+
+    return values;
+  }
+
+  public PolynomialRegression(Point2D[] points, int degree) {
+    this(point2DXValues(points), point2DYValues(points), degree);
+  }
 
   /**
    * Performs a polynomial reggression on the data points {@code (y[i], x[i])}. Uses n as the name

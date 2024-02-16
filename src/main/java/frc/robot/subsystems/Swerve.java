@@ -356,8 +356,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Rotation2d orientationOffset =
         SwerveConstants.zeroWithIntakeForward
-            ? Rotation2d.fromDegrees(180.0)
-            : Rotation2d.fromDegrees(0.0);
+            ? Rotation2d.fromDegrees(180.0 * 0.0) // revert when done
+            : Rotation2d.fromDegrees(0.0 + 180.0);
 
     odometryLock.lock();
     poseEstimator.resetPosition(
@@ -488,7 +488,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets > 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(2.25), Units.inchesToMeters(2.25), Units.degreesToRadians(10.0));
+          Units.inchesToMeters(2.25), Units.inchesToMeters(2.25), Units.degreesToRadians(100.0));
     } else {
       double xyStandardDev = LimelightConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = LimelightConstants.thetaPolynomialRegression.predict(distance);
@@ -502,7 +502,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets < 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(2.75), Units.inchesToMeters(2.75), Units.degreesToRadians(10.0));
+          Units.inchesToMeters(6.5), Units.inchesToMeters(6.5), Units.degreesToRadians(100.0));
     } else {
       double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);
@@ -536,7 +536,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Rotation2d angleDifference =
         getPose().getRotation().minus(visionPose.getRotation().toRotation2d());
 
-    double angleTolerance = DriverStation.isAutonomous() ? 3.5 : 10.0;
+    double angleTolerance =
+        DriverStation.isAutonomous() ? 3.5 : (detectedTargets >= 2) ? 20.0 : 10.0;
 
     // If the angle is too different from our gyro angle
     if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {
@@ -573,11 +574,17 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
     Pose3d visionPose;
 
-    // if (detectedTags.length >= 2) {
-    visionPose = results.getBotPose3d_wpiBlue();
-    // } else {
-    // visionPose = closestTag.getRobotPose_FieldSpace();
-    // }
+    if (detectedTags.length >= 2) {
+      visionPose = results.getBotPose3d_wpiBlue();
+    } else {
+      Pose3d centerOriginPose = closestTag.getRobotPose_FieldSpace();
+      visionPose =
+          new Pose3d(
+              centerOriginPose
+                  .getTranslation()
+                  .plus(FieldConstants.blueOriginFromCenter.getTranslation()),
+              centerOriginPose.getRotation());
+    }
 
     if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
       return;

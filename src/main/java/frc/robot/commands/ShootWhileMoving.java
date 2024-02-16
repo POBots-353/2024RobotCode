@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants;
@@ -42,7 +43,7 @@ public class ShootWhileMoving extends Command {
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
   private PIDController turnToAngleController =
-      new PIDController(SwerveConstants.headingP, 0, SwerveConstants.headingD);
+      new PIDController(0.75, 0, SwerveConstants.headingD);
 
   private Pose2d speakerPose;
 
@@ -87,6 +88,8 @@ public class ShootWhileMoving extends Command {
     }
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
+
+    arm.setProfileSetpoint(arm.getCurrentState());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -140,6 +143,8 @@ public class ShootWhileMoving extends Command {
     Rotation2d armAngle = Rotation2d.fromRadians(ArmConstants.autoShootInterpolation.get(distance));
     arm.setDesiredPosition(armAngle);
 
+    SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
+
     // Shooter speed
     shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
 
@@ -161,8 +166,9 @@ public class ShootWhileMoving extends Command {
     }
 
     Rotation2d desiredAngle =
-        Rotation2d.fromRadians(3 * Math.PI / 2)
-            .minus(virtualGoalLocation.minus(robotPose).getAngle());
+        Rotation2d.fromRadians(Math.PI)
+            .minus(robotPose.minus(virtualGoalLocation).getAngle())
+            .times(-1);
 
     Rotation2d robotAngle = swerve.getHeading();
 
@@ -184,8 +190,8 @@ public class ShootWhileMoving extends Command {
     double shooterError = ShooterConstants.shooterVelocity - shooter.getVelocity();
 
     if (setpointDebouncer.calculate(
-        Math.abs(armAngleError.getRadians()) < ArmConstants.angleTolerance
-            && Math.abs(driveAngleError.getRadians()) < Units.degreesToRadians(1.00)
+        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
+            && Math.abs(driveAngleError.getRadians()) < Units.degreesToRadians(2.50)
             && shooterError < ShooterConstants.shooterVelocity)) {
       intake.feedToShooter();
     }

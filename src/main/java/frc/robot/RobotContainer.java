@@ -31,10 +31,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
-import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -189,7 +189,13 @@ public class RobotContainer implements Logged {
     driverController
         .leftStick()
         .and(driverController.rightStick())
-        .onTrue(swerve.runOnce(swerve::resetModulesToAbsolute).ignoringDisable(true));
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      swerve.resetModulesToAbsolute();
+                      arm.resetToAbsolute();
+                    })
+                .ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
@@ -395,9 +401,21 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
+    // operatorStick
+    //     .button(OperatorConstants.armAutoShoot)
+    //     .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
+
     operatorStick
         .button(OperatorConstants.armAutoShoot)
-        .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
+        .whileTrue(
+            new ShootWhileMoving(
+                driverController::getLeftY,
+                driverController::getLeftX,
+                SwerveConstants.maxTranslationalSpeed,
+                arm,
+                intake,
+                shooter,
+                swerve));
 
     armManualUp
         .and(armSlowAdjustment)

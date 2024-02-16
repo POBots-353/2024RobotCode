@@ -98,7 +98,7 @@ public class Arm extends VirtualSubsystem implements Logged {
       Timer.delay(0.005);
     }
 
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 5; i++) {
       if (absoluteEncoder.getInverted() == ArmConstants.absoluteEncoderInverted) {
         break;
       }
@@ -177,9 +177,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setCANTimeout(0);
   }
 
-  private void resetToAbsolute() {
+  public void resetToAbsolute() {
     mainMotor.setCANTimeout(100);
-    double position = absoluteEncoder.getPosition() - ArmConstants.absoluteOffset.getRadians();
+    double position = getAbsoluteAngle().minus(ArmConstants.absoluteOffset).getRadians();
 
     boolean failed = true;
     for (int i = 0; i < 5; i++) {

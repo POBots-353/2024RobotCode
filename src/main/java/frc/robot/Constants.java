@@ -60,16 +60,22 @@ public final class Constants {
   }
 
   public static final class FieldConstants {
+    public static final double fieldLength = 16.541;
+    public static final double fieldWidth = 8.211;
+
     public static final AprilTagFieldLayout aprilTagLayout =
         AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-    public static final Pose2d speakerRedAlliance =
-        new Pose2d(0.25, 5.5, Rotation2d.fromDegrees(180.0));
     public static final Pose2d speakerBlueAlliance =
-        new Pose2d(16.3, 5.5, Rotation2d.fromDegrees(0.0));
+        new Pose2d(0.0, 5.5, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d speakerRedAlliance =
+        new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0));
 
     public static Pose2d driverStationBlueAlliance = new Pose2d();
     public static Pose2d driverStationRedAlliance = new Pose2d();
+
+    public static Transform3d blueOriginFromCenter =
+        new Transform3d(fieldLength / 2, fieldWidth / 2, 0.0, new Rotation3d());
   }
 
   public static final class StationCoordinateConstants {
@@ -164,8 +170,8 @@ public final class Constants {
           };
       public static final double[] xyStandardDeviations =
           new double[] {
-            0.014, // 0.50
-            0.020, // 1.00
+            0.019, // 0.50
+            0.025, // 1.00
             0.150, // 1.50
             0.200, // 2.00
             0.037, // 4.95
@@ -227,10 +233,10 @@ public final class Constants {
 
     public static final double armKg = 0.21434;
     public static final double armKs = 0.11941;
-    public static final double armKv = 6.88235;
+    public static final double armKv = 6.98235;
     public static final double armKa = 0.000001358;
 
-    public static final double armKp = 1.55;
+    public static final double armKp = 2.55;
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
@@ -273,10 +279,10 @@ public final class Constants {
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
           new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),
-          new Point2D.Double(Units.feetToMeters(8.5), Units.degreesToRadians(24.087830070398038)),
-          new Point2D.Double(Units.feetToMeters(10), Units.degreesToRadians(29.450690500655108)),
-          new Point2D.Double(Units.feetToMeters(12.0), Units.degreesToRadians(32.771899214290307)),
-          new Point2D.Double(Units.feetToMeters(13.0), Units.degreesToRadians(33.79285610735291)),
+          new Point2D.Double(Units.feetToMeters(7.353), Units.degreesToRadians(24.087830070398038)),
+          new Point2D.Double(Units.feetToMeters(8.85), Units.degreesToRadians(29.450690500655108)),
+          new Point2D.Double(Units.feetToMeters(10.00), Units.degreesToRadians(28.8625085019962)),
+          new Point2D.Double(Units.feetToMeters(11.20), Units.degreesToRadians(30.71285610735291)),
         };
 
     public static final LinearInterpolation autoShootInterpolation =
@@ -285,7 +291,8 @@ public final class Constants {
     // (distance, time)
     public static final Point2D[] autoShootTimes =
         new Point2D.Double[] {
-          new Point2D.Double(0.25, 0.5), new Point2D.Double(0.25, 0.5),
+          new Point2D.Double(Units.feetToMeters(8.0), 0.14),
+          new Point2D.Double(Units.feetToMeters(10.0), 0.19),
         };
 
     public static final LinearInterpolation autoShootTimeInterpolation =
@@ -296,7 +303,7 @@ public final class Constants {
     public static final int intakeMotorID = 13;
 
     public static final double intakeSpeed = 0.90;
-    public static final int intakeCurrentLimit = 30; // Amps
+    public static final int intakeCurrentLimit = 60; // Amps
 
     public static final int beamBreakID = 9;
   }
@@ -305,7 +312,7 @@ public final class Constants {
     public static final int shooterMainID = 11;
     public static final int shooterFollowerId = 12;
 
-    public static final double shooterVelocity = 3535.3;
+    public static final double shooterVelocity = 4000.353;
     public static final double ampVelocity = 750.0;
     public static final double shooterKs = 0.33307;
     public static final double shooterKv = 0.0020945;

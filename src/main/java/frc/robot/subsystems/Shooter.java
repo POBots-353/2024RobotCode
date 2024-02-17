@@ -31,9 +31,9 @@ import monologue.Logged;
 
 public class Shooter extends VirtualSubsystem implements Logged {
   private CANSparkMax bottomShooter =
-      new CANSparkMax(ShooterConstants.shooterMainID, MotorType.kBrushless);
+      new CANSparkMax(ShooterConstants.bottomShooterID, MotorType.kBrushless);
   private CANSparkMax topShooter =
-      new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
+      new CANSparkMax(ShooterConstants.topShooterID, MotorType.kBrushless);
 
   private RelativeEncoder bottomEncoder = bottomShooter.getEncoder();
   private RelativeEncoder topEncoder = topShooter.getEncoder();
@@ -65,6 +65,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     bottomShooter.setIdleMode(IdleMode.kCoast);
     bottomShooter.setInverted(false);
     bottomShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    bottomShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
 
     bottomEncoder.setAverageDepth(4);
     bottomEncoder.setMeasurementPeriod(32);
@@ -75,16 +76,17 @@ public class Shooter extends VirtualSubsystem implements Logged {
     bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
     bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
-    bottomPID.setP(ShooterConstants.shooterP);
+    bottomPID.setP(ShooterConstants.shooterKp);
     bottomPID.setOutputRange(0.0, 1.0);
     bottomShooter.setCANTimeout(0);
 
     topShooter.setCANTimeout(100);
     topShooter.restoreFactoryDefaults();
     topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    topShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
     topShooter.setIdleMode(IdleMode.kCoast);
 
-    topPID.setP(ShooterConstants.shooterP);
+    topPID.setP(ShooterConstants.shooterKp);
     topPID.setOutputRange(0.0, 1.0);
 
     topEncoder.setAverageDepth(4);
@@ -95,7 +97,6 @@ public class Shooter extends VirtualSubsystem implements Logged {
     topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
     topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
     topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-    // SparkMaxUtil.configureFollower(shooterFollower);
     topShooter.setCANTimeout(0);
   }
 

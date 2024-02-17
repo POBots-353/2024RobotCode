@@ -309,17 +309,21 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    public static final int shooterMainID = 11;
-    public static final int shooterFollowerId = 12;
+    public static final int bottomShooterID = 11;
+    public static final int topShooterID = 12;
 
     public static final double shooterVelocity = 4000.0;
     public static final double ampVelocity = 750.0;
+
     public static final double shooterKs = 0.33307;
     public static final double shooterKv = 0.0020945;
     public static final double shooterKa = 0.00072307;
-    public static final double shooterP = 0.0045;
+
+    public static final double shooterKp = 0.0045;
 
     public static final double velocityTolerance = 100.0; // 100.0
+
+    public static final double voltageCompensation = 12.0;
 
     public static final int shooterCurrentLimit = 60;
   }

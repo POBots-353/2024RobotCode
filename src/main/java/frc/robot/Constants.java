@@ -233,7 +233,7 @@ public final class Constants {
 
     public static final double armKg = 0.21434;
     public static final double armKs = 0.11941;
-    public static final double armKv = 6.98235;
+    public static final double armKv = 6.38235;
     public static final double armKa = 0.000001358;
 
     public static final double armKp = 2.55;
@@ -312,12 +312,12 @@ public final class Constants {
     public static final int shooterMainID = 11;
     public static final int shooterFollowerId = 12;
 
-    public static final double shooterVelocity = 4000.353;
+    public static final double shooterVelocity = 4000.0;
     public static final double ampVelocity = 750.0;
     public static final double shooterKs = 0.33307;
     public static final double shooterKv = 0.0020945;
     public static final double shooterKa = 0.00072307;
-    public static final double shooterP = 0.01;
+    public static final double shooterP = 0.0045;
 
     public static final double velocityTolerance = 100.0; // 100.0
 
@@ -413,7 +413,7 @@ public final class Constants {
 
     public static final int odometryUpdateFrequency = 100; // 100 Hz
 
-    public static final boolean zeroWithIntakeForward = false;
+    public static final boolean zeroWithIntakeForward = true;
   }
 
   public static final class AutoConstants {

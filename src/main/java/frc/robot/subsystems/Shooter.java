@@ -14,7 +14,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,103 +26,123 @@ import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.SparkMaxUtil;
+import monologue.Annotations.Log;
 import monologue.Logged;
 
 public class Shooter extends VirtualSubsystem implements Logged {
-  private CANSparkMax shooterMain =
+  private CANSparkMax bottomShooter =
       new CANSparkMax(ShooterConstants.shooterMainID, MotorType.kBrushless);
-  private CANSparkMax shooterFollower =
+  private CANSparkMax topShooter =
       new CANSparkMax(ShooterConstants.shooterFollowerId, MotorType.kBrushless);
 
-  private RelativeEncoder mainShooterEncoder = shooterMain.getEncoder();
-  private RelativeEncoder followerEncoder = shooterFollower.getEncoder();
+  private RelativeEncoder bottomEncoder = bottomShooter.getEncoder();
+  private RelativeEncoder topEncoder = topShooter.getEncoder();
 
   private SimpleMotorFeedforward shooterFeedforward =
       new SimpleMotorFeedforward(
           ShooterConstants.shooterKs, ShooterConstants.shooterKv, ShooterConstants.shooterKa);
-
-  private LinearFilter velocityFilter = LinearFilter.singlePoleIIR(0.04, 0.02);
-
-  private double filteredVelocity = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(
               (volts) -> {
-                shooterMain.setVoltage(volts.in(Units.Volts));
-                shooterFollower.setVoltage(volts.in(Units.Volts));
+                bottomShooter.setVoltage(volts.in(Units.Volts));
+                topShooter.setVoltage(volts.in(Units.Volts));
               },
               null,
               this));
 
-  private SparkPIDController mainPID = shooterMain.getPIDController();
-  private SparkPIDController followerPID = shooterFollower.getPIDController();
+  private SparkPIDController bottomPID = bottomShooter.getPIDController();
+  private SparkPIDController topPID = topShooter.getPIDController();
+
+  private double velocitySetpoint = 0.0;
 
   /** Creates a new Shooter. */
   public Shooter() {
-    shooterMain.setCANTimeout(100);
-    shooterMain.restoreFactoryDefaults();
-    shooterMain.setIdleMode(IdleMode.kCoast);
-    shooterMain.setInverted(false);
-    shooterMain.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    bottomShooter.setCANTimeout(100);
+    bottomShooter.restoreFactoryDefaults();
+    bottomShooter.setIdleMode(IdleMode.kCoast);
+    bottomShooter.setInverted(false);
+    bottomShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
 
-    mainShooterEncoder.setAverageDepth(4);
-    mainShooterEncoder.setMeasurementPeriod(32);
+    bottomEncoder.setAverageDepth(4);
+    bottomEncoder.setMeasurementPeriod(32);
 
-    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    shooterMain.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
-    mainPID.setP(ShooterConstants.shooterP);
-    mainPID.setOutputRange(0.0, 1.0);
-    shooterMain.setCANTimeout(0);
+    bottomPID.setP(ShooterConstants.shooterP);
+    bottomPID.setOutputRange(0.0, 1.0);
+    bottomShooter.setCANTimeout(0);
 
-    shooterFollower.setCANTimeout(100);
-    shooterFollower.restoreFactoryDefaults();
-    shooterFollower.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
-    shooterFollower.setIdleMode(IdleMode.kCoast);
+    topShooter.setCANTimeout(100);
+    topShooter.restoreFactoryDefaults();
+    topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    topShooter.setIdleMode(IdleMode.kCoast);
 
-    followerPID.setP(ShooterConstants.shooterP);
-    followerPID.setOutputRange(0.0, 1.0);
+    topPID.setP(ShooterConstants.shooterP);
+    topPID.setOutputRange(0.0, 1.0);
 
-    followerEncoder.setAverageDepth(4);
-    followerEncoder.setMeasurementPeriod(32);
+    topEncoder.setAverageDepth(4);
+    topEncoder.setMeasurementPeriod(32);
 
-    SparkMaxUtil.configureFollower(shooterFollower);
-    shooterFollower.setCANTimeout(0);
+    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // SparkMaxUtil.configureFollower(shooterFollower);
+    topShooter.setCANTimeout(0);
   }
 
   public void setMotorSpeed(double velocity) {
     double feedForward = shooterFeedforward.calculate(velocity);
 
-    mainPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
-    followerPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+    bottomPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+    topPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+
+    velocitySetpoint = velocity;
+  }
+
+  public void setMotorSpeedDifferential(double topVelocity, double bottomVelocity) {
+    double topFeedforward = shooterFeedforward.calculate(topVelocity);
+    double bottomFeedforward = shooterFeedforward.calculate(bottomVelocity);
+
+    topPID.setReference(topVelocity, ControlType.kVelocity, 0, topFeedforward, ArbFFUnits.kVoltage);
+    bottomPID.setReference(
+        bottomVelocity, ControlType.kVelocity, 0, bottomFeedforward, ArbFFUnits.kVoltage);
   }
 
   public void stopMotor() {
-    shooterMain.set(0.0);
-    shooterFollower.set(0.0);
+    bottomShooter.set(0.0);
+    topShooter.set(0.0);
   }
 
+  @Log.NT(key = "Top Velocity")
+  public double getTopVelocity() {
+    return topEncoder.getVelocity();
+  }
+
+  @Log.NT(key = "Bottom Velocity")
   public double getVelocity() {
-    return mainShooterEncoder.getVelocity();
+    return bottomEncoder.getVelocity();
     // return filteredVelocity;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    filteredVelocity = velocityFilter.calculate(mainShooterEncoder.getVelocity());
-
-    // if (Math.abs(filteredVelocity) < 1e-5) {
-    //   filteredVelocity = 0.0;
-    // }
-
-    SmartDashboard.putNumber("Shooter/Velocity Raw", mainShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("Shooter/Velocity Filtered", filteredVelocity);
+    SmartDashboard.putNumber("Shooter/Bottom Velocity", bottomEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter/Top Velocity", topEncoder.getVelocity());
+    SmartDashboard.putNumber(
+        "Shooter/Velocity Difference", topEncoder.getVelocity() - bottomEncoder.getVelocity());
+    SmartDashboard.putBoolean(
+        "Shooter/At Setpoint",
+        velocitySetpoint - bottomEncoder.getVelocity() < ShooterConstants.velocityTolerance);
   }
 
   @Override
@@ -132,7 +151,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     return Commands.sequence(
         Commands.runOnce(
             () -> {
-              REVLibError mainMotorError = shooterMain.getLastError();
+              REVLibError mainMotorError = bottomShooter.getLastError();
               if (mainMotorError != REVLibError.kOk) {
                 addError("Main Shooter motor error: " + mainMotorError.name());
               } else {

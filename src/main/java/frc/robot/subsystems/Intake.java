@@ -20,6 +20,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
+import monologue.LogLevel;
 import monologue.Logged;
 
 public class Intake extends VirtualSubsystem implements Logged {
@@ -54,7 +55,7 @@ public class Intake extends VirtualSubsystem implements Logged {
     intakeMotor.setCANTimeout(0);
   }
 
-  @Log.NT(key = "Break Broken")
+  @Log.NT(key = "Break Broken", level = LogLevel.OVERRIDE_FILE_ONLY)
   public boolean beamBroken() {
     return !irBreakBeam.get();
   }

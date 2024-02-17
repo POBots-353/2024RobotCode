@@ -235,6 +235,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
           }
         });
 
+    SmartDashboard.putData(
+        "Swerve/Gyro",
+        new Sendable() {
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.setSmartDashboardType("Gyro");
+            builder.addDoubleProperty("Value", () -> getHeading().getDegrees(), null);
+          }
+        });
+
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());
 
     Commands.sequence(Commands.waitSeconds(2.0), runOnce(this::resetModulesToAbsolute))
@@ -356,8 +366,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Rotation2d orientationOffset =
         SwerveConstants.zeroWithIntakeForward
-            ? Rotation2d.fromDegrees(180.0 * 0.0) // revert when done
-            : Rotation2d.fromDegrees(0.0 + 180.0);
+            ? Rotation2d.fromDegrees(180.0) // revert when done
+            : Rotation2d.fromDegrees(0.0);
 
     odometryLock.lock();
     poseEstimator.resetPosition(
@@ -455,8 +465,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Translation2d distance = newPose.minus(currentPose).getTranslation();
 
-    // It's literally impossible for the robot to move 2 meters in 20 milliseconds
-    if (Math.abs(distance.getX()) > 2.0 || Math.abs(distance.getY()) > 2.0) {
+    // It's literally impossible for the robot to move 1 meter in 20 milliseconds
+    if (Math.abs(distance.getX()) > 1.0 || Math.abs(distance.getY()) > 1.0) {
       return false;
     }
 
@@ -488,12 +498,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets > 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(2.25), Units.inchesToMeters(2.25), Units.degreesToRadians(100.0));
+          Units.inchesToMeters(2.25),
+          Units.inchesToMeters(2.25),
+          Units.degreesToRadians(1000000000.0));
     } else {
       double xyStandardDev = LimelightConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = LimelightConstants.thetaPolynomialRegression.predict(distance);
 
-      return VecBuilder.fill(xyStandardDev, xyStandardDev, thetaStandardDev * 4);
+      return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0 * thetaStandardDev * 4);
     }
   }
 
@@ -502,12 +514,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
     if (detectedTargets < 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(6.5), Units.inchesToMeters(6.5), Units.degreesToRadians(100.0));
+          Units.inchesToMeters(6.5),
+          Units.inchesToMeters(6.5),
+          Units.degreesToRadians(10000000000000.0));
     } else {
       double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
       double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);
 
-      return VecBuilder.fill(xyStandardDev, xyStandardDev, thetaStandardDev * 4);
+      return VecBuilder.fill(xyStandardDev, xyStandardDev, 1000000000000.0 * thetaStandardDev * 4);
     }
   }
 
@@ -574,17 +588,17 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
     Pose3d visionPose;
 
-    if (detectedTags.length >= 2) {
-      visionPose = results.getBotPose3d_wpiBlue();
-    } else {
-      Pose3d centerOriginPose = closestTag.getRobotPose_FieldSpace();
-      visionPose =
-          new Pose3d(
-              centerOriginPose
-                  .getTranslation()
-                  .plus(FieldConstants.blueOriginFromCenter.getTranslation()),
-              centerOriginPose.getRotation());
-    }
+    // if (detectedTags.length >= 2) {
+    visionPose = results.getBotPose3d_wpiBlue();
+    // } else {
+    //   Pose3d centerOriginPose = closestTag.getRobotPose_FieldSpace();
+    //   visionPose =
+    //       new Pose3d(
+    //           centerOriginPose
+    //               .getTranslation()
+    //               .plus(FieldConstants.blueOriginFromCenter.getTranslation()),
+    //           centerOriginPose.getRotation());
+    // }
 
     if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
       return;
@@ -698,11 +712,20 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backLeftModule.periodic();
     backRightModule.periodic();
 
-    updateVisionPoseEstimates();
+    if (!DriverStation.isAutonomous()) {
+      updateVisionPoseEstimates();
+    }
 
     odometryLock.lock();
     field.setRobotPose(poseEstimator.getEstimatedPosition());
     odometryLock.unlock();
+
+    SmartDashboard.putNumber(
+        "Distance",
+        getPose()
+            .getTranslation()
+            .minus(FieldConstants.speakerRedAlliance.getTranslation())
+            .getNorm());
   }
 
   @Override

@@ -208,7 +208,7 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> setDesiredPosition(position),
             (interrupted) -> setSpeed(0.0),
             () -> {
-              double positionError = armEncoder.getPosition() - position.getRadians();
+              double positionError = getPosition().getRadians() - position.getRadians();
               return setpointDebouncer.calculate(
                   Math.abs(positionError) <= ArmConstants.angleTolerance);
             },
@@ -237,7 +237,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
 
-    double positionError = Math.abs(setpoint.position - armEncoder.getPosition());
+    double positionError = Math.abs(setpoint.position - getPosition().getRadians());
 
     // Replan profile if it's too far from position or if it's finished
     if (positionError > ArmConstants.replanningError) {
@@ -258,7 +258,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public TrapezoidProfile.State getCurrentState() {
-    return new TrapezoidProfile.State(armEncoder.getPosition(), armEncoder.getVelocity());
+    return new TrapezoidProfile.State(getPosition().getRadians(), armEncoder.getVelocity());
   }
 
   public void setProfileSetpoint(TrapezoidProfile.State state) {
@@ -272,13 +272,13 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Angle")
   public Rotation2d getPosition() {
-    return Rotation2d.fromRadians(armEncoder.getPosition());
+    return getAbsoluteAngle().minus(ArmConstants.absoluteOffset);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm/Position", Units.radiansToDegrees(armEncoder.getPosition()));
+    SmartDashboard.putNumber("Arm/Position", Units.radiansToDegrees(getPosition().getRadians()));
     SmartDashboard.putNumber("Arm/Absolute Position", getAbsoluteAngle().getDegrees());
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Position", Units.radiansToDegrees(absoluteEncoder.getPosition()));

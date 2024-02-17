@@ -334,6 +334,18 @@ public class RobotContainer implements Logged {
                 .run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity))
                 .finallyDo(shooter::stopMotor))
         .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
+
+    // operatorStick
+    //     .button(OperatorConstants.manualShootButton)
+    //     .whileTrue(
+    //         shooter
+    //             .run(
+    //                 () ->
+    //                     shooter.setMotorSpeedDifferential(
+    //                         ShooterConstants.shooterVelocity,
+    //                         ShooterConstants.shooterVelocity - 200))
+    //             .finallyDo(shooter::stopMotor))
+    //     .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
   }
 
   private void configureClimbingBindings() {

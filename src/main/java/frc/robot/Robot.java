@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
     odometryNotifier.setName("OdometryThread");
     odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
 
-    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, false);
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", true, true);
   }
 
   /**

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3491521419562087,
-      "y": 5.58606903233778
+      "x": 0.8924295166707293,
+      "y": 6.616622648366552
     },
-    "rotation": -178.60281897270372
+    "rotation": -123.01999999999998
   },
   "command": {
     "type": "sequential",
@@ -35,10 +35,35 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 1 on Edge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
         }
       ]
     }
   },
-  "folder": "Wing",
+  "folder": "Amp Side",
   "choreoAuto": false
 }

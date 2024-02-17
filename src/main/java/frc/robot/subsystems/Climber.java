@@ -75,6 +75,7 @@ public class Climber extends VirtualSubsystem {
 
   public void climbBoth() {
     leftMotor.set(ClimberConstants.climberMotorSpeed);
+    rightMotor.set(ClimberConstants.climberMotorSpeed);
   }
 
   public void climbLeft() {
@@ -87,6 +88,7 @@ public class Climber extends VirtualSubsystem {
 
   public void stopClimberMotors() {
     leftMotor.set(0.0);
+    rightMotor.set(0.0);
   }
 
   public void stopLeft() {

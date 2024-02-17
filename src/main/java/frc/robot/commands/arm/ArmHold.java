@@ -37,7 +37,7 @@ public class ArmHold extends Command {
 
     holdState = new TrapezoidProfile.State(holdPosition.getRadians(), 0);
 
-    arm.setProfileSetpoint(holdState);
+    arm.setProfileSetpoint(arm.getCurrentState());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

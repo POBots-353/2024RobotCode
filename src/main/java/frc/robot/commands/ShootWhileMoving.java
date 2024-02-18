@@ -16,7 +16,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
@@ -81,11 +80,7 @@ public class ShootWhileMoving extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (AllianceUtil.isRedAlliance()) {
-      speakerPose = FieldConstants.speakerRedAlliance;
-    } else {
-      speakerPose = FieldConstants.speakerBlueAlliance;
-    }
+    speakerPose = AllianceUtil.getSpeakerPose();
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
 

@@ -721,11 +721,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.unlock();
 
     SmartDashboard.putNumber(
-        "Distance",
-        getPose()
-            .getTranslation()
-            .minus(FieldConstants.speakerRedAlliance.getTranslation())
-            .getNorm());
+        "Distance to Speaker",
+        getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm());
   }
 
   @Override

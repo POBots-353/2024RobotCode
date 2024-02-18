@@ -1,0 +1,155 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8924295166707293,
+      "y": 6.616622648366552
+    },
+    "rotation": -123.01999999999998
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Subwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 1 on Edge"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot Center 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp To Center 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot Center 2 Close"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp to Wing 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wing 1 to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp Side",
+  "choreoAuto": false
+}

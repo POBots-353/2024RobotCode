@@ -3,83 +3,56 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.8924295166707293,
-        "y": 6.616622648366552
+        "x": 7.650466355063765,
+        "y": 5.905547993432169
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5242764117815235,
-        "y": 7.785947051712799
+        "x": 5.884649034255332,
+        "y": 6.770915422172725
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Center 2"
     },
     {
       "anchor": {
-        "x": 3.651065535749305,
-        "y": 7.659671159798161
+        "x": 2.961110423640769,
+        "y": 6.326537553359732
       },
       "prevControl": {
-        "x": 2.4595373133814755,
-        "y": 7.659671159798161
+        "x": 4.048666786792263,
+        "y": 6.326537553360007
       },
       "nextControl": {
-        "x": 4.842593758117136,
-        "y": 7.659671159798161
+        "x": 2.548456283946996,
+        "y": 6.326537553359628
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.6153838917364425,
-        "y": 7.414093916506922
+        "x": 1.7916949794013546,
+        "y": 6.209596008935608
       },
       "prevControl": {
-        "x": 5.96024151689559,
-        "y": 7.445426908789105
+        "x": 2.0021897593652738,
+        "y": 6.221290163378048
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center 1"
+      "linkedName": "Amp Close Shooting Point"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.1,
       "rotationDegrees": 180.0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.05,
-      "rotationDegrees": -123.01999999999998,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": 180.0,
-      "rotateFast": true
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
-    {
-      "name": "Start Intake",
-      "waypointRelativePos": 1.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Start Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "name": "Stop Intake",
       "waypointRelativePos": 0.05,
@@ -96,6 +69,40 @@
           ]
         }
       }
+    },
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Warm Up Shooter"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arm to Amp Podium",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Arm to Close Shoot"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -106,13 +113,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -163.87740122228283,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": -118.38999999999999,
+    "rotation": 166.99291682529798,
     "velocity": 0
   },
   "useDefaultConstraints": true

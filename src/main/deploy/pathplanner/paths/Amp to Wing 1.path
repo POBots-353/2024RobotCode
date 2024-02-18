@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.7916949794013546,
+        "y": 6.209596008935608
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.894897203359749,
+        "y": 6.359653510895437
+      },
+      "isLocked": false,
+      "linkedName": "Amp Close Shooting Point"
+    },
+    {
+      "anchor": {
+        "x": 2.3,
+        "y": 6.75
+      },
+      "prevControl": {
+        "x": 2.084048840462353,
+        "y": 6.677362186633205
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Wing 1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Start Intake",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Start Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 270.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -160.21901299554918,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Side",
+  "previewStartingState": {
+    "rotation": -157.41,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

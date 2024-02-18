@@ -258,7 +258,7 @@ public final class Constants {
     public static final double autoShootAngleTolerance = Units.degreesToRadians(0.3);
     public static final double replanningError = Units.degreesToRadians(20.0);
     public static final double debounceTime = 0.50;
-    public static final double movementDebounceTime = 0.70;
+    public static final double movementDebounceTime = 0.353;
     public static final double holdDebounceTime = 1.5;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
@@ -275,18 +275,32 @@ public final class Constants {
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
 
     // (distance, angle)
-    // Stubbed with fake values for now
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
           new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),
-          new Point2D.Double(Units.feetToMeters(7.353), Units.degreesToRadians(24.087830070398038)),
-          new Point2D.Double(Units.feetToMeters(8.85), Units.degreesToRadians(29.450690500655108)),
-          new Point2D.Double(Units.feetToMeters(10.00), Units.degreesToRadians(28.8625085019962)),
-          new Point2D.Double(Units.feetToMeters(11.20), Units.degreesToRadians(30.71285610735291)),
+          new Point2D.Double(1.83, Units.degreesToRadians(13.0)),
+          new Point2D.Double(2.03, Units.degreesToRadians(16.14)),
+          new Point2D.Double(2.42, Units.degreesToRadians(22.8)),
+          new Point2D.Double(2.45, Units.degreesToRadians(23.5)),
+          new Point2D.Double(2.65, Units.degreesToRadians(23.1)),
+          new Point2D.Double(2.94, Units.degreesToRadians(27.3)),
+          new Point2D.Double(3.02, Units.degreesToRadians(27.4)),
+          new Point2D.Double(3.06, Units.degreesToRadians(28.1)),
+          new Point2D.Double(3.09, Units.degreesToRadians(29.5)),
+          new Point2D.Double(3.7, Units.degreesToRadians(31.2)),
         };
 
-    public static final LinearInterpolation autoShootInterpolation =
+    public static final LinearInterpolation autoShootAngleInterpolation =
         new LinearInterpolation(autoShootArmAngles);
+
+    // (distance, rpm)
+    public static final Point2D[] autoShootRPM =
+        new Point2D.Double[] {
+          new Point2D.Double(0.0, 4500.0),
+        };
+
+    public static final LinearInterpolation autoShootRPMInterpolation =
+        new LinearInterpolation(autoShootRPM);
 
     // (distance, time)
     public static final Point2D[] autoShootTimes =

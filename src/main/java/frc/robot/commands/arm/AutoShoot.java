@@ -53,15 +53,17 @@ public class AutoShoot extends Command {
   public void execute() {
     double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
 
-    double angle = ArmConstants.autoShootInterpolation.get(distance);
+    double angle = ArmConstants.autoShootAngleInterpolation.get(distance);
     Rotation2d desiredAngle = Rotation2d.fromRadians(angle);
-    arm.setDesiredPosition(Rotation2d.fromRadians(angle));
-    shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+    arm.setDesiredPosition(desiredAngle);
+
+    double motorRPM = ArmConstants.autoShootRPMInterpolation.get(distance);
+    shooter.setMotorSpeed(motorRPM);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", desiredAngle.getDegrees());
 
     Rotation2d armAngleError = desiredAngle.minus(arm.getPosition());
-    double shooterError = ShooterConstants.shooterVelocity - shooter.getVelocity();
+    double shooterError = motorRPM - shooter.getVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance

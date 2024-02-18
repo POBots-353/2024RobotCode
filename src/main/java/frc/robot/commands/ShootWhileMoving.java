@@ -140,13 +140,16 @@ public class ShootWhileMoving extends Command {
     }
 
     // Calculate arm angle
-    Rotation2d armAngle = Rotation2d.fromRadians(ArmConstants.autoShootInterpolation.get(distance));
+    Rotation2d armAngle =
+        Rotation2d.fromRadians(ArmConstants.autoShootAngleInterpolation.get(distance));
     arm.setDesiredPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
     // Shooter speed
-    shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+    double motorRPM = ArmConstants.autoShootRPMInterpolation.get(distance);
+
+    shooter.setMotorSpeed(motorRPM);
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
     double forwardMetersPerSecond = -forwardSpeed.getAsDouble() * maxTranslationalSpeed;
@@ -187,12 +190,11 @@ public class ShootWhileMoving extends Command {
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
-    double shooterError = ShooterConstants.shooterVelocity - shooter.getVelocity();
+    double shooterError = motorRPM - shooter.getVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-            && Math.abs(driveAngleError.getRadians()) < Units.degreesToRadians(2.50)
-            && shooterError < ShooterConstants.shooterVelocity)) {
+            && shooterError < ShooterConstants.velocityTolerance)) {
       intake.feedToShooter();
     }
 

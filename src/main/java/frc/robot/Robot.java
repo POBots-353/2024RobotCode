@@ -16,8 +16,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.BackLeftModule;
+import frc.robot.Constants.BackRightModule;
+import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.FrontLeftModule;
+import frc.robot.Constants.FrontRightModule;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.LogUtil;
+import java.util.HashMap;
+import java.util.Map;
 import monologue.Monologue;
 import org.littletonrobotics.urcl.URCL;
 
@@ -64,7 +74,32 @@ public class Robot extends TimedRobot {
     if (RobotBase.isReal()) {
       DriverStation.startDataLog(DataLogManager.getLog());
 
-      URCL.start();
+      Map<Integer, String> motorNameMap = new HashMap<>();
+
+      motorNameMap.put(FrontLeftModule.driveID, "Front Left Drive");
+      motorNameMap.put(FrontLeftModule.turnID, "Front Left Turn");
+
+      motorNameMap.put(FrontRightModule.driveID, "Front Right Drive");
+      motorNameMap.put(FrontRightModule.turnID, "Front Right Turn");
+
+      motorNameMap.put(BackLeftModule.driveID, "Back Left Drive");
+      motorNameMap.put(BackLeftModule.turnID, "Back Left Turn");
+
+      motorNameMap.put(BackRightModule.driveID, "Back Right Drive");
+      motorNameMap.put(BackRightModule.turnID, "Back Right Turn");
+
+      motorNameMap.put(ArmConstants.mainMotorID, "Arm Main");
+      motorNameMap.put(ArmConstants.followerID, "Arm Follower");
+
+      motorNameMap.put(ShooterConstants.topShooterID, "Shooter Top");
+      motorNameMap.put(ShooterConstants.bottomShooterID, "Shooter Bottom");
+
+      motorNameMap.put(IntakeConstants.intakeMotorID, "Intake");
+
+      motorNameMap.put(ClimberConstants.leftMotorID, "Climber Left");
+      motorNameMap.put(ClimberConstants.rightMotorID, "Climber Right");
+
+      URCL.start(motorNameMap);
     } else {
       DriverStation.silenceJoystickConnectionWarning(true);
     }

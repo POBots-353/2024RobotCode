@@ -39,34 +39,35 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    DataLogManager.start();
+
+    LogUtil.recordMetadata("Java Vendor", System.getProperty("java.vendor"));
+    LogUtil.recordMetadata("Java Version", System.getProperty("java.version"));
+    LogUtil.recordMetadata("WPILib Version", WPILibVersion.Version);
+
+    LogUtil.recordMetadata(
+        "REVLib Version",
+        CANSparkBase.kAPIMajorVersion
+            + "."
+            + CANSparkBase.kAPIMinorVersion
+            + "."
+            + CANSparkBase.kAPIBuildVersion);
+    LogUtil.recordMetadata("Runtime Type", getRuntimeType().toString());
+
+    // Git and build information
+    LogUtil.recordMetadata("Project Name", BuildConstants.MAVEN_NAME);
+    LogUtil.recordMetadata("Build Date", BuildConstants.BUILD_DATE);
+    LogUtil.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
+    LogUtil.recordMetadata("Git Date", BuildConstants.GIT_DATE);
+    LogUtil.recordMetadata("Git Revision", BuildConstants.GIT_REVISION);
+
     if (RobotBase.isReal()) {
-      DataLogManager.start();
       DriverStation.startDataLog(DataLogManager.getLog());
 
-      LogUtil.recordMetadata("Java Vendor", System.getProperty("java.vendor"));
-      LogUtil.recordMetadata("Java Version", System.getProperty("java.version"));
-      LogUtil.recordMetadata("WPILib Version", WPILibVersion.Version);
-
-      LogUtil.recordMetadata(
-          "REVLib Version",
-          CANSparkBase.kAPIMajorVersion
-              + "."
-              + CANSparkBase.kAPIMinorVersion
-              + "."
-              + CANSparkBase.kAPIBuildVersion);
-      LogUtil.recordMetadata("Runtime Type", getRuntimeType().toString());
-
-      // Git and build information
-      LogUtil.recordMetadata("Project Name", BuildConstants.MAVEN_NAME);
-      LogUtil.recordMetadata("Build Date", BuildConstants.BUILD_DATE);
-      LogUtil.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
-      LogUtil.recordMetadata("Git Date", BuildConstants.GIT_DATE);
-      LogUtil.recordMetadata("Git Revision", BuildConstants.GIT_REVISION);
-
       URCL.start();
+    } else {
+      DriverStation.silenceJoystickConnectionWarning(true);
     }
-
-    CANSparkBase.enableExternalUSBControl(true);
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -76,7 +77,9 @@ public class Robot extends TimedRobot {
     odometryNotifier.setName("OdometryThread");
     odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
 
-    Monologue.setupMonologue(m_robotContainer, "/Monologue", true, true);
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
+
+    addPeriodic(Monologue::updateAll, kDefaultPeriod);
   }
 
   /**
@@ -96,15 +99,15 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    Monologue.updateAll();
-
     SmartDashboard.putNumber(
         "CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("CPU Temperature", RobotController.getCPUTemp());
     SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-    SmartDashboard.putNumber("Code Runtime (ms)", (Timer.getFPGATimestamp() - startTime) * 1000.0);
+
+    double codeRuntime = (Timer.getFPGATimestamp() - startTime) * 1000.0;
+    SmartDashboard.putNumber("Code Runtime (ms)", codeRuntime);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

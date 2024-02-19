@@ -24,7 +24,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -64,6 +69,21 @@ public class Arm extends VirtualSubsystem implements Logged {
   private Debouncer setpointDebouncer = new Debouncer(ArmConstants.movementDebounceTime);
 
   private TrapezoidProfile.State previousSetpoint = new TrapezoidProfile.State();
+
+  private final double mechanismVisualizationWidth = Units.inchesToMeters(50.0);
+  private final double mechanismVisualizationHeight = Units.inchesToMeters(40.0);
+  private final double lineWidth = 5.0;
+
+  @Log.NT(key = "Arm Measured")
+  private Mechanism2d angleVisualizer =
+      new Mechanism2d(mechanismVisualizationWidth, mechanismVisualizationHeight);
+
+  @Log.NT(key = "Arm Setpoint")
+  private Mechanism2d setpointVisualizer =
+      new Mechanism2d(mechanismVisualizationWidth, mechanismVisualizationHeight);
+
+  private MechanismLigament2d currentAngleLigament;
+  private MechanismLigament2d setpointLigament;
 
   @Log.NT
   private ArmFeedforward armFeedforward =
@@ -112,10 +132,45 @@ public class Arm extends VirtualSubsystem implements Logged {
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
         .ignoringDisable(true)
         .schedule();
+
+    MechanismRoot2d measuredRoot =
+        angleVisualizer.getRoot(
+            "Measured",
+            mechanismVisualizationWidth / 2 - ArmConstants.armPivotX,
+            ArmConstants.armPivotZ);
+    MechanismRoot2d setpointRoot =
+        setpointVisualizer.getRoot(
+            "Setpoint",
+            mechanismVisualizationWidth / 2 - ArmConstants.armPivotX,
+            ArmConstants.armPivotZ);
+
+    currentAngleLigament =
+        measuredRoot.append(
+            new MechanismLigament2d(
+                "Arm Measured", ArmConstants.armLength, 0.0, lineWidth, new Color8Bit(Color.kRed)));
+
+    setpointLigament =
+        setpointRoot.append(
+            new MechanismLigament2d(
+                "Arm Setpoint",
+                ArmConstants.armLength,
+                0.0,
+                lineWidth,
+                new Color8Bit(Color.kBlue)));
+
+    // Add intake (might be helpful at some point who knows)
+    currentAngleLigament.append(
+        new MechanismLigament2d(
+            "Intake", Units.inchesToMeters(10.0), 60.0, lineWidth, new Color8Bit(Color.kRed)));
+
+    setpointLigament.append(
+        new MechanismLigament2d(
+            "Intake", Units.inchesToMeters(10.0), 60.0, lineWidth, new Color8Bit(Color.kBlue)));
   }
 
   private void configureMainMotor() {
     mainMotor.setCANTimeout(100);
+    mainMotor.restoreFactoryDefaults();
     mainMotor.setInverted(ArmConstants.mainMotorInverted);
 
     armPIDController.setP(ArmConstants.armKp);
@@ -294,10 +349,13 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     SmartDashboard.putNumber(
         "Arm/Position Error",
-        Units.radiansToDegrees(previousSetpoint.position - armEncoder.getPosition()));
+        Units.radiansToDegrees(previousSetpoint.position - getPosition().getRadians()));
     SmartDashboard.putNumber(
         "Arm/Velocity Error",
         Units.radiansToDegrees(previousSetpoint.velocity - armEncoder.getVelocity()));
+
+    currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
+    setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
   }
 
   @Override
@@ -322,7 +380,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (Math.abs(armEncoder.getPosition() - ArmConstants.pickupAngle.getRadians())
+              if (Math.abs(getPosition().getRadians() - ArmConstants.pickupAngle.getRadians())
                   > prematchAngleTolerance) {
                 addError("Arm did not sufficiently reach pickup position");
               } else {
@@ -339,7 +397,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (Math.abs(armEncoder.getPosition() - ArmConstants.ampAngle.getRadians())
+              if (Math.abs(getPosition().getRadians() - ArmConstants.ampAngle.getRadians())
                   > prematchAngleTolerance) {
                 addError("Arm did not sufficiently reach amp position");
               } else {
@@ -356,7 +414,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (Math.abs(armEncoder.getPosition() - ArmConstants.subwooferAngle.getRadians())
+              if (Math.abs(getPosition().getRadians() - ArmConstants.subwooferAngle.getRadians())
                   > prematchAngleTolerance) {
                 addError("Arm did not sufficiently reach subwoofer position");
               } else {
@@ -373,7 +431,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (Math.abs(armEncoder.getPosition() - ArmConstants.podiumAngle.getRadians())
+              if (Math.abs(getPosition().getRadians() - ArmConstants.podiumAngle.getRadians())
                   > prematchAngleTolerance) {
                 addError("Arm did not sufficiently reach podium shooting angle");
               } else {

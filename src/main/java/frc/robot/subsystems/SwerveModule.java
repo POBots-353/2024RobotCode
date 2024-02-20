@@ -288,6 +288,14 @@ public class SwerveModule implements Logged {
       optimizedState = SwerveModuleState.optimize(optimizedState, getAngle());
     }
 
+    if (SwerveConstants.useCosineCompensation) {
+      double cosineScalar = optimizedState.angle.minus(getAngle()).getCos();
+      if (cosineScalar < 0.0) {
+        cosineScalar = 1.0;
+      }
+      optimizedState.speedMetersPerSecond *= cosineScalar;
+    }
+
     previousState = desiredState;
     desiredState = optimizedState;
     this.isOpenLoop = isOpenLoop;

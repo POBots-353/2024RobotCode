@@ -403,6 +403,8 @@ public final class Constants {
     public static final boolean turnMotorInverted = true;
     public static final boolean canCoderInverted = false;
 
+    public static final boolean useCosineCompensation = true;
+
     public static final double skewOpenLoopFudgeFactor = 0.100;
     public static final double skewClosedLoopFudgeFactor = 0.060;
 

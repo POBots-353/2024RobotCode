@@ -19,7 +19,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -60,9 +59,6 @@ public class SwerveModule implements Logged {
 
   @Log.NT private SwerveModuleState desiredState = new SwerveModuleState();
   @Log.NT private SwerveModuleState previousState = new SwerveModuleState();
-
-  private double previousDrivePosition = 0.0;
-  private double previousTurnPosition = 0.0;
 
   @Log.NT private double characterizationVolts = 0.0;
   @Log.NT private boolean characterizing = false;
@@ -337,38 +333,11 @@ public class SwerveModule implements Logged {
   }
 
   public boolean driveMotorValid() {
-    double position = driveEncoder.getPosition();
-    double positionDelta = position - previousDrivePosition;
-    double velocity = getVelocity();
-
-    previousDrivePosition = position;
-
-    if (Double.isNaN(position) || Double.isInfinite(position)) {
-      return false;
-    }
-
-    if (Math.abs(positionDelta) < Math.abs(velocity * 1.0)) {
-      if (Math.abs(velocity) < 1.0e-4 && Math.abs(positionDelta) < 1.0e-4) {
-        return true;
-      } else {
-        return Math.signum(positionDelta) == Math.signum(velocity);
-      }
-    }
-
-    return false;
+    return driveMotor.getLastError() == REVLibError.kOk;
   }
 
   public boolean turnMotorValid() {
-    double position = turnEncoder.getPosition();
-    double positionDelta = position - previousTurnPosition;
-
-    previousTurnPosition = position;
-
-    if (Double.isNaN(position) || Double.isInfinite(position)) {
-      return false;
-    }
-
-    return Math.abs(positionDelta) < Units.degreesToRadians(60.0);
+    return turnMotor.getLastError() == REVLibError.kOk;
   }
 
   public boolean motorsValid() {

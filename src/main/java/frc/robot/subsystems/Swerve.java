@@ -474,20 +474,23 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void updateOdometry() {
-    // if (!frontLeftModule.motorsValid()
-    //     || !frontRightModule.motorsValid()
-    //     || !backLeftModule.motorsValid()
-    //     || !backRightModule.motorsValid()) {
-    //   return;
-    // }
     odometryLock.lock();
     Rotation2d heading = getHeading();
-    odometryLock.unlock();
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
+
+    if (!frontLeftModule.motorsValid()
+        || !frontRightModule.motorsValid()
+        || !backLeftModule.motorsValid()
+        || !backRightModule.motorsValid()) {
+      odometryLock.unlock();
+      return;
+    }
+    odometryLock.unlock();
 
     if (!odometryUpdateValid(positions, heading)) {
       return;
     }
+
     odometryLock.lock();
     poseEstimator.update(heading, positions);
     odometryLock.unlock();
@@ -707,10 +710,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
     backRightModule.periodic();
+    odometryLock.unlock();
 
     if (!DriverStation.isAutonomous()) {
       updateVisionPoseEstimates();

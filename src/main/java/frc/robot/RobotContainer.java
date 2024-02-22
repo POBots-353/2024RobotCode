@@ -106,17 +106,19 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
-        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
+        "Arm to Subwoofer",
+        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
-        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
+        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
-        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+        "Arm to Amp Podium",
+        arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Close Shoot",
-        arm.moveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0));
+        arm.moveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",

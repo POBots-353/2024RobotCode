@@ -191,7 +191,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
       cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100.0));
-      cameraProperties.setCalibError(0.75, 0.72);
+      cameraProperties.setCalibError(0.75, 0.25);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);
@@ -464,6 +464,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Pose2d pose = poseEstimator.getEstimatedPosition();
     odometryLock.unlock();
     return pose;
+  }
+
+  public Field2d getField() {
+    return field;
   }
 
   public void resetPose(Pose2d pose) {

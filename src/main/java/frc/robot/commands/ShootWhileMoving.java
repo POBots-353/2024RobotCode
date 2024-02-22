@@ -41,15 +41,15 @@ public class ShootWhileMoving extends Command {
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController =
-      new PIDController(0.75, 0, SwerveConstants.headingD);
+  private PIDController turnToAngleController = new PIDController(1.0, 0, SwerveConstants.headingD);
 
   private Pose2d speakerPose;
+  private int velocityInversion;
 
   private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
 
   private final double setpointDebounceTime = 0.50;
-  private final double feedTime = 0.250;
+  private final double feedTime = 0.0;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
@@ -74,13 +74,14 @@ public class ShootWhileMoving extends Command {
     turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake, shooter);
+    addRequirements(arm, intake, shooter, swerve);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     speakerPose = AllianceUtil.getSpeakerPose();
+    velocityInversion = AllianceUtil.isRedAlliance() ? -1 : 1;
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
 
@@ -101,11 +102,13 @@ public class ShootWhileMoving extends Command {
 
     double virtualGoalX =
         speakerPose.getX()
-            - shotTime
+            - velocityInversion
+                * shotTime
                 * (fieldSpeeds.vxMetersPerSecond + fieldAcceleration.vxMetersPerSecond * feedTime);
     double virtualGoalY =
         speakerPose.getY()
-            - shotTime
+            - velocityInversion
+                * shotTime
                 * (fieldSpeeds.vyMetersPerSecond + fieldAcceleration.vyMetersPerSecond * feedTime);
 
     Translation2d virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
@@ -133,6 +136,11 @@ public class ShootWhileMoving extends Command {
       shotTime = newShotTime;
       distance = newDistance;
     }
+
+    swerve
+        .getField()
+        .getObject("Moving Goal")
+        .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
     // Calculate arm angle
     Rotation2d armAngle =
@@ -164,9 +172,11 @@ public class ShootWhileMoving extends Command {
     }
 
     Rotation2d desiredAngle =
-        Rotation2d.fromRadians(Math.PI)
-            .minus(robotPose.minus(virtualGoalLocation).getAngle())
-            .times(-1);
+        robotPose.minus(virtualGoalLocation).getAngle().plus(Rotation2d.fromRadians(Math.PI));
+
+    if (AllianceUtil.isRedAlliance()) {
+      desiredAngle = desiredAngle.plus(Rotation2d.fromRadians(Math.PI));
+    }
 
     Rotation2d robotAngle = swerve.getHeading();
 
@@ -175,13 +185,13 @@ public class ShootWhileMoving extends Command {
 
     angularSpeed = MathUtil.clamp(angularSpeed, -0.75, 0.75);
 
-    // swerve.driveFieldOriented(
-    //     forwardMetersPerSecond,
-    //     strafeMetersPerSecond,
-    //     angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
-    //     true,
-    //     true,
-    //     false);
+    swerve.driveFieldOriented(
+        forwardMetersPerSecond,
+        strafeMetersPerSecond,
+        angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
+        true,
+        true,
+        false);
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
@@ -205,6 +215,8 @@ public class ShootWhileMoving extends Command {
     forwardRateLimiter.reset(0.0);
     strafeRateLimiter.reset(0.0);
     turnToAngleController.reset();
+
+    swerve.getField().getObject("Moving Goal").setPoses();
   }
 
   // Returns true when the command should end.

@@ -130,7 +130,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConstants.arducamPose);
 
-  private List<Pose2d> detectedTargets = new ArrayList<>();
+  private List<Pose3d> detectedTargets = new ArrayList<>();
+  private List<Pose3d> rejectedPoses = new ArrayList<>();
   @Log.NT private double limelightLastDetectedTime = 0.0;
 
   private final SysIdRoutine sysIdRoutine =
@@ -604,6 +605,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     // }
 
     if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
+      rejectedPoses.add(visionPose);
       return;
     }
 
@@ -630,7 +632,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(tagID);
 
       if (tagPose.isPresent()) {
-        detectedTargets.add(tagPose.get().toPose2d());
+        detectedTargets.add(tagPose.get());
       }
     }
   }
@@ -659,6 +661,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
             result.getBestTarget().getBestCameraToTarget().getRotation());
 
     if (!isValidPose(visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size())) {
+      rejectedPoses.add(visionPose.estimatedPose);
       return;
     }
 
@@ -679,7 +682,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
         continue;
       }
 
-      detectedTargets.add(tagPose.get().toPose2d());
+      detectedTargets.add(tagPose.get());
     }
   }
 
@@ -701,21 +704,29 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public void updateVisionPoseEstimates() {
     detectedTargets.clear();
+    rejectedPoses.clear();
+
     updateLimelightPoses(VisionConstants.limelightName);
     updatePhotonVisionPoses();
 
-    field.getObject("Detected Targets").setPoses(detectedTargets);
+    log("Detected Tags", detectedTargets.toArray(Pose3d[]::new));
+    log("Rejected Poses", rejectedPoses.toArray(Pose3d[]::new));
+
+    field
+        .getObject("Detected Targets")
+        .setPoses(detectedTargets.stream().map(p -> p.toPose2d()).toArray(Pose2d[]::new));
+    field
+        .getObject("Rejected Poses")
+        .setPoses(rejectedPoses.stream().map(p -> p.toPose2d()).toArray(Pose2d[]::new));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    odometryLock.lock();
     frontLeftModule.periodic();
     frontRightModule.periodic();
     backLeftModule.periodic();
     backRightModule.periodic();
-    odometryLock.unlock();
 
     if (!DriverStation.isAutonomous()) {
       updateVisionPoseEstimates();

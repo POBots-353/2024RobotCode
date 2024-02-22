@@ -74,6 +74,9 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -145,6 +148,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConstants.arducamPose);
 
+  private PhotonCameraSim arducamSim;
+  private VisionSystemSim visionSim;
+
   private List<Pose3d> detectedTargets = new ArrayList<>();
   private List<Pose3d> rejectedPoses = new ArrayList<>();
   @Log.NT private double limelightLastDetectedTime = 0.0;
@@ -177,6 +183,25 @@ public class Swerve extends VirtualSubsystem implements Logged {
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
     arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
+
+    if (RobotBase.isSimulation()) {
+      visionSim = new VisionSystemSim("main");
+
+      visionSim.addAprilTags(FieldConstants.aprilTagLayout);
+
+      SimCameraProperties cameraProperties = new SimCameraProperties();
+      cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100.0));
+      cameraProperties.setCalibError(0.75, 0.72);
+      cameraProperties.setFPS(28);
+      cameraProperties.setAvgLatencyMs(36);
+      cameraProperties.setLatencyStdDevMs(15);
+
+      arducamSim = new PhotonCameraSim(arducam, cameraProperties);
+      visionSim.addCamera(arducamSim, VisionConstants.arducamPose);
+
+      arducamSim.enableRawStream(false);
+      arducamSim.enableProcessedStream(false);
+    }
 
     AutoBuilder.configureHolonomic(
         this::getPose,
@@ -782,6 +807,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backRightModule.simulationPeriodic();
 
     simYaw += getChassisSpeeds().omegaRadiansPerSecond * 0.020;
+
+    visionSim.update(getPose());
+
+    if (DriverStation.isDisabled()) {
+      setChassisSpeeds(new ChassisSpeeds());
+    }
   }
 
   @Override

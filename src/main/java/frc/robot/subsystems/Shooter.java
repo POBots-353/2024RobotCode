@@ -129,21 +129,19 @@ public class Shooter extends VirtualSubsystem implements Logged {
   }
 
   @Log.NT(key = "Bottom Velocity")
-  public double getVelocity() {
+  public double getBottomVelocity() {
     return bottomEncoder.getVelocity();
-    // return filteredVelocity;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter/Bottom Velocity", bottomEncoder.getVelocity());
-    SmartDashboard.putNumber("Shooter/Top Velocity", topEncoder.getVelocity());
-    SmartDashboard.putNumber(
-        "Shooter/Velocity Difference", topEncoder.getVelocity() - bottomEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter/Bottom Velocity", getBottomVelocity());
+    SmartDashboard.putNumber("Shooter/Top Velocity", getTopVelocity());
+    SmartDashboard.putNumber("Shooter/Velocity Difference", getTopVelocity() - getBottomVelocity());
     SmartDashboard.putBoolean(
         "Shooter/At Setpoint",
-        velocitySetpoint - bottomEncoder.getVelocity() < ShooterConstants.velocityTolerance);
+        velocitySetpoint - getBottomVelocity() < ShooterConstants.velocityTolerance);
   }
 
   @Override
@@ -168,7 +166,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
         Commands.runOnce(
             () -> {
               double velocityDifference =
-                  Math.abs(getVelocity() - ShooterConstants.shooterVelocity);
+                  Math.abs(getBottomVelocity() - ShooterConstants.shooterVelocity);
               if (velocityDifference > ShooterConstants.velocityTolerance) {
                 addError("Shooter Motor not near desired velocity");
               } else {

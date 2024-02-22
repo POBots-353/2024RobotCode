@@ -195,7 +195,7 @@ public class ShootWhileMoving extends Command {
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
-    double shooterError = motorRPM - shooter.getVelocity();
+    double shooterError = motorRPM - shooter.getBottomVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance

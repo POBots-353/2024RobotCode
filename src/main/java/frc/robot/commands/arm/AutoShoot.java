@@ -58,7 +58,7 @@ public class AutoShoot extends Command {
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", desiredAngle.getDegrees());
 
     Rotation2d armAngleError = desiredAngle.minus(arm.getPosition());
-    double shooterError = motorRPM - shooter.getVelocity();
+    double shooterError = motorRPM - shooter.getBottomVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance

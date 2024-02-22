@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,6 +69,10 @@ public class SwerveModule implements Logged {
 
   private Alert noAbsoluteValue;
   private Alert motorPositionNotSet;
+
+  private double simPosition = 0.0;
+  private double simVelocity = 0.0;
+  private double simAngle = 0.0;
 
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
@@ -309,7 +314,7 @@ public class SwerveModule implements Logged {
   }
 
   public SwerveModulePosition getModulePosition() {
-    return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
+    return new SwerveModulePosition(getPosition(), getAngle());
   }
 
   public SwerveModuleState getModuleState() {
@@ -320,12 +325,28 @@ public class SwerveModule implements Logged {
     return desiredState;
   }
 
+  public double getPosition() {
+    if (RobotBase.isReal()) {
+      return driveEncoder.getPosition();
+    } else {
+      return simPosition;
+    }
+  }
+
   public double getVelocity() {
-    return driveEncoder.getVelocity();
+    if (RobotBase.isReal()) {
+      return driveEncoder.getVelocity();
+    } else {
+      return simVelocity;
+    }
   }
 
   public Rotation2d getAngle() {
-    return Rotation2d.fromRadians(turnEncoder.getPosition());
+    if (RobotBase.isReal()) {
+      return Rotation2d.fromRadians(turnEncoder.getPosition());
+    } else {
+      return Rotation2d.fromRadians(simAngle);
+    }
   }
 
   public Rotation2d getAbsoluteAngle() {
@@ -345,16 +366,20 @@ public class SwerveModule implements Logged {
   }
 
   private void setSpeed(double speedMetersPerSecond) {
-    if (isOpenLoop) {
-      driveMotor.set(speedMetersPerSecond / SwerveConstants.maxModuleSpeed);
-    } else {
-      double feedForward =
-          driveFeedforward.calculate(
-              speedMetersPerSecond,
-              (speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
+    if (RobotBase.isReal()) {
+      if (isOpenLoop) {
+        driveMotor.set(speedMetersPerSecond / SwerveConstants.maxModuleSpeed);
+      } else {
+        double feedForward =
+            driveFeedforward.calculate(
+                speedMetersPerSecond,
+                (speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
 
-      drivePID.setReference(
-          speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+        drivePID.setReference(
+            speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+      }
+    } else {
+      simVelocity = speedMetersPerSecond;
     }
   }
 
@@ -363,7 +388,11 @@ public class SwerveModule implements Logged {
   }
 
   private void setAngle(Rotation2d angle) {
-    turnPID.setReference(angle.getRadians(), ControlType.kPosition);
+    if (RobotBase.isReal()) {
+      turnPID.setReference(angle.getRadians(), ControlType.kPosition);
+    } else {
+      simAngle = angle.getRadians();
+    }
   }
 
   public void periodic() {
@@ -380,10 +409,14 @@ public class SwerveModule implements Logged {
     updateTelemetry();
   }
 
+  public void simulationPeriodic() {
+    simPosition += simVelocity * 0.020;
+  }
+
   private void updateTelemetry() {
     String telemetryKey = "Swerve/" + moduleName + "/";
 
-    SmartDashboard.putNumber(telemetryKey + "Position", driveEncoder.getPosition());
+    SmartDashboard.putNumber(telemetryKey + "Position", getPosition());
 
     SmartDashboard.putNumber(telemetryKey + "Velocity", getVelocity());
     SmartDashboard.putNumber(telemetryKey + "Angle", getAngle().getDegrees());

@@ -33,6 +33,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -168,6 +169,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   private final double prematchDriveDelay = 1.0;
   private final double prematchTranslationalTolerance = 0.1;
+
+  private double simYaw = 0.0;
 
   /** Creates a new Swerve. */
   public Swerve() {
@@ -396,15 +399,23 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.unlock();
   }
 
+  public Rotation2d getRawHeading() {
+    if (RobotBase.isReal()) {
+      return navx.getRotation2d();
+    } else {
+      return Rotation2d.fromRadians(simYaw);
+    }
+  }
+
   public void setHeading(Rotation2d rotation) {
     odometryLock.lock();
-    angleOffset = navx.getRotation2d().minus(rotation);
+    angleOffset = getRawHeading().minus(rotation);
     odometryLock.unlock();
   }
 
   @Log.NT(key = "Heading")
   public Rotation2d getHeading() {
-    return navx.getRotation2d().minus(angleOffset);
+    return getRawHeading().minus(angleOffset);
   }
 
   @Log.NT(key = "Rotation3d")
@@ -761,6 +772,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber(
         "Distance to Speaker",
         getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    frontLeftModule.simulationPeriodic();
+    frontRightModule.simulationPeriodic();
+    backLeftModule.simulationPeriodic();
+    backRightModule.simulationPeriodic();
+
+    simYaw += getChassisSpeeds().omegaRadiansPerSecond * 0.020;
   }
 
   @Override

@@ -373,7 +373,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void zeroYaw() {
-    Pose2d originalOdometryPosition = poseEstimator.getEstimatedPosition();
+    Pose2d originalOdometryPosition = getPose();
 
     if (SwerveConstants.zeroWithIntakeForward) {
       setHeading(Rotation2d.fromDegrees(180.0));
@@ -383,7 +383,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Rotation2d orientationOffset =
         SwerveConstants.zeroWithIntakeForward
-            ? Rotation2d.fromDegrees(180.0) // revert when done
+            ? Rotation2d.fromDegrees(180.0)
             : Rotation2d.fromDegrees(0.0);
 
     odometryLock.lock();
@@ -431,7 +431,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void resetPose(Pose2d pose) {
-    setHeading(pose.getRotation());
+    setHeading(pose.getRotation().plus(AllianceUtil.getZeroRotation()));
 
     odometryLock.lock();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);

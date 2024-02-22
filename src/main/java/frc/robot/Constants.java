@@ -274,6 +274,8 @@ public final class Constants {
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
+    public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(10.5);
+    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(10.5);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.5);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(33.79285610735291);

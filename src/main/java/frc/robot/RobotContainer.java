@@ -114,6 +114,9 @@ public class RobotContainer implements Logged {
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "Arm to Close Shoot",
+        arm.moveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0));
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",

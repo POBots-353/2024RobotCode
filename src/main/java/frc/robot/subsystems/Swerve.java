@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -136,6 +137,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
+  private SwerveDriveOdometry simOdometry;
 
   private SwerveDriveWheelPositions previousWheelPositions =
       new SwerveDriveWheelPositions(getModulePositions());
@@ -146,7 +148,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       new PhotonPoseEstimator(
           FieldConstants.aprilTagLayout,
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          VisionConstants.arducamPose);
+          VisionConstants.arducamTransform);
 
   private PhotonCameraSim arducamSim;
   private VisionSystemSim visionSim;
@@ -185,19 +187,20 @@ public class Swerve extends VirtualSubsystem implements Logged {
     arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
     if (RobotBase.isSimulation()) {
+      simOdometry = new SwerveDriveOdometry(kinematics, getHeading(), getModulePositions());
       visionSim = new VisionSystemSim("main");
 
       visionSim.addAprilTags(FieldConstants.aprilTagLayout);
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
       cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100.0));
-      cameraProperties.setCalibError(0.75, 0.25);
+      cameraProperties.setCalibError(0.75, 0.15);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);
 
       arducamSim = new PhotonCameraSim(arducam, cameraProperties);
-      visionSim.addCamera(arducamSim, VisionConstants.arducamPose);
+      visionSim.addCamera(arducamSim, VisionConstants.arducamTransform);
 
       arducamSim.enableRawStream(false);
       arducamSim.enableProcessedStream(false);
@@ -422,6 +425,15 @@ public class Swerve extends VirtualSubsystem implements Logged {
             originalOdometryPosition.getTranslation(),
             AllianceUtil.getZeroRotation().plus(orientationOffset)));
     odometryLock.unlock();
+
+    if (RobotBase.isSimulation()) {
+      simOdometry.resetPosition(
+          getHeading(),
+          getModulePositions(),
+          new Pose2d(
+              originalOdometryPosition.getTranslation(),
+              AllianceUtil.getZeroRotation().plus(orientationOffset)));
+    }
   }
 
   public Rotation2d getRawHeading() {
@@ -466,6 +478,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return pose;
   }
 
+  @Log.NT(key = "Arducam Pose")
+  public Pose3d getArducamPose() {
+    return new Pose3d(getPose()).plus(VisionConstants.arducamTransform);
+  }
+
+  @Log.NT(key = "Limelight Pose")
+  public Pose3d getLimelightPose() {
+    return new Pose3d(getPose()).plus(VisionConstants.limelightTransform);
+  }
+
   public Field2d getField() {
     return field;
   }
@@ -476,6 +498,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.lock();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
     odometryLock.unlock();
+
+    if (RobotBase.isSimulation()) {
+      simOdometry.resetPosition(getHeading(), getModulePositions(), pose);
+    }
   }
 
   @Log.NT(key = "Module Positions")
@@ -812,7 +838,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     simYaw += getChassisSpeeds().omegaRadiansPerSecond * 0.020;
 
-    visionSim.update(getPose());
+    simOdometry.update(getHeading(), getModulePositions());
+    visionSim.update(simOdometry.getPoseMeters());
 
     if (DriverStation.isDisabled()) {
       setChassisSpeeds(new ChassisSpeeds());

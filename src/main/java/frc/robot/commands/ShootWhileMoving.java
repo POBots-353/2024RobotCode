@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,12 +45,14 @@ public class ShootWhileMoving extends Command {
   private PIDController turnToAngleController = new PIDController(1.0, 0, SwerveConstants.headingD);
 
   private Pose2d speakerPose;
-  private int velocityInversion;
 
   private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
 
+  private LinearFilter accelXFilter = LinearFilter.movingAverage(4);
+  private LinearFilter accelYFilter = LinearFilter.movingAverage(4);
+
   private final double setpointDebounceTime = 0.50;
-  private final double feedTime = 0.0;
+  private final double feedTime = 0.250;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
@@ -81,7 +84,6 @@ public class ShootWhileMoving extends Command {
   @Override
   public void initialize() {
     speakerPose = AllianceUtil.getSpeakerPose();
-    velocityInversion = AllianceUtil.isRedAlliance() ? -1 : 1;
 
     previouSpeeds = swerve.getFieldRelativeSpeeds();
 
@@ -96,43 +98,35 @@ public class ShootWhileMoving extends Command {
 
     ChassisSpeeds fieldAcceleration = fieldSpeeds.minus(previouSpeeds).div(0.020);
 
+    double fieldAccelX = accelXFilter.calculate(fieldAcceleration.vxMetersPerSecond);
+    double fieldAccelY = accelYFilter.calculate(fieldAcceleration.vyMetersPerSecond);
+
+    SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
+    SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
+
     double distance = robotPose.minus(speakerPose.getTranslation()).getNorm();
 
     double shotTime = ArmConstants.autoShootTimeInterpolation.get(distance);
 
-    double virtualGoalX =
-        speakerPose.getX()
-            - velocityInversion
-                * shotTime
-                * (fieldSpeeds.vxMetersPerSecond + fieldAcceleration.vxMetersPerSecond * feedTime);
-    double virtualGoalY =
-        speakerPose.getY()
-            - velocityInversion
-                * shotTime
-                * (fieldSpeeds.vyMetersPerSecond + fieldAcceleration.vyMetersPerSecond * feedTime);
-
-    Translation2d virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+    Translation2d virtualGoalLocation = new Translation2d();
 
     for (int i = 0; i < 5; i++) {
+      double virtualGoalX =
+          speakerPose.getX() - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime);
+      double virtualGoalY =
+          speakerPose.getY() - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime);
+
+      virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+
       double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
       double newShotTime = ArmConstants.autoShootTimeInterpolation.get(newDistance);
 
       if (Math.abs(shotTime - newShotTime) <= 0.05) {
+        shotTime = newShotTime;
+        distance = newDistance;
         break;
       }
 
-      virtualGoalX =
-          speakerPose.getX()
-              - newShotTime
-                  * (fieldSpeeds.vxMetersPerSecond
-                      + fieldAcceleration.vxMetersPerSecond * feedTime);
-      virtualGoalY =
-          speakerPose.getY()
-              - newShotTime
-                  * (fieldSpeeds.vyMetersPerSecond
-                      + fieldAcceleration.vyMetersPerSecond * feedTime);
-
-      virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
       shotTime = newShotTime;
       distance = newDistance;
     }

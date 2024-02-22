@@ -272,10 +272,10 @@ public final class Constants {
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
-    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.5);
-    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(60.0);
-    public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(10.5);
-    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(10.5);
+    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(38.2);
+    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(38.2);
+    public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
+    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.5);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(33.79285610735291);
@@ -286,6 +286,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-4.5);
     public static final double armLength = Units.inchesToMeters(27.5);
+    public static final double armPivotToShooter = Units.inchesToMeters(23.5);
     public static final double armMass = Units.lbsToKilograms(30.0);
 
     // (distance, angle)
@@ -354,6 +355,9 @@ public final class Constants {
     public static final double voltageCompensation = 12.0;
 
     public static final int shooterCurrentLimit = 60;
+
+    public static final double gearing = 1 / 0.75;
+    public static final double circumference = Math.PI * Units.inchesToMeters(4.0);
   }
 
   public static final class ClimberConstants {

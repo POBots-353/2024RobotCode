@@ -194,7 +194,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
       cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100.0));
-      cameraProperties.setCalibError(0.75, 0.15);
+      cameraProperties.setCalibError(0.25, 0.15);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);
@@ -467,7 +467,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Field Relative Speeds")
   public ChassisSpeeds getFieldRelativeSpeeds() {
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        getChassisSpeeds(), getHeading().plus(AllianceUtil.getZeroRotation()));
   }
 
   @Log.NT(key = "Estimated Pose")

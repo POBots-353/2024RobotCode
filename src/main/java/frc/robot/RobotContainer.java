@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -31,6 +32,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
@@ -100,9 +102,11 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
+        "Start Intake", intake.intakeUntilBeamBreak().unless(RobotBase::isSimulation));
+    NamedCommands.registerCommand(
+        "Intake Until Beam Break",
+        intake.intakeUntilBeamBreak().withTimeout(1.0).unless(RobotBase::isSimulation));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
@@ -119,6 +123,9 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Close Shoot",
         arm.moveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Wing Shoot",
+        arm.moveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
@@ -132,6 +139,7 @@ public class RobotContainer implements Logged {
                 () -> {
                   intake.stopIntakeMotor();
                   shooter.stopMotor();
+                  NoteVisualizer.shoot().schedule();
                 }));
 
     configureAutoChooser();
@@ -141,6 +149,11 @@ public class RobotContainer implements Logged {
 
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+
+    if (RobotBase.isSimulation()) {
+      NoteVisualizer.startPublishers();
+      NoteVisualizer.setSuppliers(swerve::getPose, arm::getPosition, shooter::getBottomVelocity);
+    }
 
     leds.setDefaultCommand(new RSLSync(leds));
 
@@ -330,7 +343,11 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.manualFeedButton)
         .whileTrue(intake.autoFeedToShooter())
-        .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
+        .onFalse(
+            intake
+                .runOnce(intake::stopIntakeMotor)
+                .alongWith(NoteVisualizer.shoot())
+                .ignoringDisable(true));
 
     operatorStick
         .button(OperatorConstants.manualShootButton)

@@ -545,7 +545,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
   }
 
-  private boolean isValidPose(Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
+  private boolean isValidPose(
+      Pose3d visionPose, Pose3d targetPose, int detectedTargets, double timestampSeconds) {
     double distance = targetPose.getTranslation().getNorm();
 
     if (distance > 6.5) {
@@ -567,13 +568,18 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return false;
     }
 
-    Rotation2d angleDifference =
-        getPose().getRotation().minus(visionPose.getRotation().toRotation2d());
+    double dt = Timer.getFPGATimestamp() - timestampSeconds;
+    Rotation2d angleAtTime =
+        getPose()
+            .getRotation()
+            .minus(new Rotation2d(getChassisSpeeds().omegaRadiansPerSecond * dt));
+
+    Rotation2d angleDifference = angleAtTime.minus(visionPose.getRotation().toRotation2d());
 
     double angleTolerance =
         DriverStation.isAutonomous() ? 3.5 : (detectedTargets >= 2) ? 20.0 : 10.0;
 
-    // If the angle is too different from our gyro angle
+    // If the angle is too different from our gyro angle at the time of the image
     if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {
       return false;
     }
@@ -606,21 +612,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     LimelightTarget_Fiducial closestTag = detectedTags[0];
     Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
-    Pose3d visionPose;
+    Pose3d visionPose = results.getBotPose3d_wpiBlue();
 
-    // if (detectedTags.length >= 2) {
-    visionPose = results.getBotPose3d_wpiBlue();
-    // } else {
-    //   Pose3d centerOriginPose = closestTag.getRobotPose_FieldSpace();
-    //   visionPose =
-    //       new Pose3d(
-    //           centerOriginPose
-    //               .getTranslation()
-    //               .plus(FieldConstants.blueOriginFromCenter.getTranslation()),
-    //           centerOriginPose.getRotation());
-    // }
+    double timestamp =
+        Timer.getFPGATimestamp()
+            - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
+                / 1000.0;
 
-    if (!isValidPose(visionPose, closestTagPose, detectedTags.length)) {
+    if (!isValidPose(visionPose, closestTagPose, detectedTags.length, timestamp)) {
       rejectedPoses.add(visionPose);
       return;
     }
@@ -633,13 +632,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
 
-    poseEstimates.add(
-        new PoseEstimate(
-            visionPose,
-            Timer.getFPGATimestamp()
-                - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
-                    / 1000.0,
-            standardDevs));
+    poseEstimates.add(new PoseEstimate(visionPose, timestamp, standardDevs));
 
     for (LimelightTarget_Fiducial target : detectedTags) {
       int tagID = (int) target.fiducialID;
@@ -675,7 +668,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
             result.getBestTarget().getBestCameraToTarget().getTranslation(),
             result.getBestTarget().getBestCameraToTarget().getRotation());
 
-    if (!isValidPose(visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size())) {
+    if (!isValidPose(
+        visionPose.estimatedPose,
+        closestTargetPose,
+        visionPose.targetsUsed.size(),
+        visionPose.timestampSeconds)) {
       rejectedPoses.add(visionPose.estimatedPose);
       return;
     }

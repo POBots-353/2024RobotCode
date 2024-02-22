@@ -62,6 +62,7 @@ import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -76,6 +77,19 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Swerve extends VirtualSubsystem implements Logged {
+  public static record PoseEstimate(Pose3d estimatedPose, double timestamp, Vector<N3> standardDevs)
+      implements Comparable<PoseEstimate> {
+    @Override
+    public int compareTo(PoseEstimate other) {
+      if (timestamp > other.timestamp) {
+        return 1;
+      } else if (timestamp < other.timestamp) {
+        return -1;
+      }
+      return 0;
+    }
+  }
+
   private SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(SwerveConstants.wheelLocations);
 
@@ -133,6 +147,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private List<Pose3d> detectedTargets = new ArrayList<>();
   private List<Pose3d> rejectedPoses = new ArrayList<>();
   @Log.NT private double limelightLastDetectedTime = 0.0;
+
+  private List<PoseEstimate> poseEstimates = new ArrayList<>();
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -617,14 +633,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Vector<N3> standardDevs =
         getLLStandardDeviations(visionPose, closestTagPose, detectedTags.length);
 
-    odometryLock.lock();
-    poseEstimator.addVisionMeasurement(
-        visionPose.toPose2d(),
-        Timer.getFPGATimestamp()
-            - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
-                / 1000.0,
-        standardDevs);
-    odometryLock.unlock();
+    poseEstimates.add(
+        new PoseEstimate(
+            visionPose,
+            Timer.getFPGATimestamp()
+                - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
+                    / 1000.0,
+            standardDevs));
 
     for (LimelightTarget_Fiducial target : detectedTags) {
       int tagID = (int) target.fiducialID;
@@ -669,10 +684,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
         getArducamStandardDeviations(
             visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size());
 
-    odometryLock.lock();
-    poseEstimator.addVisionMeasurement(
-        visionPose.estimatedPose.toPose2d(), visionPose.timestampSeconds, standardDevs);
-    odometryLock.unlock();
+    poseEstimates.add(
+        new PoseEstimate(visionPose.estimatedPose, visionPose.timestampSeconds, standardDevs));
 
     for (PhotonTrackedTarget target : visionPose.targetsUsed) {
       int aprilTagID = target.getFiducialId();
@@ -703,11 +716,23 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void updateVisionPoseEstimates() {
+    poseEstimates.clear();
     detectedTargets.clear();
     rejectedPoses.clear();
 
     updateLimelightPoses(VisionConstants.limelightName);
     updatePhotonVisionPoses();
+
+    Collections.sort(poseEstimates);
+
+    odometryLock.lock();
+    for (PoseEstimate poseEstimate : poseEstimates) {
+      poseEstimator.addVisionMeasurement(
+          poseEstimate.estimatedPose().toPose2d(),
+          poseEstimate.timestamp(),
+          poseEstimate.standardDevs());
+    }
+    odometryLock.unlock();
 
     log("Detected Tags", detectedTargets.toArray(Pose3d[]::new));
     log("Rejected Poses", rejectedPoses.toArray(Pose3d[]::new));

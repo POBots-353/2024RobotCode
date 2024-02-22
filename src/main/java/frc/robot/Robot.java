@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -203,5 +204,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
+  }
 }

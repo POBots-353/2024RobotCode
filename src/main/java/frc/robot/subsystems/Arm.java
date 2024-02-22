@@ -12,19 +12,27 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -91,6 +99,20 @@ public class Arm extends VirtualSubsystem implements Logged {
       new ArmFeedforward(
           ArmConstants.armKg, ArmConstants.armKs, ArmConstants.armKv, ArmConstants.armKa);
 
+  private final DCMotor armGearbox = DCMotor.getNEO(2);
+
+  private SingleJointedArmSim armSimulation =
+      new SingleJointedArmSim(
+          armGearbox,
+          1.0 / ArmConstants.armGearRatio,
+          SingleJointedArmSim.estimateMOI(ArmConstants.armLength, ArmConstants.armMass),
+          ArmConstants.armLength,
+          Units.degreesToRadians(-15.0),
+          Units.degreesToRadians(120.0),
+          true,
+          0.0,
+          VecBuilder.fill(Units.degreesToRadians(0.075)));
+
   private SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),
@@ -133,6 +155,8 @@ public class Arm extends VirtualSubsystem implements Logged {
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))
         .ignoringDisable(true)
         .schedule();
+
+    REVPhysicsSim.getInstance().addSparkMax(mainMotor, armGearbox);
 
     MechanismRoot2d measuredRoot =
         angleVisualizer.getRoot(
@@ -282,8 +306,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     log("FeedForward Voltage", feedforward);
 
     double pidOutput = pidController.calculate(getPosition().getRadians(), state.position);
+    pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
 
-    mainMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
+    mainMotor.setVoltage(pidOutput * RobotController.getBatteryVoltage() + feedforward);
     // followerMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
   }
 
@@ -309,7 +334,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public void setSpeed(double speed) {
-    mainMotor.set(speed);
+    mainMotor.setVoltage(speed * RobotController.getBatteryVoltage());
     // followerMotor.set(speed);
   }
 
@@ -331,7 +356,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     if (RobotBase.isReal()) {
       return getAbsoluteAngle().minus(ArmConstants.absoluteOffset);
     } else {
-      return Rotation2d.fromRadians(previousSetpoint.position);
+      return Rotation2d.fromRadians(armSimulation.getAngleRads());
     }
   }
 
@@ -339,7 +364,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     if (RobotBase.isReal()) {
       return armEncoder.getVelocity();
     } else {
-      return previousSetpoint.velocity;
+      return armSimulation.getVelocityRadPerSec();
     }
   }
 
@@ -351,7 +376,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Position", Units.radiansToDegrees(absoluteEncoder.getPosition()));
 
-    SmartDashboard.putNumber("Arm/Velocity", Units.radiansToDegrees(armEncoder.getVelocity()));
+    SmartDashboard.putNumber("Arm/Velocity", Units.radiansToDegrees(getVelocity()));
     SmartDashboard.putNumber(
         "Arm/Absolute Encoder Velocity", Units.radiansToDegrees(absoluteEncoder.getVelocity()));
 
@@ -364,11 +389,26 @@ public class Arm extends VirtualSubsystem implements Logged {
         "Arm/Position Error",
         Units.radiansToDegrees(previousSetpoint.position - getPosition().getRadians()));
     SmartDashboard.putNumber(
-        "Arm/Velocity Error",
-        Units.radiansToDegrees(previousSetpoint.velocity - armEncoder.getVelocity()));
+        "Arm/Velocity Error", Units.radiansToDegrees(previousSetpoint.velocity - getVelocity()));
 
     currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
     setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    if (DriverStation.isEnabled()) {
+      // REV it makes literally 0 sense for this to be in voltage, especially considering the fact
+      // that it's called applied output...
+      armSimulation.setInput(mainMotor.getAppliedOutput());
+    } else {
+      armSimulation.setInput(0.0);
+    }
+
+    armSimulation.update(0.020);
+
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(armSimulation.getCurrentDrawAmps()));
   }
 
   @Override

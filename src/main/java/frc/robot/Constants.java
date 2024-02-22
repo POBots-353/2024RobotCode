@@ -284,6 +284,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-4.5);
     public static final double armLength = Units.inchesToMeters(27.5);
+    public static final double armMass = Units.lbsToKilograms(30.0);
 
     // (distance, angle)
     public static final Point2D[] autoShootArmAngles =

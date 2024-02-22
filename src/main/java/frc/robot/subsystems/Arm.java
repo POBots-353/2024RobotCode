@@ -23,6 +23,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -313,7 +314,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   public TrapezoidProfile.State getCurrentState() {
-    return new TrapezoidProfile.State(getPosition().getRadians(), armEncoder.getVelocity());
+    return new TrapezoidProfile.State(getPosition().getRadians(), getVelocity());
   }
 
   public void setProfileSetpoint(TrapezoidProfile.State state) {
@@ -327,7 +328,19 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Angle")
   public Rotation2d getPosition() {
-    return getAbsoluteAngle().minus(ArmConstants.absoluteOffset);
+    if (RobotBase.isReal()) {
+      return getAbsoluteAngle().minus(ArmConstants.absoluteOffset);
+    } else {
+      return Rotation2d.fromRadians(previousSetpoint.position);
+    }
+  }
+
+  public double getVelocity() {
+    if (RobotBase.isReal()) {
+      return armEncoder.getVelocity();
+    } else {
+      return previousSetpoint.velocity;
+    }
   }
 
   @Override

@@ -21,7 +21,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -107,11 +109,14 @@ public class Arm extends VirtualSubsystem implements Logged {
           1.0 / ArmConstants.armGearRatio,
           SingleJointedArmSim.estimateMOI(ArmConstants.armLength, ArmConstants.armMass),
           ArmConstants.armLength,
-          Units.degreesToRadians(-15.0),
-          Units.degreesToRadians(120.0),
+          ArmConstants.reverseMovementLimitAngle,
+          ArmConstants.forwardMovementLimitAngle,
           true,
           0.0,
-          VecBuilder.fill(Units.degreesToRadians(0.075)));
+          VecBuilder.fill(Units.degreesToRadians(0.0025)));
+
+  private final Pose3d origin =
+      new Pose3d(Units.inchesToMeters(9.695), 0.0, Units.inchesToMeters(10.78), new Rotation3d());
 
   private SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -393,6 +398,12 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
     setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
+
+    Rotation2d angle = getPosition();
+    log(
+        "3D Pose",
+        new Pose3d(
+            origin.getTranslation(), new Rotation3d(0.0, angle.getRadians() - Math.PI, 0.0)));
   }
 
   @Override

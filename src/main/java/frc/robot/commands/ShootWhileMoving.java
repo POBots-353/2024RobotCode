@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -48,13 +49,15 @@ public class ShootWhileMoving extends Command {
 
   private ChassisSpeeds previouSpeeds = new ChassisSpeeds();
 
-  private LinearFilter accelXFilter = LinearFilter.movingAverage(4);
-  private LinearFilter accelYFilter = LinearFilter.movingAverage(4);
+  private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
+  private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.50;
+  private final double setpointDebounceTime = 0.30;
   private final double feedTime = 0.250;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
+
+  private boolean simShotNote = false;
 
   /** Creates a new ShootWhileMoving. */
   public ShootWhileMoving(
@@ -88,6 +91,8 @@ public class ShootWhileMoving extends Command {
     previouSpeeds = swerve.getFieldRelativeSpeeds();
 
     arm.setProfileSetpoint(arm.getCurrentState());
+
+    simShotNote = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -191,10 +196,19 @@ public class ShootWhileMoving extends Command {
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
     double shooterError = motorRPM - shooter.getBottomVelocity();
 
+    SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
+
     if (setpointDebouncer.calculate(
-        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-            && shooterError < ShooterConstants.velocityTolerance)) {
+            Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
+                && shooterError < ShooterConstants.velocityTolerance)
+        && Math.abs(driveAngleError.getDegrees()) <= 7.00) {
       intake.feedToShooter();
+
+      if (!simShotNote) {
+        NoteVisualizer.shoot().beforeStarting(Commands.waitSeconds(0.250)).schedule();
+
+        simShotNote = true;
+      }
     }
 
     previouSpeeds = fieldSpeeds;

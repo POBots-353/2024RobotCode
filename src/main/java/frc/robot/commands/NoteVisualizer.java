@@ -79,7 +79,7 @@ public class NoteVisualizer implements Logged {
 
                             shotNotePublisher.set(currentNotePose);
                           })
-                      .until(() -> pathIndex == pathPositions.size() - 1)
+                      .until(() -> pathIndex >= pathPositions.size() - 1)
                       .finallyDo(
                           () -> {
                             pathIndex = 0;

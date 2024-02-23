@@ -445,7 +445,7 @@ public class RobotContainer implements Logged {
             new ShootWhileMoving(
                 driverController::getLeftY,
                 driverController::getLeftX,
-                SwerveConstants.maxTranslationalSpeed,
+                SwerveConstants.slowMotionMaxTranslationalSpeed,
                 arm,
                 intake,
                 shooter,

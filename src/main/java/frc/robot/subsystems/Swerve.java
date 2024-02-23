@@ -370,7 +370,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       ChassisSpeeds speeds, boolean fudgeFactor, boolean isOpenLoop, boolean allowTurnInPlace) {
     speeds = ChassisSpeeds.discretize(speeds, 0.020);
 
-    if (fudgeFactor) {
+    if (fudgeFactor && RobotBase.isReal()) {
       speeds = getFudgeFactoredSpeeds(speeds, isOpenLoop);
     }
 

@@ -12,17 +12,22 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -70,6 +75,9 @@ public class SwerveModule implements Logged {
   private Alert noAbsoluteValue;
   private Alert motorPositionNotSet;
 
+  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 6.12, 0.025);
+  private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.004);
+
   private double simPosition = 0.0;
   private double simVelocity = 0.0;
   private double simAngle = 0.0;
@@ -105,6 +113,11 @@ public class SwerveModule implements Logged {
 
     configureMotors();
     configureAngleEncoder();
+
+    if (RobotBase.isSimulation()) {
+      REVPhysicsSim.getInstance().addSparkMax(driveMotor, DCMotor.getNEO(1));
+      REVPhysicsSim.getInstance().addSparkMax(turnMotor, DCMotor.getNEO(1));
+    }
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
@@ -379,7 +392,21 @@ public class SwerveModule implements Logged {
             speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
       }
     } else {
-      simVelocity = speedMetersPerSecond;
+      if (isOpenLoop) {
+        driveMotor.setVoltage(
+            (speedMetersPerSecond / SwerveConstants.maxModuleSpeed)
+                * RobotController.getBatteryVoltage());
+      } else {
+        double feedForward =
+            driveFeedforward.calculate(
+                speedMetersPerSecond,
+                (speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
+        feedForward = MathUtil.clamp(feedForward, -12.0, 12.0);
+        double pidOutput = (getVelocity() - speedMetersPerSecond) * SwerveConstants.driveP;
+        pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
+
+        driveMotor.setVoltage(feedForward + pidOutput * RobotController.getBatteryVoltage());
+      }
     }
   }
 
@@ -391,7 +418,12 @@ public class SwerveModule implements Logged {
     if (RobotBase.isReal()) {
       turnPID.setReference(angle.getRadians(), ControlType.kPosition);
     } else {
-      simAngle = angle.getRadians();
+      Rotation2d angleError = angle.minus(getAngle());
+
+      double pidOutput = angleError.getRadians() * SwerveConstants.turnP;
+      pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
+
+      turnMotor.setVoltage(pidOutput * RobotController.getBatteryVoltage());
     }
   }
 
@@ -410,7 +442,18 @@ public class SwerveModule implements Logged {
   }
 
   public void simulationPeriodic() {
-    simPosition += simVelocity * 0.020;
+    driveSim.setInput(driveMotor.getAppliedOutput());
+    turnSim.setInput(turnMotor.getAppliedOutput());
+
+    driveSim.update(0.020);
+    turnSim.update(0.020);
+
+    simVelocity =
+        driveSim.getAngularVelocityRadPerSec() * SwerveConstants.wheelCircumference / (2 * Math.PI);
+    simPosition =
+        driveSim.getAngularPositionRad() * SwerveConstants.wheelCircumference / (2 * Math.PI);
+
+    simAngle = turnSim.getAngularPositionRad();
   }
 
   private void updateTelemetry() {

@@ -660,6 +660,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
     LimelightHelpers.Results results =
         LimelightHelpers.getLatestResults(limelightName).targetingResults;
+    LimelightHelpers.PoseEstimate poseEstimate =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
     if (!results.valid) {
       return;
@@ -681,18 +683,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Pose3d closestTagPose = closestTag.getCameraPose_TargetSpace();
     Pose3d visionPose = results.getBotPose3d_wpiBlue();
 
-    double timestamp =
-        Timer.getFPGATimestamp()
-            - (results.latency_capture + results.latency_jsonParse + results.latency_pipeline)
-                / 1000.0;
+    double timestamp = poseEstimate.timestampSeconds;
 
     if (!isValidPose(visionPose, closestTagPose, detectedTags.length, timestamp)) {
       rejectedPoses.add(visionPose);
-      return;
-    }
-
-    int closestTagID = (int) closestTag.fiducialID;
-    if (FieldConstants.aprilTagLayout.getTagPose(closestTagID).isEmpty()) {
       return;
     }
 

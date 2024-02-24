@@ -43,7 +43,7 @@ public class ShootWhileMoving extends Command {
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController = new PIDController(1.0, 0, SwerveConstants.headingD);
+  private PIDController turnToAngleController = new PIDController(0.6, 0, 0.02);
 
   private Pose2d speakerPose;
 
@@ -92,6 +92,7 @@ public class ShootWhileMoving extends Command {
 
     arm.setProfileSetpoint(arm.getCurrentState());
 
+    setpointDebouncer.calculate(false);
     simShotNote = false;
   }
 
@@ -182,7 +183,7 @@ public class ShootWhileMoving extends Command {
     double angularSpeed =
         turnToAngleController.calculate(robotAngle.getRadians(), desiredAngle.getRadians());
 
-    angularSpeed = MathUtil.clamp(angularSpeed, -0.75, 0.75);
+    angularSpeed = MathUtil.clamp(angularSpeed, -0.8, 0.8);
 
     swerve.driveFieldOriented(
         forwardMetersPerSecond,

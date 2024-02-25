@@ -50,7 +50,7 @@
     },
     {
       "name": "Shooting Warm Up",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -60,7 +60,18 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arm to Wing Shoot",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {

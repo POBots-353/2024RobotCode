@@ -113,7 +113,7 @@ public class RobotContainer implements Logged {
         "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0).asProxy());
+        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.5).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());

@@ -50,7 +50,7 @@
     },
     {
       "name": "Shooting Warm Up",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.05,
       "command": {
         "type": "parallel",
         "data": {
@@ -60,7 +60,18 @@
               "data": {
                 "name": "Warm Up Shooter"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Arm to Wing Shoot",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {
@@ -74,7 +85,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 270.0
   },
@@ -89,5 +100,5 @@
     "rotation": -156.0744633715317,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

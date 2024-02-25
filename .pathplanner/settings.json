@@ -4,11 +4,12 @@
   "holonomicMode": true,
   "pathFolders": [
     "Amp Side",
-    "Wing Paths",
-    "Source Side"
+    "Source Side",
+    "Wing Paths"
   ],
   "autoFolders": [
     "Amp Side",
+    "Choreo Autos",
     "Source Side",
     "Wing"
   ],

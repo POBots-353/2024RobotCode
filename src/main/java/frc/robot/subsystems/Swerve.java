@@ -182,6 +182,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   /** Creates a new Swerve. */
   public Swerve() {
+    PhotonCamera.setVersionCheckEnabled(false);
+
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
     arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);

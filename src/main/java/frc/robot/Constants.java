@@ -247,7 +247,7 @@ public final class Constants {
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
-    public static final int currentLimit = 40;
+    public static final int currentLimit = 50;
 
     public static final double armGearRatio =
         (12.0 / 60.0) * (18.0 / 68.0) * (18.0 / 72.0) * (12.0 / 64.0);
@@ -275,7 +275,7 @@ public final class Constants {
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(38.2);
-    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(38.2);
+    public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
@@ -286,8 +286,8 @@ public final class Constants {
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
 
     public static final double armPivotZ = Units.inchesToMeters(10.3);
-    public static final double armPivotX = Units.inchesToMeters(-4.5);
-    public static final double armLength = Units.inchesToMeters(27.5);
+    public static final double armPivotX = Units.inchesToMeters(-7.5);
+    public static final double armLength = Units.inchesToMeters(21.75);
     public static final double armPivotToShooter = Units.inchesToMeters(14.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
 
@@ -458,7 +458,7 @@ public final class Constants {
 
   public static final class AutoConstants {
     public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-    public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0.0, 0.0);
+    public static final PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.0);
 
     public static final double pathfindingMaxVelocity = Units.feetToMeters(13.0);
     public static final double pathfindingMaxAcceleration = Units.feetToMeters(20.0);

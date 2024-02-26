@@ -229,7 +229,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
           field.getObject("trajectory").setPoses(path);
           if (path.size() == 0) {
             field.getObject("Target Pose").setPoses(path);
-            setChassisSpeeds(new ChassisSpeeds(), false, true, false);
+            lockModules();
           }
         });
 

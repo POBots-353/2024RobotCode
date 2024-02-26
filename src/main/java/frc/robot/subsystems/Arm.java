@@ -192,11 +192,11 @@ public class Arm extends VirtualSubsystem implements Logged {
     // Add intake (might be helpful at some point who knows)
     currentAngleLigament.append(
         new MechanismLigament2d(
-            "Intake", Units.inchesToMeters(10.0), 60.0, lineWidth, new Color8Bit(Color.kRed)));
+            "Intake", Units.inchesToMeters(11.5), 60.0, lineWidth, new Color8Bit(Color.kRed)));
 
     setpointLigament.append(
         new MechanismLigament2d(
-            "Intake", Units.inchesToMeters(10.0), 60.0, lineWidth, new Color8Bit(Color.kBlue)));
+            "Intake", Units.inchesToMeters(11.5), 60.0, lineWidth, new Color8Bit(Color.kBlue)));
   }
 
   private void configureMainMotor() {

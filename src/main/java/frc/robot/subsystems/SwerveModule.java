@@ -172,6 +172,9 @@ public class SwerveModule implements Logged {
     driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
     driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
 
+    driveEncoder.setAverageDepth(2);
+    driveEncoder.setMeasurementPeriod(10);
+
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
     driveMotor.setPeriodicFramePeriod(

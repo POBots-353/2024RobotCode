@@ -262,10 +262,12 @@ public final class Constants {
     public static final double manualSpeed = 0.60;
     public static final double preciseManualSpeed = 0.20;
     public static final double angleTolerance = Units.degreesToRadians(0.15);
-    public static final double autoShootAngleTolerance = Units.degreesToRadians(0.3);
+    public static final double autonomousAngleTolerance = Units.degreesToRadians(0.35);
+    public static final double autoShootAngleTolerance = Units.degreesToRadians(0.65);
     public static final double replanningError = Units.degreesToRadians(20.0);
     public static final double debounceTime = 0.50;
     public static final double movementDebounceTime = 0.353;
+    public static final double autoMovementDebounceTime = 0.20;
     public static final double holdDebounceTime = 1.5;
 
     public static final TrapezoidProfile.Constraints profileConstraints =
@@ -286,7 +288,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-4.5);
     public static final double armLength = Units.inchesToMeters(27.5);
-    public static final double armPivotToShooter = Units.inchesToMeters(23.5);
+    public static final double armPivotToShooter = Units.inchesToMeters(14.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
 
     // (distance, angle)
@@ -320,8 +322,8 @@ public final class Constants {
     // (distance, time)
     public static final Point2D[] autoShootTimes =
         new Point2D.Double[] {
-          new Point2D.Double(Units.feetToMeters(8.0), 0.14),
-          new Point2D.Double(Units.feetToMeters(10.0), 0.19),
+          new Point2D.Double(Units.feetToMeters(8.0), 0.24),
+          new Point2D.Double(Units.feetToMeters(10.0), 0.29),
         };
 
     public static final LinearInterpolation autoShootTimeInterpolation =
@@ -426,7 +428,7 @@ public final class Constants {
 
     public static final double driveKs = 0.16022;
     public static final double driveKv = 2.3501;
-    public static final double driveKa = 0.37865;
+    public static final double driveKa = 0.39865;
 
     public static final double turnP = 0.85;
     public static final double turnD = 0;

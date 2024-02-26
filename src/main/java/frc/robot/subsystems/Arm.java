@@ -78,6 +78,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
 
   private Debouncer setpointDebouncer = new Debouncer(ArmConstants.movementDebounceTime);
+  private Debouncer autoDebouncer = new Debouncer(ArmConstants.autoMovementDebounceTime);
 
   private TrapezoidProfile.State previousSetpoint = new TrapezoidProfile.State();
 
@@ -285,6 +286,20 @@ public class Arm extends VirtualSubsystem implements Logged {
       absolutePositionNotSet.set(false);
     }
     mainMotor.setCANTimeout(0);
+  }
+
+  public Command autoMoveToPosition(Rotation2d position) {
+    return new FunctionalCommand(
+            () -> previousSetpoint = getCurrentState(),
+            () -> setDesiredPosition(position),
+            (interrupted) -> setSpeed(0.0),
+            () -> {
+              double positionError = getPosition().getRadians() - position.getRadians();
+              return autoDebouncer.calculate(
+                  Math.abs(positionError) <= ArmConstants.autonomousAngleTolerance);
+            },
+            this)
+        .withName("Arm (Auto) Move to " + position.getDegrees() + " Degrees");
   }
 
   public Command moveToPosition(Rotation2d position) {

@@ -102,34 +102,33 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
     NamedCommands.registerCommand(
-        "Start Intake", intake.intakeUntilBeamBreak().unless(RobotBase::isSimulation));
-    NamedCommands.registerCommand(
-        "Intake Until Beam Break",
-        intake.intakeUntilBeamBreak().withTimeout(1.0).unless(RobotBase::isSimulation));
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
+        "Arm to Pickup",
+        arm.autoMoveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.5).asProxy());
+        arm.autoMoveToPosition(ArmConstants.subwooferAngle).withTimeout(1.5).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
-        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
+        arm.autoMoveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Amp Podium",
-        arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
+        arm.autoMoveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Close Shoot",
-        arm.moveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
+        arm.autoMoveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Wing Shoot",
-        arm.moveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
+        arm.autoMoveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
+        shooter.runOnce(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
     NamedCommands.registerCommand(
         "Shoot",
         intake

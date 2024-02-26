@@ -442,8 +442,13 @@ public class SwerveModule implements Logged {
   }
 
   public void simulationPeriodic() {
-    driveSim.setInput(driveMotor.getAppliedOutput());
-    turnSim.setInput(turnMotor.getAppliedOutput());
+    if (DriverStation.isEnabled()) {
+      driveSim.setInput(driveMotor.getAppliedOutput());
+      turnSim.setInput(turnMotor.getAppliedOutput());
+    } else {
+      driveSim.setInput(0.0);
+      turnSim.setInput(0.0);
+    }
 
     driveSim.update(0.020);
     turnSim.update(0.020);

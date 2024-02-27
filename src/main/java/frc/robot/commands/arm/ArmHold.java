@@ -49,7 +49,7 @@ public class ArmHold extends Command {
     //   arm.setSpeed(0.0);
     //   arm.setProfileSetpoint(arm.getCurrentState());
     // } else {
-    arm.setDesiredPosition(holdPosition);
+    arm.setHoldPosition(holdPosition);
     // }
   }
 

@@ -71,11 +71,14 @@ public class Arm extends VirtualSubsystem implements Logged {
   private PIDController pidController =
       new PIDController(ArmConstants.armKp, ArmConstants.armKi, ArmConstants.armKd);
 
+  private PIDController holdPIDController =
+      new PIDController(ArmConstants.holdKp, ArmConstants.holdKi, ArmConstants.holdKd);
+
   private Alert absolutePositionNotSet =
       new Alert("Arm failed to set to absolute position", AlertType.ERROR);
 
   private final double prematchDelay = 2.5;
-  private final double prematchAngleTolerance = Units.degreesToRadians(1.5);
+  private final double prematchAngleTolerance = Units.degreesToRadians(0.5);
 
   private Debouncer setpointDebouncer = new Debouncer(ArmConstants.movementDebounceTime);
   private Debouncer autoDebouncer = new Debouncer(ArmConstants.autoMovementDebounceTime);
@@ -125,7 +128,6 @@ public class Arm extends VirtualSubsystem implements Logged {
           new SysIdRoutine.Mechanism(
               (volts) -> {
                 mainMotor.setVoltage(volts.in(Volts));
-                // followerMotor.setVoltage(volts.in(Volts));
               },
               null,
               this));
@@ -279,8 +281,8 @@ public class Arm extends VirtualSubsystem implements Logged {
     }
 
     if (failed) {
-      DriverStation.reportError("Failed to set absolute posiiton of arm motor", false);
-      DataLogManager.log("Failed to set absolute posiiton of arm motor");
+      DriverStation.reportError("Failed to set absolute posititon of arm motor", false);
+      DataLogManager.log("Failed to set absolute posititon of arm motor");
       absolutePositionNotSet.set(true);
     } else {
       absolutePositionNotSet.set(false);
@@ -316,7 +318,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         .withName("Arm Move to " + position.getDegrees() + " Degrees");
   }
 
-  public void setProfileState(TrapezoidProfile.State state) {
+  public void setMotionProfileState(TrapezoidProfile.State state) {
     double feedforward =
         armFeedforward.calculate(
             state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
@@ -329,7 +331,21 @@ public class Arm extends VirtualSubsystem implements Logged {
     pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
 
     mainMotor.setVoltage(pidOutput * RobotController.getBatteryVoltage() + feedforward);
-    // followerMotor.setVoltage(pidOutput * mainMotor.getBusVoltage() + feedforward);
+  }
+
+  public void setHoldState(TrapezoidProfile.State state) {
+    double feedforward =
+        armFeedforward.calculate(
+            state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
+
+    previousSetpoint = state;
+
+    log("FeedForward Voltage", feedforward);
+
+    double pidOutput = holdPIDController.calculate(getPosition().getRadians(), state.position);
+    pidOutput = MathUtil.clamp(pidOutput, -1.0, 1.0);
+
+    mainMotor.setVoltage(pidOutput * RobotController.getBatteryVoltage() + feedforward);
   }
 
   public void setDesiredPosition(Rotation2d position) {
@@ -350,12 +366,20 @@ public class Arm extends VirtualSubsystem implements Logged {
       setpoint = armProfile.calculate(0.020, getCurrentState(), goalState);
     }
 
-    setProfileState(setpoint);
+    setMotionProfileState(setpoint);
+  }
+
+  public void setHoldPosition(Rotation2d position) {
+    TrapezoidProfile.State currentState = previousSetpoint;
+    TrapezoidProfile.State goalState = new TrapezoidProfile.State(position.getRadians(), 0.0);
+
+    TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
+
+    setMotionProfileState(setpoint);
   }
 
   public void setSpeed(double speed) {
     mainMotor.setVoltage(speed * RobotController.getBatteryVoltage());
-    // followerMotor.set(speed);
   }
 
   public TrapezoidProfile.State getCurrentState() {

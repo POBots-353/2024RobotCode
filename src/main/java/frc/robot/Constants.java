@@ -247,6 +247,10 @@ public final class Constants {
     public static final double armKi = 0.0;
     public static final double armKd = 0.0;
 
+    public static final double holdKp = 1.50;
+    public static final double holdKi = 0.0;
+    public static final double holdKd = 0.0;
+
     public static final int currentLimit = 50;
 
     public static final double armGearRatio =

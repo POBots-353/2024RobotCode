@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.AutoShootConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
@@ -112,7 +113,7 @@ public class ShootWhileMoving extends Command {
 
     double distance = robotPose.minus(speakerPose.getTranslation()).getNorm();
 
-    double shotTime = ArmConstants.autoShootTimeInterpolation.get(distance);
+    double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
 
     Translation2d virtualGoalLocation = new Translation2d();
 
@@ -125,7 +126,7 @@ public class ShootWhileMoving extends Command {
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
       double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
-      double newShotTime = ArmConstants.autoShootTimeInterpolation.get(newDistance);
+      double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
 
       if (Math.abs(shotTime - newShotTime) <= 0.05) {
         shotTime = newShotTime;
@@ -144,13 +145,13 @@ public class ShootWhileMoving extends Command {
 
     // Calculate arm angle
     Rotation2d armAngle =
-        Rotation2d.fromRadians(ArmConstants.autoShootAngleInterpolation.get(distance));
+        Rotation2d.fromRadians(AutoShootConstants.autoShootAngleInterpolation.get(distance));
     arm.setDesiredPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
     // Shooter speed
-    double motorRPM = ArmConstants.autoShootRPMInterpolation.get(distance);
+    double motorRPM = AutoShootConstants.autoShootRPMInterpolation.get(distance);
 
     shooter.setMotorSpeed(motorRPM);
 

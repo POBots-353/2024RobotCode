@@ -294,7 +294,41 @@ public final class Constants {
     public static final double armLength = Units.inchesToMeters(21.75);
     public static final double armPivotToShooter = Units.inchesToMeters(14.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
+  }
 
+  public static class IntakeConstants {
+    public static final int intakeMotorID = 13;
+
+    public static final double intakeSpeed = 0.90;
+    public static final int intakeCurrentLimit = 60; // Amps
+
+    public static final int beamBreakID = 9;
+  }
+
+  public static class ShooterConstants {
+    public static final int bottomShooterID = 11;
+    public static final int topShooterID = 12;
+
+    public static final double shooterVelocity = 4000.0;
+    public static final double ampVelocity = 750.0;
+
+    public static final double shooterKs = 0.33307;
+    public static final double shooterKv = 0.0020945;
+    public static final double shooterKa = 0.00072307;
+
+    public static final double shooterKp = 0.0045;
+
+    public static final double velocityTolerance = 100.0; // 100.0
+
+    public static final double voltageCompensation = 12.0;
+
+    public static final int shooterCurrentLimit = 60;
+
+    public static final double gearing = 1 / 0.75;
+    public static final double circumference = Math.PI * Units.inchesToMeters(4.0);
+  }
+
+  public static final class AutoShootConstants {
     // (distance, angle)
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
@@ -332,38 +366,6 @@ public final class Constants {
 
     public static final LinearInterpolation autoShootTimeInterpolation =
         new LinearInterpolation(autoShootTimes);
-  }
-
-  public static class IntakeConstants {
-    public static final int intakeMotorID = 13;
-
-    public static final double intakeSpeed = 0.90;
-    public static final int intakeCurrentLimit = 60; // Amps
-
-    public static final int beamBreakID = 9;
-  }
-
-  public static class ShooterConstants {
-    public static final int bottomShooterID = 11;
-    public static final int topShooterID = 12;
-
-    public static final double shooterVelocity = 4000.0;
-    public static final double ampVelocity = 750.0;
-
-    public static final double shooterKs = 0.33307;
-    public static final double shooterKv = 0.0020945;
-    public static final double shooterKa = 0.00072307;
-
-    public static final double shooterKp = 0.0045;
-
-    public static final double velocityTolerance = 100.0; // 100.0
-
-    public static final double voltageCompensation = 12.0;
-
-    public static final int shooterCurrentLimit = 60;
-
-    public static final double gearing = 1 / 0.75;
-    public static final double circumference = Math.PI * Units.inchesToMeters(4.0);
   }
 
   public static final class ClimberConstants {

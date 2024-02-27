@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.AutoShootConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -48,11 +49,11 @@ public class AutoShoot extends Command {
   public void execute() {
     double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
 
-    double angle = ArmConstants.autoShootAngleInterpolation.get(distance);
+    double angle = AutoShootConstants.autoShootAngleInterpolation.get(distance);
     Rotation2d desiredAngle = Rotation2d.fromRadians(angle);
     arm.setDesiredPosition(desiredAngle);
 
-    double motorRPM = ArmConstants.autoShootRPMInterpolation.get(distance);
+    double motorRPM = AutoShootConstants.autoShootRPMInterpolation.get(distance);
     shooter.setMotorSpeed(motorRPM);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", desiredAngle.getDegrees());

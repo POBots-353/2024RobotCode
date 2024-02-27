@@ -162,7 +162,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
             () -> {
               joystick.setButton(OperatorConstants.shootButton, true);
             }),
-        Commands.waitSeconds(10),
+        Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> {
               double velocityDifference =
@@ -172,6 +172,8 @@ public class Shooter extends VirtualSubsystem implements Logged {
               } else {
                 addInfo("Shooter motors at desired velocity");
               }
+
+              joystick.clearVirtualButtons();
             }));
   }
 

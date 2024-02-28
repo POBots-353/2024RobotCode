@@ -304,12 +304,13 @@ public class RobotContainer implements Logged {
                 SwerveConstants.maxAngularSpeed,
                 swerve));
 
-    driverController
-        .x()
-        .whileTrue(
-            new ProxyCommand(
-                () ->
-                    AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathfindingConstraints)));
+    // driverController
+    //     .x()
+    //     .whileTrue(
+    //         new ProxyCommand(
+    //             () ->
+    //                 AutoBuilder.pathfindToPose(swerve.getLeftChainPose(),
+    // pathfindingConstraints)));
 
     driverController
         .y()

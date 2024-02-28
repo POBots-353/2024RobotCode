@@ -161,7 +161,7 @@ public class SwerveModule implements Logged {
     driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp);
     driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp);
 
-    driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
+    driveMotor.disableVoltageCompensation();
     driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit);
 
     driveMotor.setIdleMode(IdleMode.kBrake);
@@ -171,9 +171,6 @@ public class SwerveModule implements Logged {
 
     driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
     driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
-
-    driveEncoder.setAverageDepth(2);
-    driveEncoder.setMeasurementPeriod(10);
 
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
     driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
@@ -195,7 +192,7 @@ public class SwerveModule implements Logged {
 
     turnMotor.setInverted(SwerveConstants.turnMotorInverted);
 
-    turnMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
+    turnMotor.disableVoltageCompensation();
     turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit);
 
     turnMotor.setIdleMode(IdleMode.kCoast);

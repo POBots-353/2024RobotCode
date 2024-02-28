@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8318031430244446,
-      "y": 6.6476240158081055
+      "x": 0.7502669095993042,
+      "y": 6.693497180938721
     },
-    "rotation": -120.46554627073577
+    "rotation": -120.31122089968588
   },
   "command": {
     "type": "sequential",
@@ -65,7 +65,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.7999999999999998
+                        "waitTime": 2.4
                       }
                     },
                     {
@@ -117,18 +117,6 @@
                       "data": {
                         "name": "Stop Intake"
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.7000000000000001
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Start Intake"
-                      }
                     }
                   ]
                 }
@@ -146,13 +134,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3999999999999999
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Warm Up Shooter"
+                        "waitTime": 1.5
                       }
                     }
                   ]
@@ -164,7 +146,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Intake Until Beam Break"
           }
         },
         {

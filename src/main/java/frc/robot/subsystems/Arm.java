@@ -318,7 +318,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         .withName("Arm Move to " + position.getDegrees() + " Degrees");
   }
 
-  public void setMotionProfileState(TrapezoidProfile.State state) {
+  private void setMotionProfileState(TrapezoidProfile.State state) {
     double feedforward =
         armFeedforward.calculate(
             state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
@@ -333,7 +333,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     mainMotor.setVoltage(pidOutput * RobotController.getBatteryVoltage() + feedforward);
   }
 
-  public void setHoldState(TrapezoidProfile.State state) {
+  private void setHoldState(TrapezoidProfile.State state) {
     double feedforward =
         armFeedforward.calculate(
             state.position, state.velocity, (state.velocity - previousSetpoint.velocity) / 0.020);
@@ -375,7 +375,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
 
-    setMotionProfileState(setpoint);
+    setHoldState(setpoint);
   }
 
   public void setSpeed(double speed) {

@@ -93,14 +93,11 @@ public final class Constants {
       public static final Pose2d bottomLeftChainBlueStage =
           new Pose2d(new Translation2d(4.06, 2.89), Rotation2d.fromDegrees(-123.52));
 
-      public static final List<Pose2d> poses =
-          List.of(
-              bottomRightChainRedStage,
-              topRightChainRedStage,
-              leftChainRedStage,
-              rightChainBlueStage,
-              topLeftChainBlueStage,
-              bottomLeftChainBlueStage);
+      public static final List<Pose2d> redSidePoses =
+          List.of(bottomRightChainRedStage, topRightChainRedStage, leftChainRedStage);
+
+      public static final List<Pose2d> blueSidePoses =
+          List.of(rightChainBlueStage, topLeftChainBlueStage, bottomLeftChainBlueStage);
     }
 
     public static final class LeftChainPoses {
@@ -117,14 +114,11 @@ public final class Constants {
       public static final Pose2d bottomLeftChainBlueStage =
           new Pose2d(new Translation2d(3.61, 3.16), Rotation2d.fromDegrees(-123.52));
 
-      public static final List<Pose2d> poses =
-          List.of(
-              bottomRightChainRedStage,
-              topRightChainRedStage,
-              leftChainRedStage,
-              rightChainBlueStage,
-              topLeftChainBlueStage,
-              bottomLeftChainBlueStage);
+      public static final List<Pose2d> redSidePoses =
+          List.of(bottomRightChainRedStage, topRightChainRedStage, leftChainRedStage);
+
+      public static final List<Pose2d> blueSidePoses =
+          List.of(rightChainBlueStage, topLeftChainBlueStage, bottomLeftChainBlueStage);
     }
 
     public static final class RightChainPoses {
@@ -141,14 +135,11 @@ public final class Constants {
       public static final Pose2d bottomLeftChainBlueStage =
           new Pose2d(new Translation2d(4.69, 2.60), Rotation2d.fromDegrees(-123.52));
 
-      public static final List<Pose2d> poses =
-          List.of(
-              bottomRightChainRedStage,
-              topRightChainRedStage,
-              leftChainRedStage,
-              rightChainBlueStage,
-              topLeftChainBlueStage,
-              bottomLeftChainBlueStage);
+      public static final List<Pose2d> redSidePoses =
+          List.of(bottomRightChainRedStage, topRightChainRedStage, leftChainRedStage);
+
+      public static final List<Pose2d> blueSidePoses =
+          List.of(rightChainBlueStage, topLeftChainBlueStage, bottomLeftChainBlueStage);
     }
   }
 

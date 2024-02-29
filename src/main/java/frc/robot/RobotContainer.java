@@ -13,7 +13,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -32,7 +31,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
@@ -104,31 +102,22 @@ public class RobotContainer implements Logged {
 
     NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25));
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
-        "Arm to Pickup",
-        arm.autoMoveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Subwoofer",
-        arm.autoMoveToPosition(ArmConstants.subwooferAngle).withTimeout(1.20).asProxy());
+        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
         "Arm to Source Podium",
-        arm.autoMoveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
+        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Amp Podium",
-        arm.autoMoveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
-    NamedCommands.registerCommand(
-        "Arm to Close Shoot",
-        arm.autoMoveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
-    NamedCommands.registerCommand(
-        "Arm to Wing Shoot",
-        arm.autoMoveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
+        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        shooter.runOnce(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
+        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
     NamedCommands.registerCommand(
         "Shoot",
         intake
@@ -138,7 +127,6 @@ public class RobotContainer implements Logged {
                 () -> {
                   intake.stopIntakeMotor();
                   shooter.stopMotor();
-                  NoteVisualizer.shoot().schedule();
                 }));
 
     configureAutoChooser();
@@ -149,16 +137,9 @@ public class RobotContainer implements Logged {
     LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
     LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
 
-    if (RobotBase.isSimulation()) {
-      NoteVisualizer.startPublishers();
-      NoteVisualizer.setSuppliers(swerve::getPose, arm::getPosition, shooter::getBottomVelocity);
-    }
-
     leds.setDefaultCommand(new RSLSync(leds));
 
     arm.setDefaultCommand(new ArmHold(arm));
-
-    shooter.setDefaultCommand(shooter.runOnce(() -> shooter.stopMotor()).ignoringDisable(true));
 
     swerve.setDefaultCommand(
         new TeleopSwerve(
@@ -306,13 +287,12 @@ public class RobotContainer implements Logged {
                 SwerveConstants.maxAngularSpeed,
                 swerve));
 
-    // driverController
-    //     .x()
-    //     .whileTrue(
-    //         new ProxyCommand(
-    //             () ->
-    //                 AutoBuilder.pathfindToPose(swerve.getLeftChainPose(),
-    // pathfindingConstraints)));
+    driverController
+        .x()
+        .whileTrue(
+            new ProxyCommand(
+                () ->
+                    AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathfindingConstraints)));
 
     driverController
         .y()
@@ -345,17 +325,21 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.manualFeedButton)
         .whileTrue(intake.autoFeedToShooter())
-        .onFalse(
-            intake
-                .runOnce(intake::stopIntakeMotor)
-                .alongWith(NoteVisualizer.shoot())
-                .ignoringDisable(true));
+        .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
 
     operatorStick
         .button(OperatorConstants.manualShootButton)
         .whileTrue(
             shooter
-                .run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity))
+                .run(
+                    () -> {
+                      if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
+                        shooter.setMotorSpeed(ShooterConstants.ampVelocity);
+        
+                      } else {
+                          shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+                      }
+                    })
                 .finallyDo(shooter::stopMotor))
         .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
 
@@ -447,7 +431,7 @@ public class RobotContainer implements Logged {
             new ShootWhileMoving(
                 driverController::getLeftY,
                 driverController::getLeftX,
-                SwerveConstants.slowMotionMaxTranslationalSpeed,
+                SwerveConstants.maxTranslationalSpeed,
                 arm,
                 intake,
                 shooter,

@@ -803,15 +803,27 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Pose2d getCenterChainPose() {
-    return getNearestChain(CenterChainPoses.poses);
+    if (AllianceUtil.isRedAlliance()) {
+      return getNearestChain(CenterChainPoses.redSidePoses);
+    } else {
+      return getNearestChain(CenterChainPoses.blueSidePoses);
+    }
   }
 
   public Pose2d getRightChainPose() {
-    return getNearestChain(RightChainPoses.poses);
+    if (AllianceUtil.isRedAlliance()) {
+      return getNearestChain(RightChainPoses.redSidePoses);
+    } else {
+      return getNearestChain(RightChainPoses.blueSidePoses);
+    }
   }
 
   public Pose2d getLeftChainPose() {
-    return getNearestChain(LeftChainPoses.poses);
+    if (AllianceUtil.isRedAlliance()) {
+      return getNearestChain(LeftChainPoses.redSidePoses);
+    } else {
+      return getNearestChain(LeftChainPoses.blueSidePoses);
+    }
   }
 
   public void updateVisionPoseEstimates() {

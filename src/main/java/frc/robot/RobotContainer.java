@@ -112,7 +112,7 @@ public class RobotContainer implements Logged {
         arm.autoMoveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.autoMoveToPosition(ArmConstants.subwooferAngle).withTimeout(1.5).asProxy());
+        arm.autoMoveToPosition(ArmConstants.subwooferAngle).withTimeout(1.20).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.autoMoveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
@@ -157,6 +157,8 @@ public class RobotContainer implements Logged {
     leds.setDefaultCommand(new RSLSync(leds));
 
     arm.setDefaultCommand(new ArmHold(arm));
+
+    shooter.setDefaultCommand(shooter.runOnce(() -> shooter.stopMotor()).ignoringDisable(true));
 
     swerve.setDefaultCommand(
         new TeleopSwerve(

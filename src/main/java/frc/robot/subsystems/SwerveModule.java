@@ -161,7 +161,7 @@ public class SwerveModule implements Logged {
     driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp);
     driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp);
 
-    driveMotor.disableVoltageCompensation();
+    driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
     driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit);
 
     driveMotor.setIdleMode(IdleMode.kBrake);
@@ -360,6 +360,10 @@ public class SwerveModule implements Logged {
     } else {
       return Rotation2d.fromRadians(simAngle);
     }
+  }
+
+  public double getVoltage() {
+    return driveMotor.getAppliedOutput() * driveMotor.getBusVoltage();
   }
 
   public Rotation2d getAbsoluteAngle() {

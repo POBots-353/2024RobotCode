@@ -217,7 +217,7 @@ public class Arm extends VirtualSubsystem implements Logged {
     armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
     mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
-    mainMotor.enableVoltageCompensation(12.3);
+    mainMotor.enableVoltageCompensation(12.0);
 
     mainMotor.setIdleMode(IdleMode.kBrake);
 

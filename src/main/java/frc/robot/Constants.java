@@ -238,9 +238,9 @@ public final class Constants {
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
 
-    public static final double armKg = 0.29434;
-    public static final double armKs = 0.11941;
-    public static final double armKv = 6.38235;
+    public static final double armKg = 0.10175;
+    public static final double armKs = 0.22958;
+    public static final double armKv = 7.5499;
     public static final double armKa = 0.000001358;
 
     public static final double armKp = 2.55;
@@ -278,10 +278,10 @@ public final class Constants {
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
-    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(38.2);
+    public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
-    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(26.5);
+    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.75);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
@@ -300,7 +300,7 @@ public final class Constants {
     public static final int intakeMotorID = 13;
 
     public static final double intakeSpeed = 0.90;
-    public static final int intakeCurrentLimit = 80; // Amps
+    public static final int intakeCurrentLimit = 50; // Amps
 
     public static final int beamBreakID = 9;
   }
@@ -316,7 +316,7 @@ public final class Constants {
     public static final double shooterKv = 0.0020945;
     public static final double shooterKa = 0.00072307;
 
-    public static final double shooterKp = 0.0045;
+    public static final double shooterKp = 0.0015;
 
     public static final double velocityTolerance = 100.0; // 100.0
 
@@ -416,7 +416,7 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelCircumference = Units.inchesToMeters(4) * Math.PI;
+    public static final double wheelCircumference = Units.inchesToMeters(3.977) * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
 
@@ -434,11 +434,11 @@ public final class Constants {
     public static final double skewOpenLoopFudgeFactor = 0.100;
     public static final double skewClosedLoopFudgeFactor = 0.060;
 
-    public static final double driveP = 0.02;
+    public static final double driveP = 0.08;
 
-    public static final double driveKs = 0.20761;
-    public static final double driveKv = 2.4019;
-    public static final double driveKa = 0.000018598;
+    public static final double driveKs = 0.27332;
+    public static final double driveKv = 2.4366;
+    public static final double driveKa = 0.0 * 0.22997;
 
     public static final double turnP = 0.85;
     public static final double turnD = 0;
@@ -449,12 +449,12 @@ public final class Constants {
     public static final double turnToAngleMaxVelocity = Units.degreesToRadians(270.0);
 
     public static final double openLoopRamp = 0.15;
-    public static final double closedLoopRamp = 0.0;
+    public static final double closedLoopRamp = 0.09;
 
     public static final double voltageCompensation = 12.0;
 
-    public static final int driveCurrentLimit = 60;
-    public static final int turnCurrentLimit = 40;
+    public static final int driveCurrentLimit = 35;
+    public static final int turnCurrentLimit = 20;
 
     public static final double maxDriveTemperature = 50.0;
     public static final double maxTurnTemperature = 50.0;

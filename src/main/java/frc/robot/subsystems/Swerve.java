@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -161,7 +164,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
-          new SysIdRoutine.Config(),
+          new SysIdRoutine.Config(Volts.per(Second).of(1.0), Volts.of(4.0), null, null),
           new SysIdRoutine.Mechanism(
               (volts) -> {
                 frontLeftModule.setCharacterizationVolts(volts.in(Volts));
@@ -170,7 +173,27 @@ public class Swerve extends VirtualSubsystem implements Logged {
                 backLeftModule.setCharacterizationVolts(volts.in(Volts));
                 backRightModule.setCharacterizationVolts(volts.in(Volts));
               },
-              null,
+              t -> {
+                t.motor("Front Left")
+                    .linearVelocity(MetersPerSecond.of(frontLeftModule.getVelocity()))
+                    .linearPosition(Meters.of(frontLeftModule.getPosition()))
+                    .voltage(Volts.of(frontLeftModule.getVoltage()));
+
+                t.motor("Front Right")
+                    .linearVelocity(MetersPerSecond.of(frontRightModule.getVelocity()))
+                    .linearPosition(Meters.of(frontRightModule.getPosition()))
+                    .voltage(Volts.of(frontRightModule.getVoltage()));
+
+                t.motor("Back Left")
+                    .linearVelocity(MetersPerSecond.of(backLeftModule.getVelocity()))
+                    .linearPosition(Meters.of(backLeftModule.getPosition()))
+                    .voltage(Volts.of(backLeftModule.getVoltage()));
+
+                t.motor("Back Right")
+                    .linearVelocity(MetersPerSecond.of(backRightModule.getVelocity()))
+                    .linearPosition(Meters.of(backRightModule.getPosition()))
+                    .voltage(Volts.of(backLeftModule.getVoltage()));
+              },
               this));
 
   private Field2d field = new Field2d();
@@ -622,6 +645,22 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return false;
     }
 
+    if (DriverStation.isAutonomous()) {
+      if (detectedTargets < 2) {
+        return false;
+      }
+
+      ChassisSpeeds currentSpeeds = getChassisSpeeds();
+
+      double velocityTolerance = Units.inchesToMeters(1.5);
+
+      if (Math.abs(currentSpeeds.vxMetersPerSecond) > velocityTolerance
+          || Math.abs(currentSpeeds.vyMetersPerSecond) > velocityTolerance
+          || Math.abs(currentSpeeds.omegaRadiansPerSecond) > Units.degreesToRadians(1.0)) {
+        return false;
+      }
+    }
+
     if (distance > 3.5 && detectedTargets < 2) {
       return false;
     }
@@ -813,9 +852,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backLeftModule.periodic();
     backRightModule.periodic();
 
-    if (!DriverStation.isAutonomous()) {
-      updateVisionPoseEstimates();
-    }
+    updateVisionPoseEstimates();
 
     odometryLock.lock();
     field.setRobotPose(poseEstimator.getEstimatedPosition());

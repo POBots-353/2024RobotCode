@@ -39,6 +39,8 @@ public class Intake extends VirtualSubsystem implements Logged {
     for (int i = 0; i < 5; i++) {
       intakeMotor.setInverted(true);
       intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
+      intakeMotor.setSecondaryCurrentLimit(IntakeConstants.shutoffCurrentLimit);
+      intakeMotor.setOpenLoopRampRate(0.01);
       intakeMotor.setIdleMode(IdleMode.kBrake);
 
       intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
@@ -126,21 +128,6 @@ public class Intake extends VirtualSubsystem implements Logged {
                 addInfo("Intake Motor is moving");
               }
               joystick.clearVirtualButtons();
-            }),
-        Commands.waitSeconds(0.5),
-        // Checks IR Beam Break functionality
-        Commands.runOnce(
-            () -> {
-              joystick.setButton(OperatorConstants.intakeNoteButton, true);
-            }),
-        Commands.waitSeconds(prematchDelay),
-        Commands.runOnce(
-            () -> {
-              if (beamBroken() && getVelocity() != 0) {
-                addError("IR Break Beam isn't stopping the motor");
-              } else {
-                addInfo("IR Break Beak is functioning");
-              }
             }),
         Commands.runOnce(
             () -> {

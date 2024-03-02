@@ -229,11 +229,9 @@ public final class Constants {
 
     public static final Rotation2d absoluteOffset = Rotation2d.fromDegrees(265.89294);
 
-    public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
-
-    public static final double armKg = 0.10175;
-    public static final double armKs = 0.22958;
-    public static final double armKv = 7.5499;
+    public static final double armKg = 0.13175;
+    public static final double armKs = 0.12958;
+    public static final double armKv = 7.6843;
     public static final double armKa = 0.000001358;
 
     public static final double armKp = 2.55;
@@ -271,13 +269,19 @@ public final class Constants {
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
+    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
+    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
+
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.75);
-    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
-    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
-    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
+    public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
+    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(30.0);
+    public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
+    
+    public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
 
     public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
@@ -293,7 +297,8 @@ public final class Constants {
     public static final int intakeMotorID = 13;
 
     public static final double intakeSpeed = 0.90;
-    public static final int intakeCurrentLimit = 50; // Amps
+    public static final int intakeCurrentLimit = 40; // Amps
+    public static final int shutoffCurrentLimit = 55;
 
     public static final int beamBreakID = 9;
   }
@@ -442,12 +447,12 @@ public final class Constants {
     public static final double turnToAngleMaxVelocity = Units.degreesToRadians(270.0);
 
     public static final double openLoopRamp = 0.15;
-    public static final double closedLoopRamp = 0.09;
+    public static final double closedLoopRamp = 0.04;
 
     public static final double voltageCompensation = 12.0;
 
     public static final int driveCurrentLimit = 35;
-    public static final int turnCurrentLimit = 20;
+    public static final int turnCurrentLimit = 25;
 
     public static final double maxDriveTemperature = 50.0;
     public static final double maxTurnTemperature = 50.0;
@@ -473,27 +478,27 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(86.044921875);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(87.1875);
   }
 
   public static class FrontRightModule {
     public static final int driveID = 1;
     public static final int turnID = 5;
     public static final int encoderID = 9;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-124.365234375);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-127.17773437499999);
   }
 
   public static class BackLeftModule {
     public static final int driveID = 2;
     public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.525390625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.349609375);
   }
 
   public static final class BackRightModule {
     public static final int driveID = 4;
     public static final int turnID = 8;
     public static final int encoderID = 12;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-77.080078125);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-76.9921875);
   }
 }

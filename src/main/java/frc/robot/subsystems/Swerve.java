@@ -914,7 +914,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(0.2),
         Commands.runOnce(
             () -> {
-              if (Math.abs(getHeading().getDegrees()) > 0.05) {
+              Rotation2d rotationOffset =
+                  (SwerveConstants.zeroWithIntakeForward)
+                      ? Rotation2d.fromDegrees(180.0)
+                      : Rotation2d.fromDegrees(0.0);
+              if (Math.abs(getHeading().plus(rotationOffset).getDegrees()) > 0.05) {
                 addError("Gyro failed to zero");
               } else {
                 addInfo("Gyro zero successful");
@@ -936,7 +940,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDriveDelay),
         Commands.runOnce(
             () -> {
-              if (getChassisSpeeds().vxMetersPerSecond < Units.feetToMeters(10.0)) {
+              double forwardSpeed = getChassisSpeeds().vxMetersPerSecond;
+              double forwardSpeedSign = Math.signum(forwardSpeed);
+              double desiredSign = (SwerveConstants.zeroWithIntakeForward) ? -1.0 : 1.0;
+
+              if (Math.abs(forwardSpeed) < Units.feetToMeters(10.0)
+                  && forwardSpeedSign == desiredSign) {
                 addError("Forward speed too slow");
               } else if (Math.abs(getChassisSpeeds().vyMetersPerSecond)
                   > prematchTranslationalTolerance) {
@@ -968,7 +977,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDriveDelay),
         Commands.runOnce(
             () -> {
-              if (getChassisSpeeds().vxMetersPerSecond > Units.feetToMeters(-10.0)) {
+              double backwardSpeed = getChassisSpeeds().vxMetersPerSecond;
+              double backwardSpeedSign = Math.signum(backwardSpeed);
+              double desiredSign = (SwerveConstants.zeroWithIntakeForward) ? 1.0 : -1.0;
+
+              if (Math.abs(backwardSpeed) < Units.feetToMeters(10.0)
+                  && backwardSpeedSign == desiredSign) {
                 addError("Backward speed too slow");
               } else if (Math.abs(getChassisSpeeds().vyMetersPerSecond)
                   > prematchTranslationalTolerance) {
@@ -988,7 +1002,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDriveDelay),
         Commands.runOnce(
             () -> {
-              if (getChassisSpeeds().vyMetersPerSecond < Units.feetToMeters(10.0)) {
+              double strafeSpeed = getChassisSpeeds().vyMetersPerSecond;
+              double strafeSign = Math.signum(strafeSpeed);
+              double desiredSign = (SwerveConstants.zeroWithIntakeForward) ? 1.0 : -1.0;
+
+              if (Math.abs(strafeSpeed) < Units.feetToMeters(10.0) && strafeSign == desiredSign) {
                 addError("Left speed too slow");
               } else if (Math.abs(getChassisSpeeds().vxMetersPerSecond)
                   > prematchTranslationalTolerance) {
@@ -1008,7 +1026,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDriveDelay),
         Commands.runOnce(
             () -> {
-              if (getChassisSpeeds().vyMetersPerSecond > Units.feetToMeters(-10.0)) {
+              double strafeSpeed = getChassisSpeeds().vyMetersPerSecond;
+              double strafeSign = Math.signum(strafeSpeed);
+              double desiredSign = (SwerveConstants.zeroWithIntakeForward) ? -1.0 : 1.0;
+
+              if (Math.abs(strafeSpeed) > Units.feetToMeters(10.0) && strafeSign == desiredSign) {
                 addError("Right speed too slow");
               } else if (Math.abs(getChassisSpeeds().vxMetersPerSecond)
                   > prematchTranslationalTolerance) {

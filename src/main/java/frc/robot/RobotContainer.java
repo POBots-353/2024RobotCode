@@ -90,6 +90,7 @@ public class RobotContainer implements Logged {
   private List<Alert> alerts = new ArrayList<Alert>();
   private Alert armPrematchAlert = new Alert("", AlertType.INFO);
   private Alert intakePrematchAlert = new Alert("", AlertType.INFO);
+  private Alert shooterPrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
 
@@ -113,7 +114,23 @@ public class RobotContainer implements Logged {
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Amp Podium", arm.moveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0));
+        "Arm to Amp Podium",
+        arm.autoMoveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Close Shoot",
+        arm.autoMoveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Wing Shoot",
+        arm.autoMoveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Amp Wing",
+        arm.autoMoveToPosition(ArmConstants.autoAmpWingAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Behind W1",
+        arm.autoMoveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Behind W2",
+        arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
@@ -618,9 +635,26 @@ public class RobotContainer implements Logged {
                   if (intake.containsErrors()) {
                     intakePrematchAlert = new Alert("Intake Pre-Match Failed!", AlertType.ERROR);
                   } else {
-                    armPrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
+                    intakePrematchAlert = new Alert("Intake Pre-Match Successful!", AlertType.INFO);
                   }
                   addAlert(intakePrematchAlert);
+                });
+
+    Command shooterPrematch =
+        shooter
+            .buildPrematch(driverController, operatorStick)
+            .finallyDo(
+                (interrupted) -> {
+                  shooterPrematchAlert.removeFromGroup();
+                  alerts.remove(shooterPrematchAlert);
+
+                  if (shooter.containsErrors()) {
+                    shooterPrematchAlert = new Alert("Shooter Pre-Match Failed!", AlertType.ERROR);
+                  } else {
+                    shooterPrematchAlert =
+                        new Alert("Shooter Pre-Match Successful!", AlertType.INFO);
+                  }
+                  addAlert(shooterPrematchAlert);
                 });
 
     SmartDashboard.putData(
@@ -634,6 +668,7 @@ public class RobotContainer implements Logged {
                 swervePreMatch.asProxy(),
                 armPrematch.asProxy(),
                 intakePrematch.asProxy(),
+                shooterPrematch.asProxy(),
                 Commands.runOnce(
                     () -> {
                       if (!errorsPresent()) {
@@ -650,6 +685,7 @@ public class RobotContainer implements Logged {
     SmartDashboard.putData("Swerve/Swerve Pre-Match Check", swervePreMatch.asProxy());
     SmartDashboard.putData("Arm/Arm Pre-Match Check", armPrematch.asProxy());
     SmartDashboard.putData("Intake/Intake Pre-Match Check", intakePrematch.asProxy());
+    SmartDashboard.putData("Shooter/Shooter Pre-Match Check", shooterPrematch.asProxy());
   }
 
   private void clearPrematchAlerts() {

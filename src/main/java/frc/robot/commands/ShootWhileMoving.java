@@ -81,7 +81,7 @@ public class ShootWhileMoving extends Command {
     turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake, shooter, swerve);
+    addRequirements(arm, intake, shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -186,13 +186,13 @@ public class ShootWhileMoving extends Command {
 
     angularSpeed = MathUtil.clamp(angularSpeed, -0.8, 0.8);
 
-    swerve.driveFieldOriented(
-        forwardMetersPerSecond,
-        strafeMetersPerSecond,
-        angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
-        true,
-        true,
-        false);
+    // swerve.driveFieldOriented(
+    //     forwardMetersPerSecond,
+    //     strafeMetersPerSecond,
+    //     angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
+    //     true,
+    //     true,
+    //     false);
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
@@ -201,9 +201,10 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
     if (setpointDebouncer.calculate(
-            Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-                && shooterError < ShooterConstants.velocityTolerance)
-        && Math.abs(driveAngleError.getDegrees()) <= 7.00) {
+        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
+            && shooterError < ShooterConstants.velocityTolerance)
+    // && Math.abs(driveAngleError.getDegrees()) <= 7.00
+    ) {
       intake.feedToShooter();
 
       if (!simShotNote) {

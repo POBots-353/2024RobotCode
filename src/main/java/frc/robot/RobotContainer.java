@@ -107,12 +107,13 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
+        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
-        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.25));
+        "Arm to Subwoofer",
+        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.25).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
-        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
+        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Amp Podium",
         arm.autoMoveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
@@ -122,6 +123,9 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Wing Shoot",
         arm.autoMoveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Center Wing Shoot",
+        arm.autoMoveToPosition(ArmConstants.autoCenterWingShotAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Amp Wing",
         arm.autoMoveToPosition(ArmConstants.autoAmpWingAngle).withTimeout(3.0).asProxy());
@@ -207,11 +211,17 @@ public class RobotContainer implements Logged {
         .leftStick()
         .and(driverController.rightStick())
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      swerve.resetModulesToAbsolute();
-                      arm.resetToAbsolute();
-                    })
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          arm.resetToAbsolute();
+                          swerve.reconfigureTurnMotors();
+                        }),
+                    Commands.waitSeconds(1.0),
+                    Commands.runOnce(
+                        () -> {
+                          swerve.resetModulesToAbsolute();
+                        }))
                 .ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
@@ -343,33 +353,6 @@ public class RobotContainer implements Logged {
         .button(OperatorConstants.manualFeedButton)
         .whileTrue(intake.autoFeedToShooter())
         .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
-
-    operatorStick
-        .button(OperatorConstants.manualShootButton)
-        .whileTrue(
-            shooter
-                .run(
-                    () -> {
-                      if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
-                        shooter.setMotorSpeed(ShooterConstants.ampVelocity);
-                      } else {
-                        shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
-                      }
-                    })
-                .finallyDo(shooter::stopMotor))
-        .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
-
-    // operatorStick
-    //     .button(OperatorConstants.manualShootButton)
-    //     .whileTrue(
-    //         shooter
-    //             .run(
-    //                 () ->
-    //                     shooter.setMotorSpeedDifferential(
-    //                         ShooterConstants.shooterVelocity,
-    //                         ShooterConstants.shooterVelocity - 200))
-    //             .finallyDo(shooter::stopMotor))
-    //     .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
   }
 
   private void configureClimbingBindings() {
@@ -447,7 +430,7 @@ public class RobotContainer implements Logged {
             new ShootWhileMoving(
                 driverController::getLeftY,
                 driverController::getLeftX,
-                SwerveConstants.maxTranslationalSpeed,
+                SwerveConstants.slowMotionMaxTranslationalSpeed,
                 arm,
                 intake,
                 shooter,
@@ -467,18 +450,45 @@ public class RobotContainer implements Logged {
   private void configureShooterBindings() {
     Trigger ampShooter = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
 
-    operatorStick
-        .button(OperatorConstants.shootButton)
-        .and(ampShooter.negate())
-        .whileTrue(
-            Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
-        .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
+    // operatorStick
+    //     .button(OperatorConstants.shootButton)
+    //     .and(ampShooter.negate())
+    //     .whileTrue(
+    //         Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
+    //     .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
+
+    // operatorStick
+    //     .button(OperatorConstants.shootButton)
+    //     .and(ampShooter)
+    //     .whileTrue(Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.ampVelocity),
+    // shooter))
+    //     .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
 
     operatorStick
-        .button(OperatorConstants.shootButton)
-        .and(ampShooter)
-        .whileTrue(Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.ampVelocity), shooter))
-        .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
+        .button(OperatorConstants.manualShootButton)
+        .whileTrue(
+            shooter
+                .run(
+                    () -> {
+                      if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
+                        shooter.setMotorSpeed(ShooterConstants.ampVelocity);
+                      } else {
+                        shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+                      }
+                    })
+                .ignoringDisable(true)
+                .finallyDo(shooter::stopMotor))
+        .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
+
+    // operatorStick
+    //     .button(OperatorConstants.manualShootButton)
+    //     .whileTrue(
+    //         shooter
+    //             .run(
+    //                 () -> shooter.setMotorSpeedDifferential(ShooterConstants.shooterVelocity,
+    // ShooterConstants.shooterVelocity))
+    //             .finallyDo(shooter::stopMotor))
+    //     .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
   }
 
   private void configureAutoChooser() {

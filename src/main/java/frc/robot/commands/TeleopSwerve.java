@@ -37,7 +37,7 @@ public class TeleopSwerve extends Command {
   private PIDController turnToAngleController =
       new PIDController(SwerveConstants.headingP, 0, SwerveConstants.headingD);
 
-  private final boolean isOpenLoop = false;
+  private final boolean isOpenLoop = true;
 
   /** Creates a new TeleopSwerve. */
   public TeleopSwerve(

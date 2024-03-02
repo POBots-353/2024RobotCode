@@ -280,7 +280,7 @@ public final class Constants {
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
     public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(30.0);
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
-    
+
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
 
     public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);

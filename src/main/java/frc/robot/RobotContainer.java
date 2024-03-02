@@ -103,13 +103,13 @@ public class RobotContainer implements Logged {
 
     NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(1.0));
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25));
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
 
     NamedCommands.registerCommand(
         "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0));
     NamedCommands.registerCommand(
-        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(3.0));
+        "Arm to Subwoofer", arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.25));
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0));
@@ -352,9 +352,8 @@ public class RobotContainer implements Logged {
                     () -> {
                       if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
                         shooter.setMotorSpeed(ShooterConstants.ampVelocity);
-        
                       } else {
-                          shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+                        shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
                       }
                     })
                 .finallyDo(shooter::stopMotor))

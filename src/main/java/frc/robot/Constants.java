@@ -310,9 +310,13 @@ public final class Constants {
     public static final double shooterVelocity = 4000.0;
     public static final double ampVelocity = 750.0;
 
-    public static final double shooterKs = 0.33307;
-    public static final double shooterKv = 0.0020945;
-    public static final double shooterKa = 0.00072307;
+    public static final double topShooterKs = 0.33307;
+    public static final double topShooterKv = 0.0020945;
+    public static final double topShooterKa = 0.00072307;
+
+    public static final double bottomShooterKs = 0.33307;
+    public static final double bottomShooterKv = 0.0020945;
+    public static final double bottomShooterKa = 0.00072307;
 
     public static final double shooterKp = 0.0015;
 

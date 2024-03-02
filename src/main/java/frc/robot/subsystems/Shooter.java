@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -14,7 +18,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,19 +41,34 @@ public class Shooter extends VirtualSubsystem implements Logged {
   private RelativeEncoder bottomEncoder = bottomShooter.getEncoder();
   private RelativeEncoder topEncoder = topShooter.getEncoder();
 
-  private SimpleMotorFeedforward shooterFeedforward =
+  private SimpleMotorFeedforward topFeedforward =
       new SimpleMotorFeedforward(
-          ShooterConstants.shooterKs, ShooterConstants.shooterKv, ShooterConstants.shooterKa);
+          ShooterConstants.topShooterKs,
+          ShooterConstants.topShooterKv,
+          ShooterConstants.topShooterKa);
+
+  private SimpleMotorFeedforward bottomFeedforward =
+      new SimpleMotorFeedforward(
+          ShooterConstants.bottomShooterKs,
+          ShooterConstants.bottomShooterKv,
+          ShooterConstants.bottomShooterKa);
 
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(
               (volts) -> {
-                bottomShooter.setVoltage(volts.in(Units.Volts));
-                topShooter.setVoltage(volts.in(Units.Volts));
+                bottomShooter.setVoltage(volts.in(Volts));
+                topShooter.setVoltage(volts.in(Volts));
               },
-              null,
+              log -> {
+                log.motor("Top")
+                    .angularVelocity(Rotations.per(Minute).of(topEncoder.getVelocity()))
+                    .angularPosition(Rotations.of(topEncoder.getPosition()));
+                log.motor("Bottom")
+                    .angularVelocity(Rotations.per(Minute).of(bottomEncoder.getVelocity()))
+                    .angularPosition(Rotations.of(bottomEncoder.getPosition()));
+              },
               this));
 
   private SparkPIDController bottomPID = bottomShooter.getPIDController();
@@ -101,21 +119,21 @@ public class Shooter extends VirtualSubsystem implements Logged {
   }
 
   public void setMotorSpeed(double velocity) {
-    double feedForward = shooterFeedforward.calculate(velocity);
+    double topFF = topFeedforward.calculate(velocity);
+    double bottomFF = bottomFeedforward.calculate(velocity);
 
-    bottomPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
-    topPID.setReference(velocity, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+    bottomPID.setReference(velocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
+    topPID.setReference(velocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
 
     velocitySetpoint = velocity;
   }
 
   public void setMotorSpeedDifferential(double topVelocity, double bottomVelocity) {
-    double topFeedforward = shooterFeedforward.calculate(topVelocity);
-    double bottomFeedforward = shooterFeedforward.calculate(bottomVelocity);
+    double topFF = topFeedforward.calculate(topVelocity);
+    double bottomFF = bottomFeedforward.calculate(bottomVelocity);
 
-    topPID.setReference(topVelocity, ControlType.kVelocity, 0, topFeedforward, ArbFFUnits.kVoltage);
-    bottomPID.setReference(
-        bottomVelocity, ControlType.kVelocity, 0, bottomFeedforward, ArbFFUnits.kVoltage);
+    topPID.setReference(topVelocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
+    bottomPID.setReference(bottomVelocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
   }
 
   public void stopMotor() {

@@ -77,7 +77,7 @@ public class Arm extends VirtualSubsystem implements Logged {
   private Alert absolutePositionNotSet =
       new Alert("Arm failed to set to absolute position", AlertType.ERROR);
 
-  private final double prematchDelay = 2.5;
+  private final double prematchDelay = 1.5;
   private final double prematchAngleTolerance = Units.degreesToRadians(0.5);
 
   private Debouncer setpointDebouncer = new Debouncer(ArmConstants.movementDebounceTime);
@@ -497,7 +497,7 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> {
               joystick.setButton(OperatorConstants.armToAmp, true);
             }),
-        Commands.waitSeconds(prematchDelay),
+        Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> {
               if (Math.abs(getPosition().getRadians() - ArmConstants.ampAngle.getRadians())

@@ -52,7 +52,6 @@ import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
 import java.util.List;
 import monologue.Logged;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -68,7 +67,6 @@ public class RobotContainer implements Logged {
   private Shooter shooter = new Shooter();
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
-  private Timer timer = new Timer();
 
   private final PathConstraints pathfindingConstraints =
       new PathConstraints(
@@ -184,7 +182,7 @@ public class RobotContainer implements Logged {
         
 
 
-        new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kRed, leds));
+        new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kOrange, leds).withTimeout(3));
 
   }
 

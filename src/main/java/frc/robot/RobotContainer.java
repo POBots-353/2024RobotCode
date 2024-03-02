@@ -126,6 +126,15 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Wing Shoot",
         arm.autoMoveToPosition(ArmConstants.autoWingShotAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Amp Wing",
+        arm.autoMoveToPosition(ArmConstants.autoAmpWingAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Behind W1",
+        arm.autoMoveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Behind W2",
+        arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",

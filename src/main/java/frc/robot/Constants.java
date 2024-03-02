@@ -269,13 +269,17 @@ public final class Constants {
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
+    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
+    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
+
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.75);
-    public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
-    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
-    public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
+    public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
+    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(30.0);
+    public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
 
     public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);

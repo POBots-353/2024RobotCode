@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -54,7 +55,7 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
   private final double setpointDebounceTime = 0.30;
-  private final double feedTime = 0.0 * 0.250;
+  private final double feedTime = 0.250;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
@@ -95,6 +96,9 @@ public class ShootWhileMoving extends Command {
 
     setpointDebouncer.calculate(false);
     simShotNote = false;
+
+    accelXFilter.reset();
+    accelYFilter.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -207,7 +211,7 @@ public class ShootWhileMoving extends Command {
     ) {
       intake.feedToShooter();
 
-      if (!simShotNote) {
+      if (!simShotNote && RobotBase.isSimulation()) {
         NoteVisualizer.shoot().beforeStarting(Commands.waitSeconds(0.250)).schedule();
 
         simShotNote = true;

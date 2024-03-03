@@ -70,9 +70,6 @@ public class SwerveModule implements Logged {
   @Log.NT private double characterizationVolts = 0.0;
   @Log.NT private boolean characterizing = false;
 
-  private Alert driveConfigFailed;
-  private Alert turnConfigFailed;
-
   private Alert noAbsoluteValue;
   private Alert motorPositionNotSet;
 
@@ -87,11 +84,6 @@ public class SwerveModule implements Logged {
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
     this.moduleName = moduleName;
     this.angleOffset = angleOffset;
-
-    driveConfigFailed =
-        new Alert("Failed to configure drive motor for " + moduleName, AlertType.ERROR);
-    turnConfigFailed =
-        new Alert("Failed to configure turn motor for " + moduleName, AlertType.ERROR);
 
     noAbsoluteValue =
         new Alert("No absolute angle received for " + moduleName + ".", AlertType.ERROR);
@@ -130,32 +122,6 @@ public class SwerveModule implements Logged {
   private void configureMotors() {
     configureDriveMotor();
     configureTurnMotor();
-
-    // boolean driveFailed = true;
-    // boolean turnFailed = true;
-
-    // for (int i = 0; i < 5; i++) {
-    //   configureDriveMotor();
-    //   if (driveMotor.getLastError() == REVLibError.kOk) {
-    //     driveFailed = false;
-    //     break;
-    //   }
-    // }
-    // if (driveFailed) {
-    //   driveConfigFailed.set(true);
-    // }
-
-    // for (int i = 0; i < 5; i++) {
-    //   configureTurnMotor();
-
-    //   if (turnMotor.getLastError() == REVLibError.kOk) {
-    //     turnFailed = false;
-    //     break;
-    //   }
-    // }
-    // if (turnFailed) {
-    //   turnConfigFailed.set(true);
-    // }
   }
 
   public void configureDriveMotor() {
@@ -191,38 +157,6 @@ public class SwerveModule implements Logged {
         () ->
             driveMotor.setPeriodicFramePeriod(
                 PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
-
-    // driveMotor.setCANTimeout(100);
-
-    // driveMotor.restoreFactoryDefaults();
-
-    // driveMotor.setInverted(SwerveConstants.driveMotorInverted);
-
-    // driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp);
-    // driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp);
-
-    // driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
-    // driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit);
-
-    // driveMotor.setIdleMode(IdleMode.kBrake);
-
-    // drivePID.setP(SwerveConstants.driveP);
-    // drivePID.setOutputRange(-1, 1);
-
-    // driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
-    // driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
-
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
-    // driveMotor.setPeriodicFramePeriod(
-    //     PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-
-    // driveMotor.setCANTimeout(0);
   }
 
   public void configureTurnMotor() {
@@ -259,38 +193,6 @@ public class SwerveModule implements Logged {
         () ->
             turnMotor.setPeriodicFramePeriod(
                 PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
-    // turnMotor.setCANTimeout(100);
-
-    // turnMotor.restoreFactoryDefaults();
-
-    // turnMotor.setInverted(SwerveConstants.turnMotorInverted);
-
-    // turnMotor.disableVoltageCompensation();
-    // turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit);
-
-    // turnMotor.setIdleMode(IdleMode.kCoast);
-
-    // turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
-
-    // turnPID.setP(SwerveConstants.turnP);
-    // turnPID.setD(SwerveConstants.turnD);
-    // turnPID.setOutputRange(-1.0, 1.0);
-
-    // turnPID.setPositionPIDWrappingEnabled(true);
-    // turnPID.setPositionPIDWrappingMinInput(-Math.PI);
-    // turnPID.setPositionPIDWrappingMaxInput(Math.PI);
-
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
-    // turnMotor.setPeriodicFramePeriod(
-    //     PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-
-    // turnMotor.setCANTimeout(0);
   }
 
   private void configureAngleEncoder() {

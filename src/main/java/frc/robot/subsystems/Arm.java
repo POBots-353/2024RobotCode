@@ -238,41 +238,6 @@ public class Arm extends VirtualSubsystem implements Logged {
         () ->
             mainMotor.setPeriodicFramePeriod(
                 PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
-
-    // mainMotor.setCANTimeout(100);
-    // mainMotor.restoreFactoryDefaults();
-    // mainMotor.setInverted(ArmConstants.mainMotorInverted);
-
-    // armPIDController.setP(ArmConstants.armKp);
-    // armPIDController.setI(ArmConstants.armKi);
-    // armPIDController.setD(ArmConstants.armKd);
-    // armPIDController.setOutputRange(-1.0, 1.0);
-
-    // armPIDController.setFeedbackDevice(armEncoder);
-
-    // armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
-    // armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
-
-    // mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
-    // mainMotor.enableVoltageCompensation(12.0);
-
-    // mainMotor.setIdleMode(IdleMode.kBrake);
-
-    // mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    // mainMotor.setSoftLimit(
-    //     SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle);
-
-    // mainMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    // mainMotor.setSoftLimit(
-    //     SoftLimitDirection.kReverse, (float) ArmConstants.reverseMovementLimitAngle);
-
-    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
-    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
-    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-
-    // mainMotor.setCANTimeout(0);
   }
 
   private void configureFollowerMotor() {
@@ -281,21 +246,8 @@ public class Arm extends VirtualSubsystem implements Logged {
         () -> followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit),
         () -> followerMotor.setIdleMode(IdleMode.kBrake),
         () -> followerMotor.follow(mainMotor, true));
-    // followerMotor.setCANTimeout(100);
-    // followerMotor.restoreFactoryDefaults();
-    // followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
-    // followerMotor.setIdleMode(IdleMode.kBrake);
-    // // followerMotor.setInverted(!ArmConstants.mainMotorInverted);
-    // followerMotor.enableVoltageCompensation(12.3);
 
-    // followerMotor.setSoftLimit(SoftLimitDirection.kForward,
-    // ArmConstants.forwardMovementLimitAngle);
-    // followerMotor.setSoftLimit(SoftLimitDirection.kReverse,
-    // ArmConstants.reverseMovementLimitAngle);
-
-    // followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
-    // followerMotor.setCANTimeout(0);
   }
 
   private void configureAbsoluteEncoder() {

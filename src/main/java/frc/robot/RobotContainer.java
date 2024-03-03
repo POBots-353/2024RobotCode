@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -20,14 +18,12 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -48,7 +44,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.AllianceUtil;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -69,13 +64,6 @@ public class RobotContainer implements Logged {
   private Shooter shooter = new Shooter();
   private Climber climber = new Climber();
   private LEDs leds = new LEDs();
-
-  private final PathConstraints pathfindingConstraints =
-      new PathConstraints(
-          AutoConstants.pathfindingMaxVelocity,
-          AutoConstants.pathfindingMaxAcceleration,
-          AutoConstants.pathfindingMaxAngularVelocity,
-          AutoConstants.pathfindingMaxAngularAcceleration);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final VirtualXboxController driverController =
@@ -132,17 +120,17 @@ public class RobotContainer implements Logged {
         arm.autoMoveToPosition(ArmConstants.autoAmpWingAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Behind W1",
-        arm.autoMoveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
+        arm.moveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Behind W2",
         arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
+        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)).asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Subwoofer",
-        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.subwooferVelocity)));
+        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.subwooferVelocity)).asProxy());
     NamedCommands.registerCommand(
         "Shoot",
         intake
@@ -168,6 +156,20 @@ public class RobotContainer implements Logged {
                     })
                 .beforeStarting(Commands.waitSeconds(25.0))
                 .ignoringDisable(true));
+
+    RobotModeTriggers.autonomous()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  shooter.setDefaultCommand(shooter.run(() -> shooter.setMotorSpeed(1000.0)));
+                }));
+
+    RobotModeTriggers.disabled()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  shooter.setDefaultCommand(shooter.runOnce(shooter::stopMotor));
+                }));
 
     leds.setDefaultCommand(new RSLSync(leds));
 
@@ -226,78 +228,11 @@ public class RobotContainer implements Logged {
                     Commands.runOnce(
                         () -> {
                           arm.resetToAbsolute();
-                          swerve.reconfigureTurnMotors();
-                        }),
-                    Commands.waitSeconds(1.0),
-                    Commands.runOnce(
-                        () -> {
                           swerve.resetModulesToAbsolute();
                         }))
                 .ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
-
-    driverController
-        .leftTrigger()
-        .and(driverController.rightTrigger())
-        .whileTrue(
-            new ProxyCommand(
-                () -> {
-                  if (AllianceUtil.isRedAlliance()) {
-                    return AutoBuilder.pathfindToPose(
-                        new Pose2d(
-                            FieldConstants.driverStationRedAlliance.getX(),
-                            FieldConstants.driverStationRedAlliance.getY(),
-                            FieldConstants.driverStationRedAlliance.getRotation()),
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            Units.degreesToRadians(180.0),
-                            180.0));
-                  } else {
-                    return AutoBuilder.pathfindToPose(
-                        new Pose2d(
-                            FieldConstants.driverStationBlueAlliance.getX(),
-                            FieldConstants.driverStationBlueAlliance.getY(),
-                            FieldConstants.driverStationBlueAlliance.getRotation()),
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            Units.degreesToRadians(180.0),
-                            180.0));
-                  }
-                }));
-
-    driverController
-        .leftBumper()
-        .and(driverController.rightBumper())
-        .whileTrue(
-            new ProxyCommand(
-                () -> {
-                  if (AllianceUtil.isRedAlliance()) {
-                    return AutoBuilder.pathfindToPose(
-                        new Pose2d(
-                            FieldConstants.speakerRedAlliance.getX(),
-                            FieldConstants.speakerRedAlliance.getY(),
-                            FieldConstants.speakerRedAlliance.getRotation()),
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            Units.degreesToRadians(180.0),
-                            180.0));
-                  } else {
-                    return AutoBuilder.pathfindToPose(
-                        new Pose2d(
-                            FieldConstants.speakerBlueAlliance.getX(),
-                            FieldConstants.speakerBlueAlliance.getY(),
-                            FieldConstants.speakerBlueAlliance.getRotation()),
-                        new PathConstraints(
-                            SwerveConstants.maxTranslationalSpeed,
-                            SwerveConstants.maxTranslationalAcceleration,
-                            Units.degreesToRadians(180.0),
-                            180.0));
-                  }
-                }));
 
     driverController
         .leftTrigger()
@@ -324,30 +259,6 @@ public class RobotContainer implements Logged {
                 SwerveConstants.turboMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
-
-    // driverController
-    //     .x()
-    //     .whileTrue(
-    //         new ProxyCommand(
-    //             () ->
-    //                 AutoBuilder.pathfindToPose(swerve.getLeftChainPose(),
-    // pathfindingConstraints)));
-
-    // driverController
-    //     .y()
-    //     .whileTrue(
-    //         new ProxyCommand(
-    //             () ->
-    //                 AutoBuilder.pathfindToPose(
-    //                     swerve.getCenterChainPose(), pathfindingConstraints)));
-
-    // driverController
-    //     .b()
-    //     .whileTrue(
-    //         new ProxyCommand(
-    //             () ->
-    //                 AutoBuilder.pathfindToPose(
-    //                     swerve.getRightChainPose(), pathfindingConstraints)));
 
     driverController
         .a()
@@ -396,8 +307,7 @@ public class RobotContainer implements Logged {
 
     operatorStick
         .button(OperatorConstants.climberButton)
-        .whileTrue(
-            climber.run(climber::climbBoth).onlyIf(() -> DriverStation.getMatchTime() <= 20.0))
+        .whileTrue(climber.run(climber::climbBoth))
         .onFalse(climber.runOnce(climber::stopClimberMotors));
 
     operatorStick
@@ -433,19 +343,18 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.armToPodium)
         .whileTrue(arm.moveToPosition(ArmConstants.sourceAngle));
+
     // operatorStick
     //     .button(OperatorConstants.armToPodium)
     //     .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
     armManualUp
         .and(armSlowAdjustment.negate())
-        .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)))
-        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
+        .whileTrue(arm.run(() -> arm.setSpeed(ArmConstants.manualSpeed)));
 
     armManualDown
         .and(armSlowAdjustment.negate())
-        .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
-        .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
+        .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)));
 
     operatorStick
         .button(OperatorConstants.armAutoShoot)
@@ -475,26 +384,10 @@ public class RobotContainer implements Logged {
 
     operatorStick
         .button(OperatorConstants.startingConfiguration)
-        .whileTrue(arm.moveToPosition(ArmConstants.startingConfigurationAngle));
+        .whileTrue(arm.moveToPosition(ArmConstants.startingConfigAngle));
   }
 
   private void configureShooterBindings() {
-    Trigger ampShooter = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
-
-    // operatorStick
-    //     .button(OperatorConstants.shootButton)
-    //     .and(ampShooter.negate())
-    //     .whileTrue(
-    //         Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity), shooter))
-    //     .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
-
-    // operatorStick
-    //     .button(OperatorConstants.shootButton)
-    //     .and(ampShooter)
-    //     .whileTrue(Commands.run(() -> shooter.setMotorSpeed(ShooterConstants.ampVelocity),
-    // shooter))
-    //     .toggleOnFalse(shooter.runOnce(() -> shooter.stopMotor()));
-
     operatorStick
         .button(OperatorConstants.manualShootButton)
         .whileTrue(
@@ -509,19 +402,7 @@ public class RobotContainer implements Logged {
                         shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
                       }
                     })
-                .ignoringDisable(true)
-                .finallyDo(shooter::stopMotor))
-        .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
-
-    // operatorStick
-    //     .button(OperatorConstants.manualShootButton)
-    //     .whileTrue(
-    //         shooter
-    //             .run(
-    //                 () -> shooter.setMotorSpeedDifferential(ShooterConstants.shooterVelocity,
-    // ShooterConstants.shooterVelocity))
-    //             .finallyDo(shooter::stopMotor))
-    //     .onFalse(shooter.runOnce(shooter::stopMotor).ignoringDisable(true));
+                .finallyDo(shooter::stopMotor));
   }
 
   private void configureAutoChooser() {

@@ -72,12 +72,6 @@ public final class Constants {
         new Pose2d(0.0, 5.5, Rotation2d.fromDegrees(0.0));
     public static final Pose2d speakerRedAlliance =
         new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0));
-
-    public static Pose2d driverStationBlueAlliance = new Pose2d();
-    public static Pose2d driverStationRedAlliance = new Pose2d();
-
-    public static Transform3d blueOriginFromCenter =
-        new Transform3d(fieldLength / 2, fieldWidth / 2, 0.0, new Rotation3d());
   }
 
   public static final class StationCoordinateConstants {
@@ -274,8 +268,7 @@ public final class Constants {
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
     public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
-    public static final Rotation2d startingConfigurationAngle =
-        Rotation2d.fromDegrees(72.02189922348654);
+    public static final Rotation2d startingConfigAngle = Rotation2d.fromDegrees(72.02189922348654);
     public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(64.288);
 
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);

@@ -28,6 +28,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -78,44 +79,103 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
   /** Creates a new Shooter. */
   public Shooter() {
-    bottomShooter.setCANTimeout(100);
-    bottomShooter.restoreFactoryDefaults();
-    bottomShooter.setIdleMode(IdleMode.kCoast);
-    bottomShooter.setInverted(false);
-    bottomShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
-    bottomShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
+    SparkMaxUtil.configure(
+        bottomShooter,
+        () -> bottomShooter.setIdleMode(IdleMode.kCoast),
+        () -> SparkMaxUtil.setInverted(bottomShooter, false),
+        () -> bottomShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit),
+        () -> bottomShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation),
+        () -> bottomEncoder.setAverageDepth(4),
+        () -> bottomEncoder.setMeasurementPeriod(32),
+        () -> bottomPID.setP(ShooterConstants.shooterKp),
+        () -> bottomPID.setOutputRange(0.0, 1.0),
+        () ->
+            bottomShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            bottomShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () ->
+            bottomShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod),
+        () ->
+            bottomShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod),
+        () ->
+            bottomShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
-    bottomEncoder.setAverageDepth(4);
-    bottomEncoder.setMeasurementPeriod(32);
+    // bottomShooter.setCANTimeout(100);
+    // bottomShooter.restoreFactoryDefaults();
+    // bottomShooter.setIdleMode(IdleMode.kCoast);
+    // bottomShooter.setInverted(false);
+    // bottomShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    // bottomShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
 
-    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // bottomEncoder.setAverageDepth(4);
+    // bottomEncoder.setMeasurementPeriod(32);
 
-    bottomPID.setP(ShooterConstants.shooterKp);
-    bottomPID.setOutputRange(0.0, 1.0);
-    bottomShooter.setCANTimeout(0);
+    // bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3,
+    // SparkMaxUtil.disableFramePeriod);
+    // bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4,
+    // SparkMaxUtil.disableFramePeriod);
+    // bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5,
+    // SparkMaxUtil.disableFramePeriod);
+    // bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6,
+    // SparkMaxUtil.disableFramePeriod);
+    // bottomShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7,
+    // SparkMaxUtil.disableFramePeriod);
 
-    topShooter.setCANTimeout(100);
-    topShooter.restoreFactoryDefaults();
-    topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
-    topShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
-    topShooter.setIdleMode(IdleMode.kCoast);
+    // bottomPID.setP(ShooterConstants.shooterKp);
+    // bottomPID.setOutputRange(0.0, 1.0);
+    // bottomShooter.setCANTimeout(0);
 
-    topPID.setP(ShooterConstants.shooterKp);
-    topPID.setOutputRange(0.0, 1.0);
+    SparkMaxUtil.configure(
+        topShooter,
+        () -> topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit),
+        () -> topShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation),
+        () -> topShooter.setIdleMode(IdleMode.kCoast),
+        () -> topPID.setP(ShooterConstants.shooterKp),
+        () -> topPID.setOutputRange(0.0, 1.0),
+        () -> topEncoder.setAverageDepth(4),
+        () -> topEncoder.setMeasurementPeriod(32),
+        () ->
+            topShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            topShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () ->
+            topShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod),
+        () ->
+            topShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod),
+        () ->
+            topShooter.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
-    topEncoder.setAverageDepth(4);
-    topEncoder.setMeasurementPeriod(32);
+    FaultLogger.register(topShooter);
+    FaultLogger.register(bottomShooter);
 
-    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
-    topShooter.setCANTimeout(0);
+    // topShooter.setCANTimeout(100);
+    // topShooter.restoreFactoryDefaults();
+    // topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit);
+    // topShooter.enableVoltageCompensation(ShooterConstants.voltageCompensation);
+    // topShooter.setIdleMode(IdleMode.kCoast);
+
+    // topPID.setP(ShooterConstants.shooterKp);
+    // topPID.setOutputRange(0.0, 1.0);
+
+    // topEncoder.setAverageDepth(4);
+    // topEncoder.setMeasurementPeriod(32);
+
+    // topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    // topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    // topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    // topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    // topShooter.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // topShooter.setCANTimeout(0);
   }
 
   public void setMotorSpeed(double velocity) {

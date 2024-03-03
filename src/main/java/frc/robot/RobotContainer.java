@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,10 +32,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.arm.ArmHold;
+import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -83,8 +84,7 @@ public class RobotContainer implements Logged {
 
   private PowerDistribution powerDistribution = new PowerDistribution();
 
-  private PersistentSendableChooser<String> batteryChooser =
-      new PersistentSendableChooser<>("Battery Number");
+  private PersistentSendableChooser<String> batteryChooser;
   private SendableChooser<Command> autoChooser;
 
   private List<Alert> alerts = new ArrayList<Alert>();
@@ -140,6 +140,9 @@ public class RobotContainer implements Logged {
         "Warm Up Shooter",
         shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)));
     NamedCommands.registerCommand(
+        "Warm Up Shooter Subwoofer",
+        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.subwooferVelocity)));
+    NamedCommands.registerCommand(
         "Shoot",
         intake
             .autoFeedToShooter()
@@ -155,8 +158,15 @@ public class RobotContainer implements Logged {
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
     SmartDashboard.putData("Power Distribution Panel", powerDistribution);
 
-    LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
-    LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+    new Trigger(DriverStation::isDSAttached)
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      LogUtil.recordMetadata("Battery Number", batteryChooser.getSelectedName());
+                      LogUtil.recordMetadata("Battery Nickname", batteryChooser.getSelected());
+                    })
+                .beforeStarting(Commands.waitSeconds(25.0))
+                .ignoringDisable(true));
 
     leds.setDefaultCommand(new RSLSync(leds));
 
@@ -196,9 +206,9 @@ public class RobotContainer implements Logged {
     configureShooterBindings();
     configureClimbingBindings();
 
-    operatorStick
-        .button(OperatorConstants.ledWarningButton)
-        .whileTrue(new SolidColor(Color.kYellow, leds));
+    // operatorStick
+    //     .button(OperatorConstants.ledWarningButton)
+    //     .whileTrue(new SolidColor(Color.kYellow, leds));
   }
 
   private void configureDriveBindings() {
@@ -314,28 +324,41 @@ public class RobotContainer implements Logged {
                 SwerveConstants.maxAngularSpeed,
                 swerve));
 
-    driverController
-        .x()
-        .whileTrue(
-            new ProxyCommand(
-                () ->
-                    AutoBuilder.pathfindToPose(swerve.getLeftChainPose(), pathfindingConstraints)));
+    // driverController
+    //     .x()
+    //     .whileTrue(
+    //         new ProxyCommand(
+    //             () ->
+    //                 AutoBuilder.pathfindToPose(swerve.getLeftChainPose(),
+    // pathfindingConstraints)));
+
+    // driverController
+    //     .y()
+    //     .whileTrue(
+    //         new ProxyCommand(
+    //             () ->
+    //                 AutoBuilder.pathfindToPose(
+    //                     swerve.getCenterChainPose(), pathfindingConstraints)));
+
+    // driverController
+    //     .b()
+    //     .whileTrue(
+    //         new ProxyCommand(
+    //             () ->
+    //                 AutoBuilder.pathfindToPose(
+    //                     swerve.getRightChainPose(), pathfindingConstraints)));
 
     driverController
-        .y()
-        .whileTrue(
-            new ProxyCommand(
-                () ->
-                    AutoBuilder.pathfindToPose(
-                        swerve.getCenterChainPose(), pathfindingConstraints)));
-
-    driverController
-        .b()
-        .whileTrue(
-            new ProxyCommand(
-                () ->
-                    AutoBuilder.pathfindToPose(
-                        swerve.getRightChainPose(), pathfindingConstraints)));
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        DataLogManager.log(
+                            "Arm Angle: "
+                                + arm.getPosition().getDegrees()
+                                + " Distance: "
+                                + swerve.getSpeakerDistance()))
+                .ignoringDisable(true));
   }
 
   private void configureIntakeBindings() {
@@ -408,7 +431,10 @@ public class RobotContainer implements Logged {
 
     operatorStick
         .button(OperatorConstants.armToPodium)
-        .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
+        .whileTrue(arm.moveToPosition(ArmConstants.sourceAngle));
+    // operatorStick
+    //     .button(OperatorConstants.armToPodium)
+    //     .whileTrue(arm.moveToPosition(ArmConstants.podiumAngle));
 
     armManualUp
         .and(armSlowAdjustment.negate())
@@ -420,21 +446,21 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
 
-    // operatorStick
-    //     .button(OperatorConstants.armAutoShoot)
-    //     .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
-
     operatorStick
         .button(OperatorConstants.armAutoShoot)
-        .whileTrue(
-            new ShootWhileMoving(
-                driverController::getLeftY,
-                driverController::getLeftX,
-                SwerveConstants.slowMotionMaxTranslationalSpeed,
-                arm,
-                intake,
-                shooter,
-                swerve));
+        .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
+
+    // operatorStick
+    //     .button(OperatorConstants.armAutoShoot)
+    //     .whileTrue(
+    //         new ShootWhileMoving(
+    //             driverController::getLeftY,
+    //             driverController::getLeftX,
+    //             SwerveConstants.slowMotionMaxTranslationalSpeed,
+    //             arm,
+    //             intake,
+    //             shooter,
+    //             swerve));
 
     armManualUp
         .and(armSlowAdjustment)
@@ -445,6 +471,10 @@ public class RobotContainer implements Logged {
         .and(armSlowAdjustment)
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.preciseManualSpeed)))
         .onFalse(arm.runOnce(() -> arm.setSpeed(0.0)).ignoringDisable(true));
+
+    operatorStick
+        .button(OperatorConstants.startingConfiguration)
+        .whileTrue(arm.moveToPosition(ArmConstants.startingConfigurationAngle));
   }
 
   private void configureShooterBindings() {
@@ -472,6 +502,8 @@ public class RobotContainer implements Logged {
                     () -> {
                       if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
                         shooter.setMotorSpeed(ShooterConstants.ampVelocity);
+                      } else if (arm.getPosition().getRadians() < Units.degreesToRadians(12.0)) {
+                        shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
                       } else {
                         shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
                       }
@@ -513,6 +545,8 @@ public class RobotContainer implements Logged {
   }
 
   private void configureBatteryChooser() {
+    batteryChooser = new PersistentSendableChooser<>("Battery Number");
+
     batteryChooser.addOption("2015 #1", "Jerry");
     batteryChooser.addOption("2015 #2", "Bob");
     batteryChooser.addOption("2015 #3", "Omar");

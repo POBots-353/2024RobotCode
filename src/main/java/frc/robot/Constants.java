@@ -46,7 +46,9 @@ public final class Constants {
     public static final int armManualUp = 10;
     public static final int armManualDown = 9;
 
-    public static final int armPreciseManualAdjustment = 16;
+    public static final int armPreciseManualAdjustment = 2;
+
+    public static final int startingConfiguration = 16;
 
     public static final int climberButton = 1;
     public static final int leftClimberButton = 3;
@@ -172,7 +174,7 @@ public final class Constants {
             0.025, // 1.00
             0.150, // 1.50
             0.200, // 2.00
-            0.037, // 4.95
+            0.250, // 4.95 used to be 0.037
             1.15, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
@@ -274,6 +276,7 @@ public final class Constants {
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
     public static final Rotation2d startingConfigurationAngle =
         Rotation2d.fromDegrees(72.02189922348654);
+    public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(64.288);
 
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
@@ -281,7 +284,7 @@ public final class Constants {
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00);
     public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(24.50);
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
-    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(34.06099189211963);
+    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(32.0);
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
@@ -311,6 +314,7 @@ public final class Constants {
     public static final int topShooterID = 11;
 
     public static final double shooterVelocity = 4000.0;
+    public static final double subwooferVelocity = 2800.0;
     public static final double ampVelocity = 750.0;
 
     public static final double topShooterKs = 0.04452;
@@ -337,12 +341,13 @@ public final class Constants {
     // (distance, angle)
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
-          new Point2D.Double(1.12, Units.degreesToRadians(9.0)),
-          new Point2D.Double(2.09, Units.degreesToRadians(20.732014330623144)),
+          new Point2D.Double(1.12, Units.degreesToRadians(9.0 - 0.5)),
+          new Point2D.Double(1.25, Units.degreesToRadians(9.0 - 0.5)),
+          new Point2D.Double(2.09, Units.degreesToRadians(20.732014330623144 - 2.0)),
           // new Point2D.Double(2.29, Units.degreesToRadians(26.03)),
-          new Point2D.Double(2.50, Units.degreesToRadians(24.935558632659113)),
-          new Point2D.Double(3.0, Units.degreesToRadians(28.465810207071904)),
-          new Point2D.Double(3.53, Units.degreesToRadians(31.604855866583044)),
+          new Point2D.Double(2.50, Units.degreesToRadians(24.935558632659113 - 2.0)),
+          new Point2D.Double(3.0, Units.degreesToRadians(28.465810207071904 - 2.0)),
+          new Point2D.Double(3.53, Units.degreesToRadians(31.604855866583044 - 2.0)),
           // new Point2D.Double(2.91, Units.degreesToRadians(26.9)),
           // new Point2D.Double(3.26, Units.degreesToRadians(31.0)),
           // new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),
@@ -364,9 +369,9 @@ public final class Constants {
     // (distance, rpm)
     public static final Point2D[] autoShootRPM =
         new Point2D.Double[] {
-          new Point2D.Double(1.10, 3000),
-          new Point2D.Double(1.3, 3000),
-          new Point2D.Double(1.3 + 0.00000001, 4000),
+          new Point2D.Double(1.10, 2800),
+          new Point2D.Double(1.5, 2800),
+          new Point2D.Double(1.5 + 0.00000001, 4000),
           new Point2D.Double(2.91 - 0.000001, 4000),
           new Point2D.Double(2.91, 4000.0),
         };
@@ -421,7 +426,7 @@ public final class Constants {
 
     public static final double driveBaseRadius = frontLeft.getNorm();
 
-    public static final double maxTranslationalSpeed = Units.feetToMeters(12.5);
+    public static final double maxTranslationalSpeed = Units.feetToMeters(14.0353);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
     public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(3.53);
     public static final double turboMaxTranslationalSpeed = Units.feetToMeters(14.5);
@@ -429,7 +434,7 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelCircumference = Units.inchesToMeters(3.977) * Math.PI;
+    public static final double wheelCircumference = Units.inchesToMeters(3.972) * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
 

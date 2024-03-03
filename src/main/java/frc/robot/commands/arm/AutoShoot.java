@@ -25,7 +25,7 @@ public class AutoShoot extends Command {
   private final Swerve swerve;
 
   private Pose2d speakerPose;
-  private Debouncer setpointDebouncer = new Debouncer(ArmConstants.debounceTime);
+  private Debouncer setpointDebouncer = new Debouncer(0.30);
 
   /** Creates a new AutoShoot. */
   public AutoShoot(Arm arm, Intake intake, Shooter shooter, Swerve swerve) {

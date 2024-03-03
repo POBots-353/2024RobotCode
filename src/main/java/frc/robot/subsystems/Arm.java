@@ -53,6 +53,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -164,6 +165,9 @@ public class Arm extends VirtualSubsystem implements Logged {
         .ignoringDisable(true)
         .schedule();
 
+    FaultLogger.register(mainMotor);
+    FaultLogger.register(followerMotor);
+
     REVPhysicsSim.getInstance().addSparkMax(mainMotor, armGearbox);
 
     MechanismRoot2d measuredRoot =
@@ -202,48 +206,86 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureMainMotor() {
-    mainMotor.setCANTimeout(100);
-    mainMotor.restoreFactoryDefaults();
-    mainMotor.setInverted(ArmConstants.mainMotorInverted);
+    SparkMaxUtil.configure(
+        mainMotor,
+        () -> SparkMaxUtil.setInverted(mainMotor, ArmConstants.mainMotorInverted),
+        () -> armPIDController.setP(ArmConstants.armKp),
+        () -> armPIDController.setI(ArmConstants.armKi),
+        () -> armPIDController.setD(ArmConstants.armKd),
+        () -> armPIDController.setOutputRange(-1.0, 1.0),
+        () -> armPIDController.setFeedbackDevice(armEncoder),
+        () -> armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor),
+        () -> armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor),
+        () -> mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit),
+        () -> mainMotor.enableVoltageCompensation(12.0),
+        () -> mainMotor.setIdleMode(IdleMode.kBrake),
+        () -> mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true),
+        () ->
+            mainMotor.setSoftLimit(
+                SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle),
+        () -> mainMotor.enableSoftLimit(SoftLimitDirection.kReverse, true),
+        () ->
+            mainMotor.setSoftLimit(
+                SoftLimitDirection.kReverse, (float) ArmConstants.reverseMovementLimitAngle),
+        () ->
+            mainMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            mainMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () -> mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20),
+        () -> mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20),
+        () ->
+            mainMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
-    armPIDController.setP(ArmConstants.armKp);
-    armPIDController.setI(ArmConstants.armKi);
-    armPIDController.setD(ArmConstants.armKd);
-    armPIDController.setOutputRange(-1.0, 1.0);
+    // mainMotor.setCANTimeout(100);
+    // mainMotor.restoreFactoryDefaults();
+    // mainMotor.setInverted(ArmConstants.mainMotorInverted);
 
-    armPIDController.setFeedbackDevice(armEncoder);
+    // armPIDController.setP(ArmConstants.armKp);
+    // armPIDController.setI(ArmConstants.armKi);
+    // armPIDController.setD(ArmConstants.armKd);
+    // armPIDController.setOutputRange(-1.0, 1.0);
 
-    armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
-    armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
+    // armPIDController.setFeedbackDevice(armEncoder);
 
-    mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
-    mainMotor.enableVoltageCompensation(12.0);
+    // armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor);
+    // armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor);
 
-    mainMotor.setIdleMode(IdleMode.kBrake);
+    // mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
+    // mainMotor.enableVoltageCompensation(12.0);
 
-    mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    mainMotor.setSoftLimit(
-        SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle);
+    // mainMotor.setIdleMode(IdleMode.kBrake);
 
-    mainMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    mainMotor.setSoftLimit(
-        SoftLimitDirection.kReverse, (float) ArmConstants.reverseMovementLimitAngle);
+    // mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    // mainMotor.setSoftLimit(
+    //     SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle);
 
-    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
-    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
-    mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // mainMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    // mainMotor.setSoftLimit(
+    //     SoftLimitDirection.kReverse, (float) ArmConstants.reverseMovementLimitAngle);
 
-    mainMotor.setCANTimeout(0);
+    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // Absolute encoder position
+    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20); // Absolute encoder velocity
+    // mainMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+
+    // mainMotor.setCANTimeout(0);
   }
 
   private void configureFollowerMotor() {
-    followerMotor.setCANTimeout(100);
-    followerMotor.restoreFactoryDefaults();
-    followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
-    followerMotor.setIdleMode(IdleMode.kBrake);
-    // followerMotor.setInverted(!ArmConstants.mainMotorInverted);
+    SparkMaxUtil.configure(
+        followerMotor,
+        () -> followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit),
+        () -> followerMotor.setIdleMode(IdleMode.kBrake),
+        () -> followerMotor.follow(mainMotor, true));
+    // followerMotor.setCANTimeout(100);
+    // followerMotor.restoreFactoryDefaults();
+    // followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit);
+    // followerMotor.setIdleMode(IdleMode.kBrake);
+    // // followerMotor.setInverted(!ArmConstants.mainMotorInverted);
     // followerMotor.enableVoltageCompensation(12.3);
 
     // followerMotor.setSoftLimit(SoftLimitDirection.kForward,
@@ -251,9 +293,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     // followerMotor.setSoftLimit(SoftLimitDirection.kReverse,
     // ArmConstants.reverseMovementLimitAngle);
 
-    followerMotor.follow(mainMotor, true);
+    // followerMotor.follow(mainMotor, true);
     SparkMaxUtil.configureFollower(followerMotor);
-    followerMotor.setCANTimeout(0);
+    // followerMotor.setCANTimeout(0);
   }
 
   private void configureAbsoluteEncoder() {
@@ -404,6 +446,12 @@ public class Arm extends VirtualSubsystem implements Logged {
     }
   }
 
+  @Log.NT(key = "3D Pose")
+  public Pose3d get3DPose() {
+    return new Pose3d(
+        origin.getTranslation(), new Rotation3d(0.0, getPosition().getRadians() - Math.PI, 0.0));
+  }
+
   public double getVelocity() {
     if (RobotBase.isReal()) {
       return armEncoder.getVelocity();
@@ -437,12 +485,6 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
     setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
-
-    Rotation2d angle = getPosition();
-    log(
-        "3D Pose",
-        new Pose3d(
-            origin.getTranslation(), new Rotation3d(0.0, angle.getRadians() - Math.PI, 0.0)));
   }
 
   @Override
@@ -514,7 +556,7 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> {
               joystick.setButton(OperatorConstants.armToSubwoofer, true);
             }),
-        Commands.waitSeconds(prematchDelay),
+        Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> {
               if (Math.abs(getPosition().getRadians() - ArmConstants.subwooferAngle.getRadians())

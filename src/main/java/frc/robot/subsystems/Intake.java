@@ -18,6 +18,7 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.LogLevel;
@@ -35,26 +36,56 @@ public class Intake extends VirtualSubsystem implements Logged {
   private final double prematchDelay = 2.5;
 
   public Intake() {
-    intakeMotor.setCANTimeout(100);
-    for (int i = 0; i < 5; i++) {
-      intakeMotor.setInverted(true);
-      intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
-      intakeMotor.setSecondaryCurrentLimit(IntakeConstants.shutoffCurrentLimit);
-      intakeMotor.setOpenLoopRampRate(0.01);
-      intakeMotor.setIdleMode(IdleMode.kBrake);
+    SparkMaxUtil.configure(
+        intakeMotor,
+        () -> SparkMaxUtil.setInverted(intakeMotor, true),
+        () -> intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit),
+        () -> intakeMotor.setSecondaryCurrentLimit(IntakeConstants.shutoffCurrentLimit),
+        () -> intakeMotor.setOpenLoopRampRate(0.01),
+        () -> intakeMotor.setIdleMode(IdleMode.kBrake),
+        () -> intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20),
+        () ->
+            intakeMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            intakeMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () ->
+            intakeMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod),
+        () ->
+            intakeMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod),
+        () ->
+            intakeMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-      intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    FaultLogger.register(intakeMotor);
+    // intakeMotor.setCANTimeout(100);
+    // for (int i = 0; i < 5; i++) {
+    //   intakeMotor.setInverted(true);
+    //   intakeMotor.setSmartCurrentLimit(IntakeConstants.intakeCurrentLimit);
+    //   intakeMotor.setSecondaryCurrentLimit(IntakeConstants.shutoffCurrentLimit);
+    //   intakeMotor.setOpenLoopRampRate(0.01);
+    //   intakeMotor.setIdleMode(IdleMode.kBrake);
 
-      if (intakeMotor.getLastError() == REVLibError.kOk) {
-        break;
-      }
-    }
-    intakeMotor.setCANTimeout(0);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3,
+    // SparkMaxUtil.disableFramePeriod);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4,
+    // SparkMaxUtil.disableFramePeriod);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5,
+    // SparkMaxUtil.disableFramePeriod);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6,
+    // SparkMaxUtil.disableFramePeriod);
+    //   intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7,
+    // SparkMaxUtil.disableFramePeriod);
+
+    //   if (intakeMotor.getLastError() == REVLibError.kOk) {
+    //     break;
+    //   }
+    // }
+    // intakeMotor.setCANTimeout(0);
   }
 
   @Log.NT(key = "Break Broken", level = LogLevel.OVERRIDE_FILE_ONLY)
@@ -63,7 +94,10 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public Command intakeUntilBeamBreak() {
-    return run(this::intake).until(this::beamBroken).finallyDo(this::stopIntakeMotor);
+    return run(this::intake)
+        .until(this::beamBroken)
+        .unless(this::beamBroken)
+        .finallyDo(this::stopIntakeMotor);
   }
 
   public Command autoFeedToShooter() {

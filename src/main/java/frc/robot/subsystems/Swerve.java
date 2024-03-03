@@ -64,6 +64,7 @@ import frc.robot.Constants.VisionConstants.ArducamConstants;
 import frc.robot.Constants.VisionConstants.LimelightConstants;
 import frc.robot.util.AStarPathfinder;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import java.util.ArrayList;
@@ -209,7 +210,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
-    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
+    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_CAMERA_HEIGHT);
 
     if (RobotBase.isSimulation()) {
       simOdometry = new SwerveDriveOdometry(kinematics, getHeading(), getModulePositions());
@@ -323,6 +324,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Commands.sequence(Commands.waitSeconds(2.0), runOnce(this::resetModulesToAbsolute))
         .ignoringDisable(true)
         .schedule();
+
+    FaultLogger.register(arducam);
+    FaultLogger.register(navx);
   }
 
   public void resetModulesToAbsolute() {
@@ -333,21 +337,21 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void reconfigureTurnMotors() {
-    odometryLock.lock();
-    for (int i = 0; i < 5; i++) {
-      frontLeftModule.configureDriveMotor();
-      frontLeftModule.configureTurnMotor();
+    // odometryLock.lock();
+    // for (int i = 0; i < 5; i++) {
+    //   frontLeftModule.configureDriveMotor();
+    //   frontLeftModule.configureTurnMotor();
 
-      frontRightModule.configureDriveMotor();
-      frontRightModule.configureTurnMotor();
+    //   frontRightModule.configureDriveMotor();
+    //   frontRightModule.configureTurnMotor();
 
-      backLeftModule.configureDriveMotor();
-      backLeftModule.configureTurnMotor();
+    //   backLeftModule.configureDriveMotor();
+    //   backLeftModule.configureTurnMotor();
 
-      backRightModule.configureDriveMotor();
-      backRightModule.configureTurnMotor();
-    }
-    odometryLock.unlock();
+    //   backRightModule.configureDriveMotor();
+    //   backRightModule.configureTurnMotor();
+    // }
+    // odometryLock.unlock();
   }
 
   @Log.NT
@@ -874,6 +878,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
         .setPoses(rejectedPoses.stream().map(p -> p.toPose2d()).toArray(Pose2d[]::new));
   }
 
+  public double getSpeakerDistance() {
+    return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -888,9 +896,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     field.setRobotPose(poseEstimator.getEstimatedPosition());
     odometryLock.unlock();
 
-    SmartDashboard.putNumber(
-        "Distance to Speaker",
-        getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm());
+    SmartDashboard.putNumber("Distance to Speaker", getSpeakerDistance());
   }
 
   @Override

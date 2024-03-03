@@ -26,6 +26,7 @@ import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.LogUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,9 +114,10 @@ public class Robot extends TimedRobot {
     odometryNotifier.setName("OdometryThread");
     odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
 
-    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, false);
 
     addPeriodic(Monologue::updateAll, kDefaultPeriod);
+    addPeriodic(FaultLogger::update, 1);
   }
 
   /**

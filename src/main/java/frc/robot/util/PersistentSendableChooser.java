@@ -41,9 +41,11 @@ public class PersistentSendableChooser<V> implements NTSendable {
   public PersistentSendableChooser(String preferenceName) {
     this.preferenceName = preferenceName;
 
-    String persistentString = Preferences.getString(preferenceName, null);
-    if (persistentString != null) {
+    Preferences.initString(preferenceName, "");
+    String persistentString = Preferences.getString(preferenceName, "");
+    if (!persistentString.equals("")) {
       m_selected = persistentString;
+      m_defaultChoice = persistentString;
     }
 
     m_instance = s_instances.getAndIncrement();

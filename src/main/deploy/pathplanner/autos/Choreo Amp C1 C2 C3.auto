@@ -24,7 +24,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Warm Up Shooter"
+                  "name": "Warm Up Shooter Subwoofer"
                 }
               }
             ]
@@ -103,7 +103,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.65
+                        "waitTime": 0.35
                       }
                     },
                     {
@@ -191,7 +191,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.7
+                        "waitTime": 0.35
                       }
                     },
                     {

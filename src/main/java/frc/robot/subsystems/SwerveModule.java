@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.FaultLogger;
 import frc.robot.util.SparkMaxUtil;
 import java.util.function.Consumer;
 import monologue.Annotations.Log;
@@ -121,103 +122,175 @@ public class SwerveModule implements Logged {
 
     DataLogManager.log(moduleName + " Drive Firmware: " + driveMotor.getFirmwareString());
     DataLogManager.log(moduleName + " Turn Firmware: " + turnMotor.getFirmwareString());
+
+    FaultLogger.register(driveMotor);
+    FaultLogger.register(turnMotor);
   }
 
   private void configureMotors() {
-    boolean driveFailed = true;
-    boolean turnFailed = true;
+    configureDriveMotor();
+    configureTurnMotor();
 
-    for (int i = 0; i < 5; i++) {
-      configureDriveMotor();
-      if (driveMotor.getLastError() == REVLibError.kOk) {
-        driveFailed = false;
-        break;
-      }
-    }
-    if (driveFailed) {
-      driveConfigFailed.set(true);
-    }
+    // boolean driveFailed = true;
+    // boolean turnFailed = true;
 
-    for (int i = 0; i < 5; i++) {
-      configureTurnMotor();
+    // for (int i = 0; i < 5; i++) {
+    //   configureDriveMotor();
+    //   if (driveMotor.getLastError() == REVLibError.kOk) {
+    //     driveFailed = false;
+    //     break;
+    //   }
+    // }
+    // if (driveFailed) {
+    //   driveConfigFailed.set(true);
+    // }
 
-      if (turnMotor.getLastError() == REVLibError.kOk) {
-        turnFailed = false;
-        break;
-      }
-    }
-    if (turnFailed) {
-      turnConfigFailed.set(true);
-    }
+    // for (int i = 0; i < 5; i++) {
+    //   configureTurnMotor();
+
+    //   if (turnMotor.getLastError() == REVLibError.kOk) {
+    //     turnFailed = false;
+    //     break;
+    //   }
+    // }
+    // if (turnFailed) {
+    //   turnConfigFailed.set(true);
+    // }
   }
 
   public void configureDriveMotor() {
-    driveMotor.setCANTimeout(100);
+    SparkMaxUtil.configure(
+        driveMotor,
+        () -> SparkMaxUtil.setInverted(driveMotor, SwerveConstants.driveMotorInverted),
+        () -> driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp),
+        () -> driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp),
+        () -> driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation),
+        () -> driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit),
+        () -> driveMotor.setIdleMode(IdleMode.kBrake),
+        () -> drivePID.setP(SwerveConstants.driveP),
+        () -> drivePID.setOutputRange(-1.0, 1.0),
+        () -> driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion),
+        () -> driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion),
+        () -> driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20),
+        () -> driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod),
+        () ->
+            driveMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
-    driveMotor.restoreFactoryDefaults();
+    // driveMotor.setCANTimeout(100);
 
-    driveMotor.setInverted(SwerveConstants.driveMotorInverted);
+    // driveMotor.restoreFactoryDefaults();
 
-    driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp);
-    driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp);
+    // driveMotor.setInverted(SwerveConstants.driveMotorInverted);
 
-    driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
-    driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit);
+    // driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp);
+    // driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp);
 
-    driveMotor.setIdleMode(IdleMode.kBrake);
+    // driveMotor.enableVoltageCompensation(SwerveConstants.voltageCompensation);
+    // driveMotor.setSmartCurrentLimit(SwerveConstants.driveCurrentLimit);
 
-    drivePID.setP(SwerveConstants.driveP);
-    drivePID.setOutputRange(-1, 1);
+    // driveMotor.setIdleMode(IdleMode.kBrake);
 
-    driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
-    driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
+    // drivePID.setP(SwerveConstants.driveP);
+    // drivePID.setOutputRange(-1, 1);
 
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
-    driveMotor.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion);
+    // driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion);
 
-    driveMotor.setCANTimeout(0);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
+    // driveMotor.setPeriodicFramePeriod(
+    //     PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    // driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+
+    // driveMotor.setCANTimeout(0);
   }
 
   public void configureTurnMotor() {
-    turnMotor.setCANTimeout(100);
+    SparkMaxUtil.configure(
+        turnMotor,
+        () -> SparkMaxUtil.setInverted(turnMotor, SwerveConstants.turnMotorInverted),
+        () -> turnMotor.disableVoltageCompensation(),
+        () -> turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit),
+        () -> turnMotor.setIdleMode(IdleMode.kCoast),
+        () -> turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion),
+        () -> turnPID.setP(SwerveConstants.turnP),
+        () -> turnPID.setD(SwerveConstants.turnD),
+        () -> turnPID.setOutputRange(-1.0, 1.0),
+        () -> turnPID.setPositionPIDWrappingEnabled(true),
+        () -> turnPID.setPositionPIDWrappingMinInput(-Math.PI),
+        () -> turnPID.setPositionPIDWrappingMaxInput(Math.PI),
+        () -> turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20),
+        () -> turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod),
+        () ->
+            turnMotor.setPeriodicFramePeriod(
+                PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
+    // turnMotor.setCANTimeout(100);
 
-    turnMotor.restoreFactoryDefaults();
+    // turnMotor.restoreFactoryDefaults();
 
-    turnMotor.setInverted(SwerveConstants.turnMotorInverted);
+    // turnMotor.setInverted(SwerveConstants.turnMotorInverted);
 
-    turnMotor.disableVoltageCompensation();
-    turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit);
+    // turnMotor.disableVoltageCompensation();
+    // turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit);
 
-    turnMotor.setIdleMode(IdleMode.kCoast);
+    // turnMotor.setIdleMode(IdleMode.kCoast);
 
-    turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
+    // turnEncoder.setPositionConversionFactor(SwerveConstants.turnPositionConversion);
 
-    turnPID.setP(SwerveConstants.turnP);
-    turnPID.setD(SwerveConstants.turnD);
-    turnPID.setOutputRange(-1.0, 1.0);
+    // turnPID.setP(SwerveConstants.turnP);
+    // turnPID.setD(SwerveConstants.turnD);
+    // turnPID.setOutputRange(-1.0, 1.0);
 
-    turnPID.setPositionPIDWrappingEnabled(true);
-    turnPID.setPositionPIDWrappingMinInput(-Math.PI);
-    turnPID.setPositionPIDWrappingMaxInput(Math.PI);
+    // turnPID.setPositionPIDWrappingEnabled(true);
+    // turnPID.setPositionPIDWrappingMinInput(-Math.PI);
+    // turnPID.setPositionPIDWrappingMaxInput(Math.PI);
 
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
-    turnMotor.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
-    turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
+    // turnMotor.setPeriodicFramePeriod(
+    //     PeriodicFrame.kStatus2, 1000 / SwerveConstants.odometryUpdateFrequency);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, SparkMaxUtil.disableFramePeriod);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, SparkMaxUtil.disableFramePeriod);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, SparkMaxUtil.disableFramePeriod);
+    // turnMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod);
 
-    turnMotor.setCANTimeout(0);
+    // turnMotor.setCANTimeout(0);
   }
 
   private void configureAngleEncoder() {

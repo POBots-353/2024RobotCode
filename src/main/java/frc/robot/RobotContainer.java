@@ -24,12 +24,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
@@ -44,6 +46,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.AllianceUtil;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -171,6 +175,20 @@ public class RobotContainer implements Logged {
                   shooter.setDefaultCommand(shooter.runOnce(shooter::stopMotor));
                 }));
 
+    new Trigger(DriverStation::isEnabled)
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (AllianceUtil.isRedAlliance()) {
+                        LimelightHelpers.setPriorityTagID(
+                            VisionConstants.limelightName, FieldConstants.redSpeakerCenterID);
+                      } else {
+                        LimelightHelpers.setPriorityTagID(
+                            VisionConstants.limelightName, FieldConstants.blueSpeakerCenterID);
+                      }
+                    })
+                .ignoringDisable(true));
+
     leds.setDefaultCommand(new RSLSync(leds));
 
     arm.setDefaultCommand(new ArmHold(arm));
@@ -250,15 +268,7 @@ public class RobotContainer implements Logged {
     driverController
         .rightTrigger()
         .whileTrue(
-            new TeleopSwerve(
-                driverController::getLeftY,
-                driverController::getLeftX,
-                driverController::getRightX,
-                driverController::getRightY,
-                () -> driverController.getLeftBumper(),
-                SwerveConstants.turboMaxTranslationalSpeed,
-                SwerveConstants.maxAngularSpeed,
-                swerve));
+            new TurnToSpeaker(driverController::getLeftY, driverController::getLeftX, swerve));
 
     driverController
         .a()

@@ -115,7 +115,7 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
     SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
 
-    double distance = robotPose.minus(speakerPose.getTranslation()).getNorm();
+    double distance = swerve.getSpeakerDistance();
 
     double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
 

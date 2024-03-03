@@ -336,24 +336,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backRightModule.resetToAbsolute();
   }
 
-  public void reconfigureTurnMotors() {
-    // odometryLock.lock();
-    // for (int i = 0; i < 5; i++) {
-    //   frontLeftModule.configureDriveMotor();
-    //   frontLeftModule.configureTurnMotor();
-
-    //   frontRightModule.configureDriveMotor();
-    //   frontRightModule.configureTurnMotor();
-
-    //   backLeftModule.configureDriveMotor();
-    //   backLeftModule.configureTurnMotor();
-
-    //   backRightModule.configureDriveMotor();
-    //   backRightModule.configureTurnMotor();
-    // }
-    // odometryLock.unlock();
-  }
-
   @Log.NT
   public boolean arducamConnected() {
     return arducam.isConnected();
@@ -711,7 +693,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Rotation2d angleDifference = angleAtTime.minus(visionPose.getRotation().toRotation2d());
 
     double angleTolerance =
-        DriverStation.isAutonomous() ? 5.0 : (detectedTargets >= 2) ? 20.0 : 10.0;
+        DriverStation.isAutonomous() ? 8.0 : (detectedTargets >= 2) ? 25.0 : 15.0;
 
     // If the angle is too different from our gyro angle at the time of the image
     if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {
@@ -883,7 +865,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public double getSpeakerDistance() {
-    return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
+    if (LimelightHelpers.getTV(VisionConstants.limelightName)) {
+      return LimelightHelpers.getTargetPose3d_RobotSpace(VisionConstants.limelightName)
+          .toPose2d()
+          .getTranslation()
+          .getNorm();
+    } else {
+      return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
+    }
   }
 
   public double[] getWheelRadiusCharacterizationPosition() {

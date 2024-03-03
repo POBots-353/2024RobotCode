@@ -5,7 +5,6 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,7 +15,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
-import frc.robot.util.AllianceUtil;
 
 public class AutoShoot extends Command {
   private final Arm arm;
@@ -24,7 +22,6 @@ public class AutoShoot extends Command {
   private final Shooter shooter;
   private final Swerve swerve;
 
-  private Pose2d speakerPose;
   private Debouncer setpointDebouncer = new Debouncer(0.30);
 
   /** Creates a new AutoShoot. */
@@ -40,14 +37,12 @@ public class AutoShoot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    speakerPose = AllianceUtil.getSpeakerPose();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = speakerPose.minus(swerve.getPose()).getTranslation().getNorm();
+    double distance = swerve.getSpeakerDistance();
 
     double angle = AutoShootConstants.autoShootAngleInterpolation.get(distance);
     Rotation2d desiredAngle = Rotation2d.fromRadians(angle);

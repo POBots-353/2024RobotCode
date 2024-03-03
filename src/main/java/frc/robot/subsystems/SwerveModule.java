@@ -124,7 +124,7 @@ public class SwerveModule implements Logged {
     configureTurnMotor();
   }
 
-  public void configureDriveMotor() {
+  private void configureDriveMotor() {
     SparkMaxUtil.configure(
         driveMotor,
         () -> SparkMaxUtil.setInverted(driveMotor, SwerveConstants.driveMotorInverted),
@@ -159,7 +159,7 @@ public class SwerveModule implements Logged {
                 PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
   }
 
-  public void configureTurnMotor() {
+  private void configureTurnMotor() {
     SparkMaxUtil.configure(
         turnMotor,
         () -> SparkMaxUtil.setInverted(turnMotor, SwerveConstants.turnMotorInverted),

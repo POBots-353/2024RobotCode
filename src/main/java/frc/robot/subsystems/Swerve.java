@@ -507,6 +507,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return navx.getRotation3d();
   }
 
+  public double getYawRadians() {
+    return Units.degreesToRadians(navx.getYaw());
+  }
+
   @Log.NT(key = "Chassis Speeds")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
@@ -880,6 +884,15 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public double getSpeakerDistance() {
     return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
+  }
+
+  public double[] getWheelRadiusCharacterizationPosition() {
+    return new double[] {
+      frontLeftModule.getPosition(),
+      frontRightModule.getPosition(),
+      backLeftModule.getPosition(),
+      backRightModule.getPosition()
+    };
   }
 
   @Override

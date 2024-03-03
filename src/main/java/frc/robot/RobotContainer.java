@@ -34,6 +34,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.leds.LoadingAnimation;
@@ -540,6 +541,8 @@ public class RobotContainer implements Logged {
     autoChooser.addOption("[SysID] Shooter Quasistatic Backward", shooter.quasistaticBackward());
     autoChooser.addOption("[SysID] Shooter Dynamic Forward", shooter.dynamicForward());
     autoChooser.addOption("[SysID] Shooter Dynamic Backward", shooter.dynamicBackward());
+
+    autoChooser.addOption("Wheel Radius Characterization", new WheelRadiusCharacterization(swerve));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }

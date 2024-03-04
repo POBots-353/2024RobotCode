@@ -29,15 +29,22 @@ public class TurnToSpeaker extends Command {
   private DoubleSupplier forwardSpeed;
   private DoubleSupplier strafeSpeed;
 
+  private DoubleSupplier maxTranslationalSpeed;
+
   private SlewRateLimiter forwardRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
   /** Creates a new TurnToNote. */
-  public TurnToSpeaker(DoubleSupplier forwardSpeed, DoubleSupplier strafeSpeed, Swerve swerve) {
+  public TurnToSpeaker(
+      DoubleSupplier forwardSpeed,
+      DoubleSupplier strafeSpeed,
+      DoubleSupplier maxTranslationalSpeed,
+      Swerve swerve) {
     this.forwardSpeed = forwardSpeed;
     this.strafeSpeed = strafeSpeed;
+    this.maxTranslationalSpeed = maxTranslationalSpeed;
     this.swerve = swerve;
 
     turnToSpeakerController.setTolerance(Units.degreesToRadians(1));
@@ -79,9 +86,8 @@ public class TurnToSpeaker extends Command {
             swerve.getHeading().getRadians(), desiredRotation.getRadians());
 
     double forwardMetersPerSecond =
-        -forwardSpeed.getAsDouble() * SwerveConstants.maxTranslationalSpeed;
-    double strafeMetersPerSecond =
-        strafeSpeed.getAsDouble() * SwerveConstants.maxTranslationalSpeed;
+        -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
+    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
 
     forwardMetersPerSecond = forwardRateLimiter.calculate(forwardMetersPerSecond);
     strafeMetersPerSecond = strafeRateLimiter.calculate(strafeMetersPerSecond);

@@ -233,6 +233,9 @@ public class RobotContainer implements Logged {
   }
 
   private void configureDriveBindings() {
+    Trigger turnToSpeaker = driverController.rightTrigger();
+    Trigger slowMode = driverController.leftTrigger();
+
     driverController
         .back()
         .and(driverController.start())
@@ -252,8 +255,8 @@ public class RobotContainer implements Logged {
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
-    driverController
-        .leftTrigger()
+    slowMode
+        .and(turnToSpeaker.negate())
         .whileTrue(
             new TeleopSwerve(
                 driverController::getLeftY,
@@ -265,10 +268,18 @@ public class RobotContainer implements Logged {
                 SwerveConstants.maxAngularSpeed,
                 swerve));
 
-    driverController
-        .rightTrigger()
-        .whileTrue(
-            new TurnToSpeaker(driverController::getLeftY, driverController::getLeftX, swerve));
+    turnToSpeaker.whileTrue(
+        new TurnToSpeaker(
+            driverController::getLeftY,
+            driverController::getLeftX,
+            () -> {
+              if (!slowMode.getAsBoolean()) {
+                return SwerveConstants.slowMotionMaxTranslationalSpeed;
+              }
+
+              return SwerveConstants.maxTranslationalSpeed;
+            },
+            swerve));
 
     driverController
         .a()

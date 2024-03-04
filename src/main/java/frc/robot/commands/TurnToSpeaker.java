@@ -14,10 +14,11 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.LimelightHelpers;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 public class TurnToSpeaker extends Command {
-  private Swerve swerve = new Swerve();
+  private Swerve swerve;
 
   private long lastDetectionTime = 0;
 
@@ -74,7 +75,17 @@ public class TurnToSpeaker extends Command {
 
     double rotation = LimelightHelpers.getTX(VisionConstants.limelightName);
 
-    desiredRotation = swerve.getHeading().minus(Rotation2d.fromDegrees(rotation));
+    double timestamp =
+        (lastDetectionTime / 1e6)
+            - LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightName);
+
+    Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(timestamp);
+
+    if (rotationAtTime.isEmpty()) {
+      rotationAtTime = Optional.of(swerve.getHeading());
+    }
+
+    desiredRotation = rotationAtTime.get().minus(Rotation2d.fromDegrees(rotation));
   }
 
   // Called every time the scheduler runs while the command is scheduled.

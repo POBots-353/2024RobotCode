@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -142,6 +143,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
   public static final Lock odometryLock = new ReentrantLock();
   private SwerveDrivePoseEstimator poseEstimator;
   private SwerveDriveOdometry simOdometry;
+
+  private TimeInterpolatableBuffer<Rotation2d> rotationBuffer =
+      TimeInterpolatableBuffer.createBuffer(5.0);
 
   private SwerveDriveWheelPositions previousWheelPositions =
       new SwerveDriveWheelPositions(getModulePositions());
@@ -493,6 +497,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
     return Units.degreesToRadians(navx.getYaw());
   }
 
+  public Optional<Rotation2d> getRotationAtTime(double time) {
+    odometryLock.lock();
+    Optional<Rotation2d> rotationAtTime = rotationBuffer.getSample(time);
+    odometryLock.unlock();
+    return rotationAtTime;
+  }
+
   @Log.NT(key = "Chassis Speeds")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
@@ -609,6 +620,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
 
     odometryLock.lock();
+    rotationBuffer.addSample(Timer.getFPGATimestamp(), heading);
     poseEstimator.update(heading, positions);
     odometryLock.unlock();
   }
@@ -684,13 +696,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return false;
     }
 
-    double dt = Timer.getFPGATimestamp() - timestampSeconds;
-    Rotation2d angleAtTime =
-        getPose()
-            .getRotation()
-            .minus(new Rotation2d(getChassisSpeeds().omegaRadiansPerSecond * dt));
+    Optional<Rotation2d> angleAtTime = getRotationAtTime(timestampSeconds);
+    if (angleAtTime.isEmpty()) {
+      angleAtTime = Optional.of(getHeading());
+    }
 
-    Rotation2d angleDifference = angleAtTime.minus(visionPose.getRotation().toRotation2d());
+    Rotation2d angleDifference = angleAtTime.get().minus(visionPose.getRotation().toRotation2d());
 
     double angleTolerance =
         DriverStation.isAutonomous() ? 8.0 : (detectedTargets >= 2) ? 25.0 : 15.0;

@@ -169,10 +169,10 @@ public final class Constants {
           new double[] {
             0.019, // 0.50
             0.025, // 1.00
-            0.150, // 1.50
-            0.200, // 2.00
-            0.250, // 4.95 used to be 0.037
-            1.15, // 5.5 might be a stddev of 0.85-ish
+            0.050, // 1.50
+            0.080, // 2.00
+            0.150, // 4.95 used to be 0.037
+            0.85, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
@@ -200,8 +200,8 @@ public final class Constants {
           new double[] {
             0.014, // 0.50
             0.020, // 1.00
-            0.150, // 1.50
-            0.200, // 2.00
+            0.050, // 1.50
+            0.070, // 2.00
           };
       public static final double[] thetaStandardDeviations =
           new double[] {

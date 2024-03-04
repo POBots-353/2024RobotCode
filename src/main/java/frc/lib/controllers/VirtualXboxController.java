@@ -17,6 +17,7 @@ public class VirtualXboxController extends CommandXboxController {
   private Map<XboxController.Axis, Optional<Double>> virtualAxes = new HashMap<>();
 
   private boolean virtualAxesEnabled = false;
+  private boolean virtualButtonsEnabled = false;
 
   private boolean virtualPOVEnabled = false;
   private int virtualPOVValue = -1;
@@ -44,60 +45,66 @@ public class VirtualXboxController extends CommandXboxController {
 
   @Override
   public Trigger leftBumper(EventLoop loop) {
-    return super.leftBumper(loop).or(() -> virtualButtons.get(Button.kLeftBumper));
+    return super.leftBumper(loop)
+        .or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kLeftBumper));
   }
 
   public boolean getLeftBumper() {
-    return getHID().getLeftBumper() || virtualButtons.get(Button.kLeftBumper);
+    return getHID().getLeftBumper()
+        || (virtualButtonsEnabled && virtualButtons.get(Button.kLeftBumper));
   }
 
   @Override
   public Trigger rightBumper(EventLoop loop) {
-    return super.rightBumper(loop).or(() -> virtualButtons.get(Button.kRightBumper));
+    return super.rightBumper(loop)
+        .or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kRightBumper));
   }
 
   public boolean getRightBumper() {
-    return getHID().getRightBumper() || virtualButtons.get(Button.kRightBumper);
+    return getHID().getRightBumper()
+        || (virtualButtonsEnabled && virtualButtons.get(Button.kRightBumper));
   }
 
   @Override
   public Trigger leftStick(EventLoop loop) {
-    return super.leftStick(loop).or(() -> virtualButtons.get(Button.kLeftStick));
+    return super.leftStick(loop)
+        .or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kLeftStick));
   }
 
   @Override
   public Trigger rightStick(EventLoop loop) {
-    return super.rightStick(loop).or(() -> virtualButtons.get(Button.kRightStick));
+    return super.rightStick(loop)
+        .or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kRightStick));
   }
 
   @Override
   public Trigger a(EventLoop loop) {
-    return super.a(loop).or(() -> virtualButtons.get(Button.kA));
+    return super.a(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kA));
   }
 
   @Override
   public Trigger b(EventLoop loop) {
-    return super.b(loop).or(() -> virtualButtons.get(Button.kB));
+    return super.b(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kB));
   }
 
   @Override
   public Trigger x(EventLoop loop) {
-    return super.x(loop).or(() -> virtualButtons.get(Button.kX));
+    return super.x(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kX));
   }
 
   @Override
   public Trigger y(EventLoop loop) {
-    return super.y(loop).or(() -> virtualButtons.get(Button.kY));
+    return super.y(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kY));
   }
 
   @Override
   public Trigger start(EventLoop loop) {
-    return super.start(loop).or(() -> virtualButtons.get(Button.kStart));
+    return super.start(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kStart));
   }
 
   @Override
   public Trigger back(EventLoop loop) {
-    return super.back(loop).or(() -> virtualButtons.get(Button.kBack));
+    return super.back(loop).or(() -> virtualButtonsEnabled && virtualButtons.get(Button.kBack));
   }
 
   @Override
@@ -264,6 +271,7 @@ public class VirtualXboxController extends CommandXboxController {
     }
 
     virtualButtons.replace(button, state);
+    virtualButtonsEnabled = true;
   }
 
   public void clearVirtualAxes() {
@@ -280,6 +288,7 @@ public class VirtualXboxController extends CommandXboxController {
     for (Button button : virtualButtons.keySet()) {
       virtualButtons.replace(button, false);
     }
+    virtualButtonsEnabled = false;
   }
 
   public void setLeftX(double value) {

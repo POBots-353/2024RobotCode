@@ -14,6 +14,7 @@ public class VirtualJoystick extends CommandJoystick {
   private Map<Integer, Boolean> virtualButtons = new HashMap<>();
   private Map<AxisType, Optional<Double>> virtualAxes = new HashMap<>();
 
+  private boolean virtualButtonsEnabled = false;
   private boolean virtualAxesEnabled = false;
 
   public VirtualJoystick(int port) {
@@ -37,7 +38,7 @@ public class VirtualJoystick extends CommandJoystick {
   public Trigger button(int button, EventLoop loop) {
     virtualButtons.putIfAbsent(button, false);
 
-    return super.button(button, loop).or(() -> virtualButtons.get(button));
+    return super.button(button, loop).or(() -> virtualButtonsEnabled && virtualButtons.get(button));
   }
 
   @Override
@@ -114,6 +115,7 @@ public class VirtualJoystick extends CommandJoystick {
     for (int button : virtualButtons.keySet()) {
       virtualButtons.replace(button, false);
     }
+    virtualButtonsEnabled = false;
   }
 
   public void setButton(int button, boolean value) {
@@ -121,6 +123,7 @@ public class VirtualJoystick extends CommandJoystick {
       return;
     }
     virtualButtons.putIfAbsent(button, false);
+    virtualButtonsEnabled = true;
 
     virtualButtons.replace(button, value);
   }

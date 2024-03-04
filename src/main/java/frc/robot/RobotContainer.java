@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -417,7 +416,8 @@ public class RobotContainer implements Logged {
                     () -> {
                       if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
                         shooter.setMotorSpeed(ShooterConstants.ampVelocity);
-                      } else if (arm.getPosition().getRadians() < Units.degreesToRadians(12.0)) {
+                      } else if (arm.getPosition().getRadians()
+                          < ArmConstants.subwooferSpeedAngle) {
                         shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
                       } else {
                         shooter.setMotorSpeed(ShooterConstants.shooterVelocity);

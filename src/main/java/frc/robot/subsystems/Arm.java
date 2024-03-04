@@ -251,12 +251,12 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureAbsoluteEncoder() {
-    mainMotor.setCANTimeout(100);
-    absoluteEncoder.setZeroOffset(0.0);
-    absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
-    absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
-    absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
-    mainMotor.setCANTimeout(0);
+    SparkMaxUtil.configure(
+        mainMotor,
+        () -> absoluteEncoder.setZeroOffset(0.0),
+        () -> absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted),
+        () -> absoluteEncoder.setPositionConversionFactor(2 * Math.PI),
+        () -> absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0));
   }
 
   public void resetToAbsolute() {

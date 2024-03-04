@@ -284,6 +284,7 @@ public final class Constants {
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
+    public static final double subwooferSpeedAngle = Units.degreesToRadians(12.0);
 
     public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);

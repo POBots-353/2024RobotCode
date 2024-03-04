@@ -452,8 +452,8 @@ public class RobotContainer implements Logged {
   private void configureBatteryChooser() {
     batteryChooser = new PersistentSendableChooser<>("Battery Number");
 
-    batteryChooser.addOption("2015 #1", "Jerry");
-    batteryChooser.addOption("2015 #2", "Bob");
+    batteryChooser.addOption("2015 #1", "Jerry (Decommissioned)");
+    batteryChooser.addOption("2015 #2", "Bob (Decommissioned)");
     batteryChooser.addOption("2015 #3", "Omar");
     batteryChooser.addOption("2016 #2", "Ella");
     batteryChooser.addOption("2017 #1", "2017 #1");
@@ -467,6 +467,9 @@ public class RobotContainer implements Logged {
     batteryChooser.addOption("2022 #1", "Charles");
     batteryChooser.addOption("2024 #1", "Ian");
     batteryChooser.addOption("2024 #2", "Nancy");
+    batteryChooser.addOption("2024 #3", "Perry");
+    batteryChooser.addOption("2024 #4", "Quincy");
+    batteryChooser.addOption("2024 #5", "Richard");
 
     SmartDashboard.putData("Battery Chooser", batteryChooser);
   }

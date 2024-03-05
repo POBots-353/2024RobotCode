@@ -208,6 +208,12 @@ public class RobotContainer implements Logged {
             new SolidColor(Color.kGreen, leds).withTimeout(5.0),
             new SolidColor(Color.kRed, leds).withTimeout(5.0))
         .schedule();
+
+        
+
+
+        new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kOrange, leds).withTimeout(3));
+
   }
 
   /**

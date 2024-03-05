@@ -34,6 +34,7 @@ import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
+import frc.robot.commands.leds.FlashingLights;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -209,11 +210,8 @@ public class RobotContainer implements Logged {
             new SolidColor(Color.kRed, leds).withTimeout(5.0))
         .schedule();
 
-        
-
-
-        new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kOrange, leds).withTimeout(3));
-
+    new Trigger(intake::beamBroken)
+        .onTrue(new FlashingLights(0.50, Color.kGreen, leds).withTimeout(3));
   }
 
   /**

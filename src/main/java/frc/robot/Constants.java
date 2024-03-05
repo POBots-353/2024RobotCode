@@ -431,7 +431,8 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelCircumference = Units.inchesToMeters(3.972) * Math.PI;
+    public static final double wheelRadius = Units.inchesToMeters(4.00) / 2;
+    public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
 

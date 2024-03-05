@@ -888,10 +888,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public double[] getWheelRadiusCharacterizationPosition() {
     return new double[] {
-      frontLeftModule.getPosition(),
-      frontRightModule.getPosition(),
-      backLeftModule.getPosition(),
-      backRightModule.getPosition()
+      frontLeftModule.getPositionRadians(),
+      frontRightModule.getPositionRadians(),
+      backLeftModule.getPositionRadians(),
+      backRightModule.getPositionRadians()
     };
   }
 

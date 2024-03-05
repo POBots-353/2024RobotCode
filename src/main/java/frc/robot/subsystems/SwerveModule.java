@@ -313,6 +313,10 @@ public class SwerveModule implements Logged {
     return desiredState;
   }
 
+  public double getPositionRadians() {
+    return getPosition() / SwerveConstants.wheelRadius;
+  }
+
   public double getPosition() {
     if (RobotBase.isReal()) {
       return driveEncoder.getPosition();

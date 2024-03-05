@@ -65,6 +65,8 @@ public class WheelRadiusCharacterization extends Command {
     currentWheelRadius = (accumYaw * SwerveConstants.driveBaseRadius) / averagePosition;
 
     SmartDashboard.putNumber("Measured Wheel Radius", Units.metersToInches(currentWheelRadius));
+    SmartDashboard.putNumber(
+        "Measured Wheel Diameter", Units.metersToInches(currentWheelRadius) * 2);
   }
 
   // Called once the command ends or is interrupted.

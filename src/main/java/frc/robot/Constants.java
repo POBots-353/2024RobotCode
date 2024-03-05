@@ -258,7 +258,7 @@ public final class Constants {
     public static final double angleTolerance = Units.degreesToRadians(0.15);
     public static final double autonomousAngleTolerance = Units.degreesToRadians(0.35);
     public static final double autoShootAngleTolerance = Units.degreesToRadians(0.65);
-    public static final double replanningError = Units.degreesToRadians(20.0);
+    public static final double replanningError = Units.degreesToRadians(25.0);
     public static final double debounceTime = 0.50;
     public static final double movementDebounceTime = 0.353;
     public static final double autoMovementDebounceTime = 0.40;

@@ -34,7 +34,6 @@ import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
-import frc.robot.commands.leds.FlashingLights;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -89,6 +88,14 @@ public class RobotContainer implements Logged {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    DataLogManager.log("Initializing Robot Container");
+
+    new StartupConnectionCheck(
+            new LoadingAnimation(Color.kBlue, leds),
+            new SolidColor(Color.kGreen, leds).withTimeout(5.0),
+            new SolidColor(Color.kRed, leds).withTimeout(5.0))
+        .schedule();
+
     // Configure the trigger bindings
     configureBindings();
     configureBatteryChooser();
@@ -103,7 +110,7 @@ public class RobotContainer implements Logged {
         "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.25).asProxy());
+        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.50).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
@@ -136,6 +143,17 @@ public class RobotContainer implements Logged {
         "Warm Up Shooter Subwoofer",
         shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.subwooferVelocity)).asProxy());
     NamedCommands.registerCommand(
+        "Warm Up Shooter Differential",
+        shooter
+            .run(
+                () ->
+                    shooter.setMotorSpeedDifferential(
+                        ShooterConstants.shooterVelocity + 500,
+                        ShooterConstants.shooterVelocity - 800))
+            .asProxy());
+    NamedCommands.registerCommand(
+        "Warm Up Shooter Idle", shooter.run(() -> shooter.setMotorSpeed(1000.0)).asProxy());
+    NamedCommands.registerCommand(
         "Shoot",
         intake
             .autoFeedToShooter()
@@ -165,15 +183,16 @@ public class RobotContainer implements Logged {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  shooter.setDefaultCommand(shooter.run(() -> shooter.setMotorSpeed(1000.0)));
+                  // shooter.setDefaultCommand(shooter.run(() -> shooter.setMotorSpeed(1000.0)));
                 }));
 
     RobotModeTriggers.disabled()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  shooter.setDefaultCommand(shooter.runOnce(shooter::stopMotor));
-                }));
+                    () -> {
+                      // shooter.setDefaultCommand(shooter.runOnce(shooter::stopMotor));
+                    })
+                .ignoringDisable(true));
 
     new Trigger(DriverStation::isEnabled)
         .onTrue(
@@ -204,14 +223,7 @@ public class RobotContainer implements Logged {
             SwerveConstants.maxAngularSpeed,
             swerve));
 
-    new StartupConnectionCheck(
-            new LoadingAnimation(Color.kBlue, leds),
-            new SolidColor(Color.kGreen, leds).withTimeout(5.0),
-            new SolidColor(Color.kRed, leds).withTimeout(5.0))
-        .schedule();
-
-    new Trigger(intake::beamBroken)
-        .onTrue(new FlashingLights(0.50, Color.kGreen, leds).withTimeout(3));
+    new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kGreen, leds));
   }
 
   /**
@@ -424,7 +436,10 @@ public class RobotContainer implements Logged {
                           < ArmConstants.subwooferSpeedAngle) {
                         shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
                       } else {
-                        shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+                        shooter.setMotorSpeedDifferential(
+                            ShooterConstants.shooterVelocity + 500,
+                            ShooterConstants.shooterVelocity - 800);
+                        // shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
                       }
                     })
                 .finallyDo(shooter::stopMotor));

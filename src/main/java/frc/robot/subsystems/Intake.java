@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,6 +37,7 @@ public class Intake extends VirtualSubsystem implements Logged {
   private final double prematchDelay = 2.5;
 
   public Intake() {
+    DataLogManager.log("Configuring Intake");
     SparkMaxUtil.configure(
         intakeMotor,
         () -> SparkMaxUtil.setInverted(intakeMotor, true),

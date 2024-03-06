@@ -14,8 +14,8 @@ public class LoadingAnimation extends Command {
   private final LEDs leds;
   private final Color color;
 
-  private static final int length = 12;
-  private static final int incrementAmount = 2;
+  private static final int length = 6;
+  private static final int incrementAmount = 1;
   private boolean increasing = true;
   private int startOffset = 0;
 

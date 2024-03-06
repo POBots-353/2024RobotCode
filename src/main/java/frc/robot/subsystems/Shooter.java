@@ -18,6 +18,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -79,6 +80,8 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
   /** Creates a new Shooter. */
   public Shooter() {
+    DataLogManager.log("[Shooter] Initializing");
+    DataLogManager.log("[Shooter] Configuring Bottom Motor");
     SparkMaxUtil.configure(
         bottomShooter,
         () -> bottomShooter.setIdleMode(IdleMode.kCoast),
@@ -105,6 +108,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
             bottomShooter.setPeriodicFramePeriod(
                 PeriodicFrame.kStatus7, SparkMaxUtil.disableFramePeriod));
 
+    DataLogManager.log("[Shooter] Configuring Top Motor");
     SparkMaxUtil.configure(
         topShooter,
         () -> topShooter.setSmartCurrentLimit(ShooterConstants.shooterCurrentLimit),
@@ -132,6 +136,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
     FaultLogger.register(topShooter);
     FaultLogger.register(bottomShooter);
+    DataLogManager.log("[Shooter] Initialization Complete");
   }
 
   public void setMotorSpeed(double velocity) {

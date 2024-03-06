@@ -21,6 +21,7 @@ public class FlashingLights extends Command {
 
   /** Creates a new FlashingLights. */
   public FlashingLights(double period, Color color, LEDs leds) {
+    this.period = period;
     this.color = color;
     this.leds = leds;
 
@@ -28,9 +29,15 @@ public class FlashingLights extends Command {
     addRequirements(leds);
   }
 
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.restart();
     timer.start();
     ledsOn = false;
   }

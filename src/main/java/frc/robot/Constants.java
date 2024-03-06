@@ -170,9 +170,9 @@ public final class Constants {
             0.019, // 0.50
             0.025, // 1.00
             0.050, // 1.50
-            0.080, // 2.00
-            0.150, // 4.95 used to be 0.037
-            0.85, // 5.5 might be a stddev of 0.85-ish
+            0.108, // 2.00
+            0.130, // 4.95 used to be 0.037
+            1.145, // 5.5 might be a stddev of 0.85-ish
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
@@ -194,21 +194,23 @@ public final class Constants {
     public static final class LimelightConstants {
       public static final double[] distances =
           new double[] {
-            0.50, 1.00, 1.50, 2.00,
+            0.50, 1.00, 1.50, 2.00, 2.50,
           };
       public static final double[] xyStandardDeviations =
           new double[] {
             0.014, // 0.50
             0.020, // 1.00
             0.050, // 1.50
-            0.070, // 2.00
+            0.090, // 2.00
+            0.120, // 2.5
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
             0.115, // 0.50
             0.149, // 1.00
             0.190, // 1.50
-            0.250 // 2.00
+            0.250, // 2.00
+            0.350, // 2.5
           };
 
       public static PolynomialRegression xyPolynomialRegression =
@@ -258,7 +260,7 @@ public final class Constants {
     public static final double angleTolerance = Units.degreesToRadians(0.15);
     public static final double autonomousAngleTolerance = Units.degreesToRadians(0.35);
     public static final double autoShootAngleTolerance = Units.degreesToRadians(0.65);
-    public static final double replanningError = Units.degreesToRadians(25.0);
+    public static final double replanningError = Units.degreesToRadians(55.0);
     public static final double debounceTime = 0.50;
     public static final double movementDebounceTime = 0.353;
     public static final double autoMovementDebounceTime = 0.40;
@@ -269,7 +271,7 @@ public final class Constants {
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
-    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(9);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.067);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
     public static final Rotation2d startingConfigAngle = Rotation2d.fromDegrees(72.02189922348654);
     public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(64.288);
@@ -278,10 +280,10 @@ public final class Constants {
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00);
-    public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(24.50);
+    public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(23.50);
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
-    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(32.0);
-    public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(30.0);
+    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(32.678343038055615);
+    public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(29.49);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
     public static final double subwooferSpeedAngle = Units.degreesToRadians(12.0);
@@ -311,7 +313,7 @@ public final class Constants {
     public static final int topShooterID = 11;
 
     public static final double shooterVelocity = 4000.0;
-    public static final double subwooferVelocity = 2800.0;
+    public static final double subwooferVelocity = 2500.0;
     public static final double ampVelocity = 750.0;
 
     public static final double topShooterKs = 0.04452;
@@ -398,7 +400,7 @@ public final class Constants {
 
   public static final class LEDConstants {
     public static final int ledPort = 0;
-    public static final int bufferLength = 100;
+    public static final int bufferLength = 25;
 
     public static final Color transparent = new Color(0, 0, 0);
     public static final Color rslColor = new Color(255, 25, 0);
@@ -431,7 +433,7 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelRadius = Units.inchesToMeters(4.00) / 2;
+    public static final double wheelRadius = Units.inchesToMeters(3.94) / 2;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
@@ -448,12 +450,12 @@ public final class Constants {
     public static final boolean useCosineCompensation = true;
 
     public static final double skewOpenLoopFudgeFactor = 0.100;
-    public static final double skewClosedLoopFudgeFactor = 0.060;
+    public static final double skewClosedLoopFudgeFactor = 0.010;
 
     public static final double driveP = 0.08;
 
-    public static final double driveKs = 0.27332;
-    public static final double driveKv = 2.4366;
+    public static final double driveKs = 0.22542;
+    public static final double driveKv = 2.4829;
     public static final double driveKa = 0.0 * 0.22997;
 
     public static final double turnP = 0.85;
@@ -465,11 +467,11 @@ public final class Constants {
     public static final double turnToAngleMaxVelocity = Units.degreesToRadians(270.0);
 
     public static final double openLoopRamp = 0.15;
-    public static final double closedLoopRamp = 0.04;
+    public static final double closedLoopRamp = 0.03;
 
     public static final double voltageCompensation = 12.0;
 
-    public static final int driveCurrentLimit = 35;
+    public static final int driveCurrentLimit = 45;
     public static final int turnCurrentLimit = 25;
 
     public static final double maxDriveTemperature = 50.0;

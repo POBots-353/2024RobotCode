@@ -16,9 +16,9 @@ import frc.robot.subsystems.Swerve;
 public class WheelRadiusCharacterization extends Command {
   private final Swerve swerve;
 
-  private final double characterizationSpeed = Units.degreesToRadians(7.5);
+  private final double characterizationSpeed = Units.degreesToRadians(25.0);
   private final SlewRateLimiter angularRateLimiter =
-      new SlewRateLimiter(Units.degreesToRadians(60.0));
+      new SlewRateLimiter(Units.degreesToRadians(20.0));
 
   private double lastGyroYaw = 0.0;
   private double accumYaw = 0.0;

@@ -210,6 +210,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   /** Creates a new Swerve. */
   public Swerve() {
+    DataLogManager.log("[Swerve] Initializing");
+
     PhotonCamera.setVersionCheckEnabled(false);
 
     poseEstimator =
@@ -257,7 +259,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
           field.getObject("trajectory").setPoses(path);
           if (path.size() == 0) {
             field.getObject("Target Pose").setPoses(path);
-            lockModules();
+            // lockModules();
+            setChassisSpeeds(new ChassisSpeeds());
           }
         });
 
@@ -331,9 +334,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     FaultLogger.register(arducam);
     FaultLogger.register(navx);
+
+    DataLogManager.log("[Swerve] Initialization Complete");
   }
 
   public void resetModulesToAbsolute() {
+    DataLogManager.log("[Swerve] Resetting modules to absolute");
     frontLeftModule.resetToAbsolute();
     frontRightModule.resetToAbsolute();
     backLeftModule.resetToAbsolute();
@@ -666,19 +672,20 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
 
     if (DriverStation.isAutonomous()) {
-      if (detectedTargets < 2) {
-        return false;
-      }
+      return false;
+      // if (detectedTargets < 2) {
+      //   return false;
+      // }
 
-      ChassisSpeeds currentSpeeds = getChassisSpeeds();
+      // ChassisSpeeds currentSpeeds = getChassisSpeeds();
 
-      double velocityTolerance = Units.inchesToMeters(1.5);
+      // double velocityTolerance = Units.inchesToMeters(1.5);
 
-      if (Math.abs(currentSpeeds.vxMetersPerSecond) > velocityTolerance
-          || Math.abs(currentSpeeds.vyMetersPerSecond) > velocityTolerance
-          || Math.abs(currentSpeeds.omegaRadiansPerSecond) > Units.degreesToRadians(1.0)) {
-        return false;
-      }
+      // if (Math.abs(currentSpeeds.vxMetersPerSecond) > velocityTolerance
+      //     || Math.abs(currentSpeeds.vyMetersPerSecond) > velocityTolerance
+      //     || Math.abs(currentSpeeds.omegaRadiansPerSecond) > Units.degreesToRadians(1.0)) {
+      //   return false;
+      // }
     }
 
     if (distance > 3.5 && detectedTargets < 2) {

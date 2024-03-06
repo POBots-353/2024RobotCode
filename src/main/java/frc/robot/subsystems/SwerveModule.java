@@ -82,6 +82,7 @@ public class SwerveModule implements Logged {
 
   public SwerveModule(
       String moduleName, int driveID, int turnID, int canCoderID, Rotation2d angleOffset) {
+    DataLogManager.log("[" + moduleName + "] Initializing");
     this.moduleName = moduleName;
     this.angleOffset = angleOffset;
 
@@ -117,6 +118,7 @@ public class SwerveModule implements Logged {
 
     FaultLogger.register(driveMotor);
     FaultLogger.register(turnMotor);
+    DataLogManager.log("[" + moduleName + "] Initialization Complete");
   }
 
   private void configureMotors() {
@@ -125,8 +127,10 @@ public class SwerveModule implements Logged {
   }
 
   private void configureDriveMotor() {
+    DataLogManager.log("[" + moduleName + "] Configuring Drive Motor");
     SparkMaxUtil.configure(
         driveMotor,
+        () -> driveMotor.clearFaults(),
         () -> SparkMaxUtil.setInverted(driveMotor, SwerveConstants.driveMotorInverted),
         () -> driveMotor.setOpenLoopRampRate(SwerveConstants.openLoopRamp),
         () -> driveMotor.setClosedLoopRampRate(SwerveConstants.closedLoopRamp),
@@ -160,8 +164,10 @@ public class SwerveModule implements Logged {
   }
 
   private void configureTurnMotor() {
+    DataLogManager.log("[" + moduleName + "] Configuring Turn Motor");
     SparkMaxUtil.configure(
         turnMotor,
+        () -> turnMotor.clearFaults(),
         () -> SparkMaxUtil.setInverted(turnMotor, SwerveConstants.turnMotorInverted),
         () -> turnMotor.disableVoltageCompensation(),
         () -> turnMotor.setSmartCurrentLimit(SwerveConstants.turnCurrentLimit),

@@ -135,6 +135,7 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   /** Creates a new Arm. */
   public Arm() {
+    DataLogManager.log("[Arm] Initializing");
     configureMainMotor();
     configureFollowerMotor();
     configureAbsoluteEncoder();
@@ -203,17 +204,22 @@ public class Arm extends VirtualSubsystem implements Logged {
     setpointLigament.append(
         new MechanismLigament2d(
             "Intake", Units.inchesToMeters(11.5), 60.0, lineWidth, new Color8Bit(Color.kBlue)));
+
+    DataLogManager.log("[Arm] Initialization Complete");
   }
 
   private void configureMainMotor() {
+    DataLogManager.log("[Arm] Configuring Main Motor");
     SparkMaxUtil.configure(
         mainMotor,
+        () -> mainMotor.clearFaults(),
         () -> SparkMaxUtil.setInverted(mainMotor, ArmConstants.mainMotorInverted),
         () -> armPIDController.setP(ArmConstants.armKp),
         () -> armPIDController.setI(ArmConstants.armKi),
         () -> armPIDController.setD(ArmConstants.armKd),
         () -> armPIDController.setOutputRange(-1.0, 1.0),
         () -> armPIDController.setFeedbackDevice(armEncoder),
+        () -> armPIDController.setPositionPIDWrappingEnabled(false),
         () -> armEncoder.setPositionConversionFactor(ArmConstants.armPositionConversionFactor),
         () -> armEncoder.setVelocityConversionFactor(ArmConstants.armVelocityConversionFactor),
         () -> mainMotor.setSmartCurrentLimit(ArmConstants.currentLimit),
@@ -241,8 +247,10 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureFollowerMotor() {
+    DataLogManager.log("[Arm] Configuring Follower Motor");
     SparkMaxUtil.configure(
         followerMotor,
+        () -> followerMotor.clearFaults(),
         () -> followerMotor.setSmartCurrentLimit(ArmConstants.currentLimit),
         () -> followerMotor.setIdleMode(IdleMode.kBrake),
         () -> followerMotor.follow(mainMotor, true));
@@ -251,15 +259,17 @@ public class Arm extends VirtualSubsystem implements Logged {
   }
 
   private void configureAbsoluteEncoder() {
-    SparkMaxUtil.configure(
-        mainMotor,
-        () -> absoluteEncoder.setZeroOffset(0.0),
-        () -> absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted),
-        () -> absoluteEncoder.setPositionConversionFactor(2 * Math.PI),
-        () -> absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0));
+    DataLogManager.log("[Arm] Configuring Absolute Encoder");
+    mainMotor.setCANTimeout(100);
+    absoluteEncoder.setZeroOffset(0.0);
+    absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
+    absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+    absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
+    mainMotor.setCANTimeout(0);
   }
 
   public void resetToAbsolute() {
+    DataLogManager.log("[Arm] Resetting Position to Absolute");
     mainMotor.setCANTimeout(100);
     double position = getAbsoluteAngle().minus(ArmConstants.absoluteOffset).getRadians();
 

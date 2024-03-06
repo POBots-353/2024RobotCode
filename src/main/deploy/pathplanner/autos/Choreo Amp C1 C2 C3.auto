@@ -70,6 +70,12 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Idle"
+                }
               }
             ]
           }
@@ -103,19 +109,25 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.35
+                        "waitTime": 0.1
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Warm Up Shooter"
+                        "name": "Warm Up Shooter Differential"
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
@@ -158,6 +170,12 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Idle"
+                }
               }
             ]
           }
@@ -191,19 +209,25 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.35
+                        "waitTime": 0.1
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Warm Up Shooter"
+                        "name": "Warm Up Shooter Differential"
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {

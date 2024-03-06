@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVPhysicsSim;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -51,7 +52,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    double startTime = Timer.getFPGATimestamp();
     DataLogManager.start();
+    DataLogManager.log("Starting Robot Program");
 
     LogUtil.recordMetadata("Java Vendor", System.getProperty("java.vendor"));
     LogUtil.recordMetadata("Java Version", System.getProperty("java.version"));
@@ -72,6 +75,17 @@ public class Robot extends TimedRobot {
     LogUtil.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     LogUtil.recordMetadata("Git Date", BuildConstants.GIT_DATE);
     LogUtil.recordMetadata("Git Revision", BuildConstants.GIT_REVISION);
+
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
+
+    odometryNotifier = new Notifier(m_robotContainer::updateSwerveOdometry);
+    odometryNotifier.setName("OdometryThread");
+    odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
+
+    // NetworkTableInstance.stopEntryDataLog(temporaryLogHandle);
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
 
     if (RobotBase.isReal()) {
       DriverStation.startDataLog(DataLogManager.getLog());
@@ -106,18 +120,13 @@ public class Robot extends TimedRobot {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-
-    odometryNotifier = new Notifier(m_robotContainer::updateSwerveOdometry);
-    odometryNotifier.setName("OdometryThread");
-    odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
-
-    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
-
     addPeriodic(Monologue::updateAll, kDefaultPeriod);
     addPeriodic(FaultLogger::update, 1);
+
+    CameraServer.startAutomaticCapture();
+
+    double startupTimeSeconds = Timer.getFPGATimestamp() - startTime;
+    DataLogManager.log("Startup Time (ms): " + startupTimeSeconds * 1000.0);
   }
 
   /**
@@ -157,7 +166,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void driverStationConnected() {
-    Monologue.setFileOnly(DriverStation.isFMSAttached());
+    // Monologue.setFileOnly(DriverStation.isFMSAttached());
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

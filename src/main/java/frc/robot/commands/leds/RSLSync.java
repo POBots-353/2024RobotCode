@@ -37,7 +37,22 @@ public class RSLSync extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    ledsOn = false;
+    boolean rslOn = RobotController.getRSLState();
+    AddressableLEDBuffer buffer = leds.getBuffer();
+
+    if (rslOn) {
+      for (int i = 0; i < buffer.getLength(); i++) {
+        buffer.setLED(i, color);
+      }
+      leds.updateBuffer();
+    } else if (!rslOn) {
+      for (int i = 0; i < buffer.getLength(); i++) {
+        buffer.setLED(i, LEDConstants.transparent);
+      }
+      leds.updateBuffer();
+    }
+
+    ledsOn = rslOn;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

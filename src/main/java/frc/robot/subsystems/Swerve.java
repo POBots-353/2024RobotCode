@@ -884,10 +884,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public double getSpeakerDistance() {
     if (LimelightHelpers.getTV(VisionConstants.limelightName)) {
-      return LimelightHelpers.getTargetPose3d_RobotSpace(VisionConstants.limelightName)
-          .toPose2d()
-          .getTranslation()
-          .getNorm();
+      Pose3d pose = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.limelightName);
+      return new Translation2d(pose.getZ(), pose.getX()).getNorm();
     } else {
       return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
     }

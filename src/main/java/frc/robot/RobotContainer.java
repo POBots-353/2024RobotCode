@@ -110,7 +110,7 @@ public class RobotContainer implements Logged {
         "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.subwooferAngle).withTimeout(1.50).asProxy());
+        arm.moveToPosition(ArmConstants.autoSubwooferAngle).withTimeout(1.50).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
@@ -141,7 +141,13 @@ public class RobotContainer implements Logged {
         shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)).asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Subwoofer",
-        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.subwooferVelocity)).asProxy());
+        shooter
+            .run(
+                () ->
+                    shooter.setMotorSpeedDifferential(
+                        ShooterConstants.subwooferVelocity,
+                        ShooterConstants.subwooferVelocity - 700.0))
+            .asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Differential",
         shooter
@@ -152,7 +158,7 @@ public class RobotContainer implements Logged {
                         ShooterConstants.shooterVelocity - 800))
             .asProxy());
     NamedCommands.registerCommand(
-        "Warm Up Shooter Idle", shooter.run(() -> shooter.setMotorSpeed(1000.0)).asProxy());
+        "Warm Up Shooter Idle", shooter.run(() -> shooter.setMotorSpeed(2000.0)).asProxy());
     NamedCommands.registerCommand(
         "Shoot",
         intake
@@ -288,7 +294,7 @@ public class RobotContainer implements Logged {
             driverController::getLeftY,
             driverController::getLeftX,
             () -> {
-              if (!slowMode.getAsBoolean()) {
+              if (slowMode.getAsBoolean()) {
                 return SwerveConstants.slowMotionMaxTranslationalSpeed;
               }
 
@@ -434,7 +440,11 @@ public class RobotContainer implements Logged {
                         shooter.setMotorSpeed(ShooterConstants.ampVelocity);
                       } else if (arm.getPosition().getRadians()
                           < ArmConstants.subwooferSpeedAngle) {
+                        // shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
                         shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
+                        // shooter.setMotorSpeedDifferential(
+                        //     ShooterConstants.subwooferVelocity,
+                        //     ShooterConstants.subwooferVelocity - 700.0);
                       } else {
                         shooter.setMotorSpeedDifferential(
                             ShooterConstants.shooterVelocity + 500,

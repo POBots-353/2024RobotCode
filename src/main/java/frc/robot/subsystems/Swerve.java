@@ -215,8 +215,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
     PhotonCamera.setVersionCheckEnabled(false);
 
     poseEstimator =
-        new SwerveDrivePoseEstimator(kinematics, getHeading(), getModulePositions(), new Pose2d());
-    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_CAMERA_HEIGHT);
+        new SwerveDrivePoseEstimator(
+            kinematics,
+            getHeading(),
+            getModulePositions(),
+            new Pose2d(0.0, 0.0, navx.getRotation2d()));
+    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
     if (RobotBase.isSimulation()) {
       simOdometry = new SwerveDriveOdometry(kinematics, getHeading(), getModulePositions());
@@ -611,6 +615,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.lock();
     Rotation2d heading = getHeading();
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
+    double timestamp = Timer.getFPGATimestamp();
 
     if (!frontLeftModule.motorsValid()
         || !frontRightModule.motorsValid()
@@ -626,8 +631,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
 
     odometryLock.lock();
-    rotationBuffer.addSample(Timer.getFPGATimestamp(), heading);
-    poseEstimator.update(heading, positions);
+    Pose2d newPose = poseEstimator.update(heading, positions);
+    rotationBuffer.addSample(timestamp, newPose.getRotation());
     odometryLock.unlock();
   }
 

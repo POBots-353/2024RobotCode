@@ -121,7 +121,7 @@ public class Arm extends VirtualSubsystem implements Logged {
           VecBuilder.fill(Units.degreesToRadians(0.0025)));
 
   private final Pose3d origin =
-      new Pose3d(Units.inchesToMeters(9.695), 0.0, Units.inchesToMeters(10.78), new Rotation3d());
+      new Pose3d(Units.inchesToMeters(6.22), 0.0, Units.inchesToMeters(12.13), new Rotation3d());
 
   private SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
@@ -226,6 +226,10 @@ public class Arm extends VirtualSubsystem implements Logged {
         () -> mainMotor.enableVoltageCompensation(12.0),
         () -> mainMotor.setIdleMode(IdleMode.kBrake),
         () -> mainMotor.enableSoftLimit(SoftLimitDirection.kForward, true),
+        () -> absoluteEncoder.setZeroOffset(0.0),
+        () -> absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted),
+        () -> absoluteEncoder.setPositionConversionFactor(2 * Math.PI),
+        () -> absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0),
         () ->
             mainMotor.setSoftLimit(
                 SoftLimitDirection.kForward, (float) ArmConstants.forwardMovementLimitAngle),

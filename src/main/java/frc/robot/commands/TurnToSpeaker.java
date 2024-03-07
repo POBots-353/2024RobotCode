@@ -5,6 +5,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,7 +26,7 @@ public class TurnToSpeaker extends Command {
   private Rotation2d desiredRotation = Rotation2d.fromDegrees(0.0);
 
   private PIDController turnToSpeakerController =
-      new PIDController(SwerveConstants.headingP, 0, SwerveConstants.headingD);
+      new PIDController(0.95, 0, SwerveConstants.headingD);
 
   private DoubleSupplier forwardSpeed;
   private DoubleSupplier strafeSpeed;
@@ -76,8 +77,8 @@ public class TurnToSpeaker extends Command {
     double rotation = LimelightHelpers.getTX(VisionConstants.limelightName);
 
     double timestamp =
-        (lastDetectionTime / 1e6)
-            - LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightName);
+        (lastDetectionTime / 1.0e6)
+            - (LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightName)) / 1000.0;
 
     Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(timestamp);
 
@@ -94,7 +95,9 @@ public class TurnToSpeaker extends Command {
     updateDesiredRotation();
     double turningSpeed =
         turnToSpeakerController.calculate(
-            swerve.getHeading().getRadians(), desiredRotation.getRadians());
+            swerve.getPose().getRotation().getRadians(), desiredRotation.getRadians());
+
+    turningSpeed = MathUtil.clamp(turningSpeed, -1.00, 1.00);
 
     double forwardMetersPerSecond =
         -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();

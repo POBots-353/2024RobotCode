@@ -66,7 +66,7 @@ public class SparkMaxUtil {
     for (var f : config) {
       configure(spark, f::get);
     }
-    configure(spark, () -> spark.setCANTimeout(10));
+    configure(spark, () -> spark.setCANTimeout(0));
   }
 
   /**

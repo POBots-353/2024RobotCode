@@ -200,9 +200,9 @@ public final class Constants {
           new double[] {
             0.014, // 0.50
             0.020, // 1.00
-            0.050, // 1.50
-            0.090, // 2.00
-            0.120, // 2.5
+            0.070, // 1.50
+            0.120, // 2.00
+            0.140, // 2.5
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
@@ -271,18 +271,20 @@ public final class Constants {
 
     public static final Rotation2d pickupAngle = Rotation2d.fromDegrees(-2.4);
     public static final Rotation2d ampAngle = Rotation2d.fromDegrees(95.0);
-    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(8.067);
+    public static final Rotation2d subwooferAngle = Rotation2d.fromDegrees(7.5);
     public static final Rotation2d podiumAngle = Rotation2d.fromDegrees(22.03);
     public static final Rotation2d startingConfigAngle = Rotation2d.fromDegrees(72.02189922348654);
-    public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(64.288);
+    public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(62.85939169721119);
 
+    public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00);
     public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(23.50);
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
-    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(32.678343038055615);
+    public static final Rotation2d behindWing1Angle =
+        Rotation2d.fromDegrees(32.678343038055615 - 1.0);
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(29.49);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
@@ -340,13 +342,14 @@ public final class Constants {
     // (distance, angle)
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
-          new Point2D.Double(1.12, Units.degreesToRadians(9.0 - 0.5)),
-          new Point2D.Double(1.25, Units.degreesToRadians(9.0 - 0.5)),
-          new Point2D.Double(2.09, Units.degreesToRadians(20.732014330623144 - 2.0)),
+          new Point2D.Double(1.12, Units.degreesToRadians(8.0 - 1.5)),
+          new Point2D.Double(1.25, Units.degreesToRadians(8.0 - 1.5)),
+          new Point2D.Double(1.60, Units.degreesToRadians(8.0 - 1.5)),
+          new Point2D.Double(2.09, Units.degreesToRadians(20.732014330623144 - 2.0 - 1.5)),
           // new Point2D.Double(2.29, Units.degreesToRadians(26.03)),
-          new Point2D.Double(2.50, Units.degreesToRadians(24.935558632659113 - 2.0)),
-          new Point2D.Double(3.0, Units.degreesToRadians(28.465810207071904 - 2.0)),
-          new Point2D.Double(3.53, Units.degreesToRadians(31.604855866583044 - 2.0)),
+          new Point2D.Double(2.50, Units.degreesToRadians(24.935558632659113 - 2.0 - 1.5)),
+          new Point2D.Double(3.0, Units.degreesToRadians(28.465810207071904 - 2.0 - 1.5)),
+          new Point2D.Double(3.53, Units.degreesToRadians(31.604855866583044 - 2.0 - 1.5)),
           // new Point2D.Double(2.91, Units.degreesToRadians(26.9)),
           // new Point2D.Double(3.26, Units.degreesToRadians(31.0)),
           // new Point2D.Double(Units.inchesToMeters(38.0), Units.degreesToRadians(8.5)),

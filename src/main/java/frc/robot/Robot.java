@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVPhysicsSim;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -123,7 +122,7 @@ public class Robot extends TimedRobot {
     addPeriodic(Monologue::updateAll, kDefaultPeriod);
     addPeriodic(FaultLogger::update, 1);
 
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
 
     double startupTimeSeconds = Timer.getFPGATimestamp() - startTime;
     DataLogManager.log("Startup Time (ms): " + startupTimeSeconds * 1000.0);

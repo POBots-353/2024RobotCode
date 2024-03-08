@@ -51,8 +51,6 @@ import frc.lib.controllers.VirtualXboxController;
 import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.util.Alert;
-import frc.robot.util.Alert.AlertType;
 import frc.robot.util.FaultLogger;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
@@ -75,8 +73,8 @@ public class Arm extends VirtualSubsystem implements Logged {
   private PIDController holdPIDController =
       new PIDController(ArmConstants.holdKp, ArmConstants.holdKi, ArmConstants.holdKd);
 
-  private Alert absolutePositionNotSet =
-      new Alert("Arm failed to set to absolute position", AlertType.ERROR);
+  // private Alert absolutePositionNotSet =
+  //     new Alert("Arm failed to set to absolute position", AlertType.ERROR);
 
   private final double prematchDelay = 1.5;
   private final double prematchAngleTolerance = Units.degreesToRadians(0.5);
@@ -264,38 +262,46 @@ public class Arm extends VirtualSubsystem implements Logged {
 
   private void configureAbsoluteEncoder() {
     DataLogManager.log("[Arm] Configuring Absolute Encoder");
-    mainMotor.setCANTimeout(100);
-    absoluteEncoder.setZeroOffset(0.0);
-    absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
-    absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
-    absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
-    mainMotor.setCANTimeout(0);
+    SparkMaxUtil.configureNoReset(
+        mainMotor,
+        () -> absoluteEncoder.setZeroOffset(0.0),
+        () -> absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted),
+        () -> absoluteEncoder.setPositionConversionFactor(2 * Math.PI),
+        () -> absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0));
+    // mainMotor.setCANTimeout(100);
+    // absoluteEncoder.setZeroOffset(0.0);
+    // absoluteEncoder.setInverted(ArmConstants.absoluteEncoderInverted);
+    // absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+    // absoluteEncoder.setVelocityConversionFactor(2 * Math.PI / 60.0);
+    // mainMotor.setCANTimeout(0);
   }
 
   public void resetToAbsolute() {
     DataLogManager.log("[Arm] Resetting Position to Absolute");
-    mainMotor.setCANTimeout(100);
+    // mainMotor.setCANTimeout(100);
     double position = getAbsoluteAngle().minus(ArmConstants.absoluteOffset).getRadians();
 
-    boolean failed = true;
-    for (int i = 0; i < 5; i++) {
-      if (armEncoder.setPosition(position) == REVLibError.kOk) {
-        failed = false;
-      }
-      if (armEncoder.getPosition() == position) {
-        break;
-      }
-      Timer.delay(0.010);
-    }
+    SparkMaxUtil.configureNoReset(mainMotor, () -> armEncoder.setPosition(position));
 
-    if (failed) {
-      DriverStation.reportError("Failed to set absolute posititon of arm motor", false);
-      DataLogManager.log("Failed to set absolute posititon of arm motor");
-      absolutePositionNotSet.set(true);
-    } else {
-      absolutePositionNotSet.set(false);
-    }
-    mainMotor.setCANTimeout(0);
+    // boolean failed = true;
+    // for (int i = 0; i < 5; i++) {
+    //   if (armEncoder.setPosition(position) == REVLibError.kOk) {
+    //     failed = false;
+    //   }
+    //   if (armEncoder.getPosition() == position) {
+    //     break;
+    //   }
+    //   Timer.delay(0.010);
+    // }
+
+    // if (failed) {
+    //   DriverStation.reportError("Failed to set absolute posititon of arm motor", false);
+    //   DataLogManager.log("Failed to set absolute posititon of arm motor");
+    //   absolutePositionNotSet.set(true);
+    // } else {
+    //   absolutePositionNotSet.set(false);
+    // }
+    // mainMotor.setCANTimeout(0);
   }
 
   public Command autoMoveToPosition(Rotation2d position) {
@@ -505,7 +511,7 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> {
               joystick.setButton(OperatorConstants.armToAmp, true);
             }),
-        Commands.waitSeconds(2.0),
+        Commands.waitSeconds(2.5),
         Commands.runOnce(
             () -> {
               if (Math.abs(getPosition().getRadians() - ArmConstants.ampAngle.getRadians())
@@ -522,7 +528,7 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> {
               joystick.setButton(OperatorConstants.armToSubwoofer, true);
             }),
-        Commands.waitSeconds(2.0),
+        Commands.waitSeconds(2.3),
         Commands.runOnce(
             () -> {
               if (Math.abs(getPosition().getRadians() - ArmConstants.subwooferAngle.getRadians())
@@ -542,7 +548,7 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(prematchDelay),
         Commands.runOnce(
             () -> {
-              if (Math.abs(getPosition().getRadians() - ArmConstants.podiumAngle.getRadians())
+              if (Math.abs(getPosition().getRadians() - ArmConstants.sourceAngle.getRadians())
                   > prematchAngleTolerance) {
                 addError("Arm did not sufficiently reach podium shooting angle");
               } else {

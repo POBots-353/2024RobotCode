@@ -24,7 +24,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Warm Up Shooter Subwoofer"
+                  "name": "Warm Up Shooter"
                 }
               }
             ]
@@ -127,13 +127,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.1
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -159,7 +159,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.35
+                        "waitTime": 1.2
                       }
                     },
                     {
@@ -227,13 +227,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.1
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -308,7 +308,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Auto Shoot"
           }
         }
       ]

@@ -703,7 +703,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
         || visionPose.getY() < 0.0
         || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()
         || visionPose.getZ()
-            < -0.15 // To account for minor inaccuracies in the LL location on the robot
+            < -0.25 // To account for minor inaccuracies in the LL location on the robot
         || visionPose.getZ() > 1.6) {
       return false;
     }
@@ -1004,7 +1004,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
               controller.clearVirtualAxes();
             }),
         // Test slowing down to 0 m/s
-        Commands.waitSeconds(prematchDriveDelay),
+        Commands.waitSeconds(1.35),
         Commands.runOnce(
             () -> {
               if (Math.abs(getChassisSpeeds().vxMetersPerSecond) > Units.feetToMeters(0.1)

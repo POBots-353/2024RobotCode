@@ -155,6 +155,8 @@ public class Shooter extends VirtualSubsystem implements Logged {
 
     topPID.setReference(topVelocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
     bottomPID.setReference(bottomVelocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
+
+    velocitySetpoint = topVelocity;
   }
 
   public void stopMotor() {
@@ -180,7 +182,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber("Shooter/Velocity Difference", getTopVelocity() - getBottomVelocity());
     SmartDashboard.putBoolean(
         "Shooter/At Setpoint",
-        velocitySetpoint - getBottomVelocity() < ShooterConstants.velocityTolerance);
+        velocitySetpoint - getTopVelocity() < ShooterConstants.velocityTolerance);
   }
 
   @Override
@@ -204,8 +206,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> {
-              double velocityDifference =
-                  Math.abs(getBottomVelocity() - ShooterConstants.shooterVelocity);
+              double velocityDifference = Math.abs(getTopVelocity() - velocitySetpoint);
               if (velocityDifference > ShooterConstants.velocityTolerance) {
                 addError("Shooter Motor not near desired velocity");
               } else {

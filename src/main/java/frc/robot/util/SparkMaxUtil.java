@@ -69,6 +69,15 @@ public class SparkMaxUtil {
     configure(spark, () -> spark.setCANTimeout(0));
   }
 
+  @SafeVarargs
+  public static void configureNoReset(CANSparkBase spark, Supplier<REVLibError>... config) {
+    configure(spark, () -> spark.setCANTimeout(100));
+    for (var f : config) {
+      configure(spark, f::get);
+    }
+    configure(spark, () -> spark.setCANTimeout(0));
+  }
+
   /**
    * Recursively configures a specific value on a spark, until {@code attempt} exceeds {@code
    * MAX_ATTEMPTS}.

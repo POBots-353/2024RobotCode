@@ -28,6 +28,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.AutonomousAutoShoot;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
@@ -101,10 +102,10 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
-    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak());
+    NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak().asProxy());
     NamedCommands.registerCommand(
-        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25));
-    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor));
+        "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25).asProxy());
+    NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor).asProxy());
 
     NamedCommands.registerCommand(
         "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
@@ -135,6 +136,13 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Behind W2",
         arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());
+
+    NamedCommands.registerCommand(
+        "Auto Shoot",
+        new AutonomousAutoShoot(arm, intake, shooter, swerve)
+            .withTimeout(2.00)
+            .handleInterrupt(() -> intake.autoFeedToShooter().withTimeout(1.5).asProxy().schedule())
+            .asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
@@ -168,7 +176,8 @@ public class RobotContainer implements Logged {
                 () -> {
                   intake.stopIntakeMotor();
                   shooter.stopMotor();
-                }));
+                })
+            .asProxy());
 
     configureAutoChooser();
 

@@ -117,11 +117,11 @@ public class Climber extends VirtualSubsystem {
   }
 
   public void leftReverse() {
-    leftMotor.set(-ClimberConstants.climberMotorSpeed);
+    leftMotor.set(-0.50);
   }
 
   public void rightReverse() {
-    rightMotor.set(-ClimberConstants.climberMotorSpeed);
+    rightMotor.set(-0.50);
   }
 
   @Override

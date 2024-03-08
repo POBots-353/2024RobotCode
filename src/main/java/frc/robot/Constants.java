@@ -276,12 +276,12 @@ public final class Constants {
     public static final Rotation2d startingConfigAngle = Rotation2d.fromDegrees(72.02189922348654);
     public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(62.85939169721119);
 
-    public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0);
+    public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
-    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00);
-    public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(23.50);
+    public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
+    public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(23.50 - 1.0);
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
     public static final Rotation2d behindWing1Angle =
         Rotation2d.fromDegrees(32.678343038055615 - 1.0);
@@ -398,12 +398,12 @@ public final class Constants {
 
     public static final int climberCurrentLimit = 60;
 
-    public static final double climberMotorSpeed = 0.50;
+    public static final double climberMotorSpeed = 0.70;
   }
 
   public static final class LEDConstants {
     public static final int ledPort = 0;
-    public static final int bufferLength = 25;
+    public static final int bufferLength = 16;
 
     public static final Color transparent = new Color(0, 0, 0);
     public static final Color rslColor = new Color(255, 25, 0);

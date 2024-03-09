@@ -102,6 +102,7 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
+    DataLogManager.log("Registering Named Commands");
     NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak().asProxy());
     NamedCommands.registerCommand(
         "Intake Until Beam Break", intake.intakeUntilBeamBreak().withTimeout(0.25).asProxy());
@@ -263,6 +264,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureDriveBindings() {
+    DataLogManager.log("Configuring drive button bindings");
     Trigger turnToSpeaker = driverController.rightTrigger();
     Trigger slowMode = driverController.leftTrigger();
 
@@ -325,6 +327,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureIntakeBindings() {
+    DataLogManager.log("Configuring intake button bindings");
     operatorStick
         .button(OperatorConstants.intakeNoteButton)
         .whileTrue(intake.intakeUntilBeamBreak())
@@ -342,6 +345,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureClimbingBindings() {
+    DataLogManager.log("Configuring climber button bindings");
     Trigger reverseDirection = operatorStick.povUp();
 
     operatorStick
@@ -375,6 +379,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureArmBindings() {
+    DataLogManager.log("Configuring arm button bindings");
     Trigger armManualUp = operatorStick.button(OperatorConstants.armManualUp);
     Trigger armManualDown = operatorStick.button(OperatorConstants.armManualDown);
     Trigger armSlowAdjustment = operatorStick.button(OperatorConstants.armPreciseManualAdjustment);
@@ -439,6 +444,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureShooterBindings() {
+    DataLogManager.log("Configuring shooter button bindings");
     operatorStick
         .button(OperatorConstants.manualShootButton)
         .whileTrue(
@@ -465,6 +471,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureAutoChooser() {
+    DataLogManager.log("Configuring auto chooser");
     autoChooser = AutoBuilder.buildAutoChooser();
 
     autoChooser.addOption("[SysID] Swerve Quasistatic Forward", swerve.quasistaticForward());
@@ -488,6 +495,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configureBatteryChooser() {
+    DataLogManager.log("Configuring battery chooser");
     batteryChooser = new PersistentSendableChooser<>("Battery Number");
 
     batteryChooser.addOption("2015 #1", "Jerry (Decommissioned)");
@@ -513,6 +521,7 @@ public class RobotContainer implements Logged {
   }
 
   private void configurePrematchChecklist() {
+    DataLogManager.log("Configuring prematch checklist");
     Command generalPreMatch =
         Commands.sequence(
                 Commands.runOnce(

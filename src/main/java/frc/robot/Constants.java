@@ -283,8 +283,7 @@ public final class Constants {
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
     public static final Rotation2d autoCenterWingShotAngle = Rotation2d.fromDegrees(23.50 - 1.0);
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
-    public static final Rotation2d behindWing1Angle =
-        Rotation2d.fromDegrees(32.678343038055615 - 1.0);
+    public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(28.117);
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(29.49);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);

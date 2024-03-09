@@ -639,6 +639,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private Vector<N3> getLLStandardDeviations(
       Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
+    // If we're far from the tag, compute higher standard devs
+    // if (distance > 3.5 && detectedTargets < 2) {
+    //   double xyStandardDev = Math.pow(distance, 2) / 20.0;
+    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
+    // } else if (distance > 4.5 && detectedTargets > 1) {
+    //   double xyStandardDev = Math.pow(distance, 2) / 30.0;
+    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
+    // }
+
+    // If we're semi-close to it, use polynomial regression or a super low stdandard dev
     if (detectedTargets > 1) {
       return VecBuilder.fill(
           Units.inchesToMeters(2.25),
@@ -655,10 +665,18 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private Vector<N3> getArducamStandardDeviations(
       Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
     double distance = targetPose.getTranslation().toTranslation2d().getNorm();
-    if (detectedTargets < 1) {
+    // if (distance > 3.5 && detectedTargets < 2) {
+    //   double xyStandardDev = Math.pow(distance, 2) / 22.5;
+    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
+    // } else if (distance > 4.5 && detectedTargets > 1) {
+    //   double xyStandardDev = Math.pow(distance, 2) / 30.0;
+    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
+    // }
+
+    if (detectedTargets > 1) {
       return VecBuilder.fill(
-          Units.inchesToMeters(6.5),
-          Units.inchesToMeters(6.5),
+          Units.inchesToMeters(4.5),
+          Units.inchesToMeters(4.5),
           Units.degreesToRadians(10000000000000.0));
     } else {
       double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
@@ -717,6 +735,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     double angleTolerance =
         DriverStation.isAutonomous() ? 8.0 : (detectedTargets >= 2) ? 25.0 : 15.0;
+
+    // if (distance > 3.5 && detectedTargets < 2) {
+    //   angleTolerance = 10.0;
+    // } else if (distance > 5.5 && detectedTargets > 2) {
+    //   angleTolerance = 10.0;
+    // }
 
     // If the angle is too different from our gyro angle at the time of the image
     if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {

@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7502669095993042,
+      "x": 0.7502669095993052,
       "y": 6.693497180938721
     },
     "rotation": -120.31122089968588
@@ -127,13 +127,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.75
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Auto Shoot"
+            "name": "Shoot"
           }
         },
         {
@@ -227,13 +227,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.75
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Auto Shoot"
+            "name": "Shoot"
           }
         },
         {

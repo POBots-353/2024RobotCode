@@ -77,7 +77,6 @@ public class Shooter extends VirtualSubsystem implements Logged {
   private SparkPIDController bottomPID = bottomShooter.getPIDController();
   private SparkPIDController topPID = topShooter.getPIDController();
 
-  private double velocitySetpoint = 0.0;
   private ShooterState desiredState = new ShooterState();
 
   /** Creates a new Shooter. */
@@ -148,7 +147,6 @@ public class Shooter extends VirtualSubsystem implements Logged {
     bottomPID.setReference(velocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
     topPID.setReference(velocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
 
-    velocitySetpoint = velocity;
     desiredState = new ShooterState(velocity);
   }
 
@@ -159,7 +157,6 @@ public class Shooter extends VirtualSubsystem implements Logged {
     topPID.setReference(topVelocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
     bottomPID.setReference(bottomVelocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
 
-    velocitySetpoint = topVelocity;
     desiredState = new ShooterState(topVelocity, bottomVelocity);
   }
 
@@ -171,7 +168,6 @@ public class Shooter extends VirtualSubsystem implements Logged {
     bottomPID.setReference(
         state.bottomSpeed(), ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
 
-    velocitySetpoint = state.topSpeed();
     desiredState = state;
   }
 
@@ -235,8 +231,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
         Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> {
-              double velocityDifference = Math.abs(getTopVelocity() - velocitySetpoint);
-              if (velocityDifference > ShooterConstants.velocityTolerance) {
+              if (!nearSetpoint()) {
                 addError("Shooter Motor not near desired velocity");
               } else {
                 addInfo("Shooter motors at desired velocity");

@@ -37,18 +37,19 @@ public class AutoShoot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    setpointDebouncer.calculate(false);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double distance = swerve.getSpeakerDistance();
 
-    double angle = AutoShootConstants.autoShootAngleInterpolation.get(distance);
-    Rotation2d desiredAngle = Rotation2d.fromRadians(angle);
+    Rotation2d desiredAngle = AutoShootConstants.autoShootAngleMap.get(distance);
     arm.setDesiredPosition(desiredAngle);
 
-    ShooterState state = AutoShootConstants.autoShootSpeeds.get(distance);
+    ShooterState state = AutoShootConstants.autoShootSpeedMap.get(distance);
 
     shooter.setShooterState(state);
 

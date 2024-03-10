@@ -140,14 +140,15 @@ public class RobotContainer implements Logged {
 
     NamedCommands.registerCommand(
         "Auto Shoot",
-        new AutonomousAutoShoot(arm, intake, shooter, swerve)
+        new AutonomousAutoShoot(arm, shooter, swerve)
             .withTimeout(2.00)
-            .handleInterrupt(() -> intake.autoFeedToShooter().withTimeout(1.5).asProxy().schedule())
+            .andThen(intake.autoFeedToShooter().withTimeout(1.0))
+            .finallyDo(() -> shooter.stopMotor())
             .asProxy());
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        shooter.run(() -> shooter.setShooterState(ShooterConstants.defaultState)).asProxy());
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.defaultSameSpeed)).asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Subwoofer",
         shooter.run(() -> shooter.setShooterState(ShooterConstants.subwooferState)).asProxy());

@@ -148,14 +148,13 @@ public class ShootWhileMoving extends Command {
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
     // Calculate arm angle
-    Rotation2d armAngle =
-        Rotation2d.fromRadians(AutoShootConstants.autoShootAngleInterpolation.get(distance));
+    Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
     arm.setDesiredPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
     // Shooter speed
-    ShooterState shooterState = AutoShootConstants.autoShootSpeeds.get(distance);
+    ShooterState shooterState = AutoShootConstants.autoShootSpeedMap.get(distance);
 
     shooter.setShooterState(shooterState);
 

@@ -321,6 +321,7 @@ public final class Constants {
     public static final double ampVelocity = 750.0;
 
     public static final ShooterState defaultState = new ShooterState(4500.0, 3200.0);
+    public static final ShooterState defaultSameSpeed = new ShooterState(4000.0);
     public static final ShooterState subwooferState = new ShooterState(2500.0);
     public static final ShooterState ampState = new ShooterState(750.0);
     public static final ShooterState idleState = new ShooterState(2000.0);
@@ -347,6 +348,7 @@ public final class Constants {
 
   public static final class AutoShootConstants {
     // (distance, angle)
+    // This isn't being used, but the data could still be important at some point
     public static final Point2D[] autoShootArmAngles =
         new Point2D.Double[] {
           new Point2D.Double(1.12, Units.degreesToRadians(8.0 - 1.5)),
@@ -372,33 +374,30 @@ public final class Constants {
           // new Point2D.Double(3.7, Units.degreesToRadians(31.2)),
         };
 
-    public static final LinearInterpolation autoShootAngleInterpolation =
-        new LinearInterpolation(autoShootArmAngles);
+    public static final InterpolatingTreeMap<Double, Rotation2d> autoShootAngleMap =
+        new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
 
-    public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeeds =
+    static {
+      autoShootAngleMap.put(1.12, Rotation2d.fromDegrees(8.0 - 1.5));
+      autoShootAngleMap.put(1.25, Rotation2d.fromDegrees(8.0 - 1.5));
+      autoShootAngleMap.put(1.60, Rotation2d.fromDegrees(8.0 - 1.5));
+      autoShootAngleMap.put(2.09, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
+      autoShootAngleMap.put(2.50, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
+      autoShootAngleMap.put(3.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
+      autoShootAngleMap.put(3.53, Rotation2d.fromDegrees(31.604855866583044 - 2.0 - 1.5));
+    }
+
+    public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeedMap =
         new InterpolatingTreeMap<Double, ShooterState>(
             InverseInterpolator.forDouble(), ShooterState::interpolate);
 
     static {
-      autoShootSpeeds.put(1.10, new ShooterState(2800.0, 2800.0));
-      autoShootSpeeds.put(1.5, new ShooterState(2800.0, 2800.0));
-      autoShootSpeeds.put(1.5 + 0.00000001, new ShooterState(4500.0, 3200.0));
-      autoShootSpeeds.put(2.91 - 0.00000001, new ShooterState(4500.0, 3200.0));
-      autoShootSpeeds.put(2.91, new ShooterState(4500.0, 3200.0));
+      autoShootSpeedMap.put(1.10, new ShooterState(2800.0, 2800.0));
+      autoShootSpeedMap.put(1.5, new ShooterState(2800.0, 2800.0));
+      autoShootSpeedMap.put(1.5 + 0.00000001, new ShooterState(4500.0, 3200.0));
+      autoShootSpeedMap.put(2.91 - 0.00000001, new ShooterState(4500.0, 3200.0));
+      autoShootSpeedMap.put(2.91, new ShooterState(4500.0, 3200.0));
     }
-
-    // (distance, rpm)
-    public static final Point2D[] autoShootRPM =
-        new Point2D.Double[] {
-          new Point2D.Double(1.10, 2800),
-          new Point2D.Double(1.5, 2800),
-          new Point2D.Double(1.5 + 0.00000001, 4000),
-          new Point2D.Double(2.91 - 0.000001, 4000),
-          new Point2D.Double(2.91, 4000.0),
-        };
-
-    public static final LinearInterpolation autoShootRPMInterpolation =
-        new LinearInterpolation(autoShootRPM);
 
     // (distance, time)
     public static final Point2D[] autoShootTimes =

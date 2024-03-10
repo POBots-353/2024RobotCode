@@ -149,6 +149,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     topPID.setReference(velocity, ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
 
     velocitySetpoint = velocity;
+    desiredState = new ShooterState(velocity);
   }
 
   public void setMotorSpeedDifferential(double topVelocity, double bottomVelocity) {
@@ -159,6 +160,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     bottomPID.setReference(bottomVelocity, ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
 
     velocitySetpoint = topVelocity;
+    desiredState = new ShooterState(topVelocity, bottomVelocity);
   }
 
   public void setShooterState(ShooterState state) {
@@ -170,6 +172,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
         state.bottomSpeed(), ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
 
     velocitySetpoint = state.topSpeed();
+    desiredState = state;
   }
 
   public void stopMotor() {
@@ -187,12 +190,18 @@ public class Shooter extends VirtualSubsystem implements Logged {
     return bottomEncoder.getVelocity();
   }
 
+  @Log.NT(key = "Desired State")
   public ShooterState getDesiredState() {
     return desiredState;
   }
 
+  @Log.NT(key = "Current State")
   public ShooterState getState() {
     return new ShooterState(getTopVelocity(), getBottomVelocity());
+  }
+
+  public boolean nearSetpoint() {
+    return getState().isNear(desiredState, ShooterConstants.velocityTolerance);
   }
 
   @Override
@@ -202,8 +211,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber("Shooter/Top Velocity", getTopVelocity());
     SmartDashboard.putNumber("Shooter/Velocity Difference", getTopVelocity() - getBottomVelocity());
     SmartDashboard.putBoolean(
-        "Shooter/At Setpoint",
-        velocitySetpoint - getTopVelocity() < ShooterConstants.velocityTolerance);
+        "Shooter/At Setpoint", getState().isNear(desiredState, ShooterConstants.velocityTolerance));
   }
 
   @Override

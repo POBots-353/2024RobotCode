@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -201,13 +200,12 @@ public class ShootWhileMoving extends Command {
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
-    double shooterError = shooterState.topSpeed() - shooter.getTopVelocity();
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-            && shooterError < ShooterConstants.velocityTolerance)
+            && shooter.nearSetpoint())
     // && Math.abs(driveAngleError.getDegrees()) <= 7.00
     ) {
       intake.feedToShooter();

@@ -323,7 +323,7 @@ public final class Constants {
     public static final ShooterState defaultState = new ShooterState(4500.0, 3200.0);
     public static final ShooterState subwooferState = new ShooterState(2500.0);
     public static final ShooterState ampState = new ShooterState(750.0);
-    public static final ShooterState idleState = new ShooterState(200.0);
+    public static final ShooterState idleState = new ShooterState(2000.0);
 
     public static final double topShooterKs = 0.04452;
     public static final double topShooterKv = 0.0021696;

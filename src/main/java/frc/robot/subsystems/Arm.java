@@ -88,11 +88,9 @@ public class Arm extends VirtualSubsystem implements Logged {
   private final double mechanismVisualizationHeight = Units.inchesToMeters(40.0);
   private final double lineWidth = 5.0;
 
-  @Log.NT(key = "Arm Measured")
   private Mechanism2d angleVisualizer =
       new Mechanism2d(mechanismVisualizationWidth, mechanismVisualizationHeight);
 
-  @Log.NT(key = "Arm Setpoint")
   private Mechanism2d setpointVisualizer =
       new Mechanism2d(mechanismVisualizationWidth, mechanismVisualizationHeight);
 
@@ -202,6 +200,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     setpointLigament.append(
         new MechanismLigament2d(
             "Intake", Units.inchesToMeters(11.5), 60.0, lineWidth, new Color8Bit(Color.kBlue)));
+
+    SmartDashboard.putData("Arm/Arm Measured", angleVisualizer);
+    SmartDashboard.putData("Arm/Arm Setpoint", setpointVisualizer);
 
     DataLogManager.log("[Arm] Initialization Complete");
   }

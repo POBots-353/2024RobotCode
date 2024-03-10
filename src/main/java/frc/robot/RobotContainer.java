@@ -147,27 +147,16 @@ public class RobotContainer implements Logged {
 
     NamedCommands.registerCommand(
         "Warm Up Shooter",
-        shooter.run(() -> shooter.setMotorSpeed(ShooterConstants.shooterVelocity)).asProxy());
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.defaultState)).asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Subwoofer",
-        shooter
-            .run(
-                () ->
-                    shooter.setMotorSpeedDifferential(
-                        ShooterConstants.subwooferVelocity,
-                        ShooterConstants.subwooferVelocity - 700.0))
-            .asProxy());
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.subwooferState)).asProxy());
     NamedCommands.registerCommand(
         "Warm Up Shooter Differential",
-        shooter
-            .run(
-                () ->
-                    shooter.setMotorSpeedDifferential(
-                        ShooterConstants.shooterVelocity + 500,
-                        ShooterConstants.shooterVelocity - 800))
-            .asProxy());
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.defaultState)).asProxy());
     NamedCommands.registerCommand(
-        "Warm Up Shooter Idle", shooter.run(() -> shooter.setMotorSpeed(2000.0)).asProxy());
+        "Warm Up Shooter Idle",
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.idleState)).asProxy());
     NamedCommands.registerCommand(
         "Shoot",
         intake
@@ -397,7 +386,7 @@ public class RobotContainer implements Logged {
         .whileTrue(arm.moveToPosition(ArmConstants.subwooferAngle));
 
     operatorStick
-        .button(OperatorConstants.armToPodium)
+        .button(OperatorConstants.armToSource)
         .whileTrue(arm.moveToPosition(ArmConstants.sourceAngle));
 
     // operatorStick
@@ -452,19 +441,12 @@ public class RobotContainer implements Logged {
                 .run(
                     () -> {
                       if (arm.getPosition().getRadians() > ArmConstants.ampSpeedAngle) {
-                        shooter.setMotorSpeed(ShooterConstants.ampVelocity);
+                        shooter.setShooterState(ShooterConstants.ampState);
                       } else if (arm.getPosition().getRadians()
                           < ArmConstants.subwooferSpeedAngle) {
-                        // shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
-                        shooter.setMotorSpeed(ShooterConstants.subwooferVelocity);
-                        // shooter.setMotorSpeedDifferential(
-                        //     ShooterConstants.subwooferVelocity,
-                        //     ShooterConstants.subwooferVelocity - 700.0);
+                        shooter.setShooterState(ShooterConstants.subwooferState);
                       } else {
-                        shooter.setMotorSpeedDifferential(
-                            ShooterConstants.shooterVelocity + 500,
-                            ShooterConstants.shooterVelocity - 800);
-                        // shooter.setMotorSpeed(ShooterConstants.shooterVelocity);
+                        shooter.setShooterState(ShooterConstants.defaultState);
                       }
                     })
                 .finallyDo(shooter::stopMotor));

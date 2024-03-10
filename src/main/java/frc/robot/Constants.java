@@ -12,11 +12,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.LinearInterpolation;
 import frc.robot.util.PolynomialRegression;
+import frc.robot.util.ShooterState;
 import java.awt.geom.Point2D;
 import java.util.List;
 
@@ -39,7 +42,7 @@ public final class Constants {
 
     public static final int armToPickup = 5;
     public static final int armToSubwoofer = 6;
-    public static final int armToPodium = 7;
+    public static final int armToSource = 7;
     public static final int armToAmp = 8;
     public static final int armAutoShoot = 14;
 
@@ -317,6 +320,11 @@ public final class Constants {
     public static final double subwooferVelocity = 2500.0;
     public static final double ampVelocity = 750.0;
 
+    public static final ShooterState defaultState = new ShooterState(4500.0, 3200.0);
+    public static final ShooterState subwooferState = new ShooterState(2500.0);
+    public static final ShooterState ampState = new ShooterState(750.0);
+    public static final ShooterState idleState = new ShooterState(200.0);
+
     public static final double topShooterKs = 0.04452;
     public static final double topShooterKv = 0.0021696;
     public static final double topShooterKa = 0.00073383;
@@ -366,6 +374,18 @@ public final class Constants {
 
     public static final LinearInterpolation autoShootAngleInterpolation =
         new LinearInterpolation(autoShootArmAngles);
+
+    public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeeds =
+        new InterpolatingTreeMap<Double, ShooterState>(
+            InverseInterpolator.forDouble(), ShooterState::interpolate);
+
+    static {
+      autoShootSpeeds.put(1.10, new ShooterState(2800.0, 2800.0));
+      autoShootSpeeds.put(1.5, new ShooterState(2800.0, 2800.0));
+      autoShootSpeeds.put(1.5 + 0.00000001, new ShooterState(4500.0, 3200.0));
+      autoShootSpeeds.put(2.91 - 0.00000001, new ShooterState(4500.0, 3200.0));
+      autoShootSpeeds.put(2.91, new ShooterState(4500.0, 3200.0));
+    }
 
     // (distance, rpm)
     public static final Point2D[] autoShootRPM =

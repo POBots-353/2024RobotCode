@@ -30,6 +30,7 @@ import frc.lib.subsystem.VirtualSubsystem;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.FaultLogger;
+import frc.robot.util.ShooterState;
 import frc.robot.util.SparkMaxUtil;
 import monologue.Annotations.Log;
 import monologue.Logged;
@@ -77,6 +78,7 @@ public class Shooter extends VirtualSubsystem implements Logged {
   private SparkPIDController topPID = topShooter.getPIDController();
 
   private double velocitySetpoint = 0.0;
+  private ShooterState desiredState = new ShooterState();
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -159,6 +161,17 @@ public class Shooter extends VirtualSubsystem implements Logged {
     velocitySetpoint = topVelocity;
   }
 
+  public void setShooterState(ShooterState state) {
+    double topFF = topFeedforward.calculate(state.topSpeed());
+    double bottomFF = bottomFeedforward.calculate(state.bottomSpeed());
+
+    topPID.setReference(state.topSpeed(), ControlType.kVelocity, 0, topFF, ArbFFUnits.kVoltage);
+    bottomPID.setReference(
+        state.bottomSpeed(), ControlType.kVelocity, 0, bottomFF, ArbFFUnits.kVoltage);
+
+    velocitySetpoint = state.topSpeed();
+  }
+
   public void stopMotor() {
     bottomShooter.set(0.0);
     topShooter.set(0.0);
@@ -172,6 +185,14 @@ public class Shooter extends VirtualSubsystem implements Logged {
   @Log.NT(key = "Bottom Velocity")
   public double getBottomVelocity() {
     return bottomEncoder.getVelocity();
+  }
+
+  public ShooterState getDesiredState() {
+    return desiredState;
+  }
+
+  public ShooterState getState() {
+    return new ShooterState(getTopVelocity(), getBottomVelocity());
   }
 
   @Override

@@ -27,6 +27,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class ShootWhileMoving extends Command {
@@ -155,9 +156,9 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
     // Shooter speed
-    double motorRPM = AutoShootConstants.autoShootRPMInterpolation.get(distance);
+    ShooterState shooterState = AutoShootConstants.autoShootSpeeds.get(distance);
 
-    shooter.setMotorSpeed(motorRPM);
+    shooter.setShooterState(shooterState);
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
     double forwardMetersPerSecond = -forwardSpeed.getAsDouble() * maxTranslationalSpeed;
@@ -200,7 +201,7 @@ public class ShootWhileMoving extends Command {
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
-    double shooterError = motorRPM - shooter.getBottomVelocity();
+    double shooterError = shooterState.topSpeed() - shooter.getTopVelocity();
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 

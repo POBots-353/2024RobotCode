@@ -15,6 +15,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.ShooterState;
 
 public class AutoShoot extends Command {
   private final Arm arm;
@@ -48,24 +49,14 @@ public class AutoShoot extends Command {
     Rotation2d desiredAngle = Rotation2d.fromRadians(angle);
     arm.setDesiredPosition(desiredAngle);
 
-    double bottomRPM = AutoShootConstants.autoShootRPMInterpolation.get(distance);
-    double topRPM = bottomRPM;
+    ShooterState state = AutoShootConstants.autoShootSpeeds.get(distance);
 
-    boolean useDifferential = bottomRPM == 4000.0;
-
-    if (useDifferential) {
-      topRPM = 4500;
-      bottomRPM = 3200;
-
-      shooter.setMotorSpeedDifferential(topRPM, bottomRPM);
-    } else {
-      shooter.setMotorSpeed(bottomRPM);
-    }
+    shooter.setShooterState(state);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", desiredAngle.getDegrees());
 
     Rotation2d armAngleError = desiredAngle.minus(arm.getPosition());
-    double topError = topRPM - shooter.getTopVelocity();
+    double topError = state.topSpeed() - shooter.getTopVelocity();
 
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance

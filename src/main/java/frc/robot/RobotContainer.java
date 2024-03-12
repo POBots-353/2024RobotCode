@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -28,13 +29,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.AutonomousAutoShoot;
+import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
+import frc.robot.commands.auto.AutoShootWhileMoving;
+import frc.robot.commands.auto.AutonomousAutoShoot;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -102,6 +105,11 @@ public class RobotContainer implements Logged {
     configureBatteryChooser();
     configurePrematchChecklist();
 
+    if (RobotBase.isSimulation()) {
+      NoteVisualizer.setSuppliers(swerve::getPose, arm::getPosition, shooter::getTopVelocity);
+      NoteVisualizer.startPublishers();
+    }
+
     DataLogManager.log("Registering Named Commands");
     NamedCommands.registerCommand("Start Intake", intake.intakeUntilBeamBreak().asProxy());
     NamedCommands.registerCommand(
@@ -147,6 +155,9 @@ public class RobotContainer implements Logged {
             .asProxy());
 
     NamedCommands.registerCommand(
+        "Auto SOTM", new AutoShootWhileMoving(arm, shooter, swerve).asProxy());
+
+    NamedCommands.registerCommand(
         "Warm Up Shooter",
         shooter.run(() -> shooter.setShooterState(ShooterConstants.defaultSameSpeed)).asProxy());
     NamedCommands.registerCommand(
@@ -165,6 +176,9 @@ public class RobotContainer implements Logged {
             .withTimeout(1.0)
             .finallyDo(
                 () -> {
+                  if (RobotBase.isSimulation()) {
+                    NoteVisualizer.shoot().schedule();
+                  }
                   intake.stopIntakeMotor();
                   shooter.stopMotor();
                 })

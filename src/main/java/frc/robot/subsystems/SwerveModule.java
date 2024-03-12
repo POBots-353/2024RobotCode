@@ -73,7 +73,7 @@ public class SwerveModule implements Logged {
   private Alert noAbsoluteValue;
   private Alert motorPositionNotSet;
 
-  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 6.12, 0.025);
+  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 6.12, 0.015);
   private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.004);
 
   private double simPosition = 0.0;

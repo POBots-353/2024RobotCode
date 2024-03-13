@@ -8,12 +8,14 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.AllianceUtil;
 import frc.robot.util.LimelightHelpers;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -24,6 +26,7 @@ public class TurnToSpeaker extends Command {
   private long lastDetectionTime = 0;
 
   private Rotation2d desiredRotation = Rotation2d.fromDegrees(0.0);
+  private boolean seenTag = false;
 
   private PIDController turnToSpeakerController =
       new PIDController(0.95, 0, SwerveConstants.headingD);
@@ -37,6 +40,8 @@ public class TurnToSpeaker extends Command {
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
+
+  private Pose2d speakerPose;
 
   /** Creates a new TurnToNote. */
   public TurnToSpeaker(
@@ -58,12 +63,22 @@ public class TurnToSpeaker extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    seenTag = false;
+    speakerPose = AllianceUtil.getSpeakerPose();
+  }
 
   private void updateDesiredRotation() {
     if (!LimelightHelpers.getTV(VisionConstants.limelightName)) {
+      if (!seenTag) {
+        Pose2d currentPose = swerve.getPose();
+
+        desiredRotation =
+            speakerPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
+      }
       return;
     }
+    seenTag = true;
 
     long detectionTime =
         LimelightHelpers.getLimelightNTTableEntry(VisionConstants.limelightName, "tx")
@@ -98,6 +113,10 @@ public class TurnToSpeaker extends Command {
             swerve.getPose().getRotation().getRadians(), desiredRotation.getRadians());
 
     turningSpeed = MathUtil.clamp(turningSpeed, -1.00, 1.00);
+
+    System.out.println("Speed: " + turningSpeed);
+    System.out.println("Current Rotation: " + swerve.getPose().getRotation().getDegrees());
+    System.out.println("Desired Rotation: " + desiredRotation.getDegrees());
 
     double forwardMetersPerSecond =
         -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();

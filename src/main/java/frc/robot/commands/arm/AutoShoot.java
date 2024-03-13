@@ -6,10 +6,12 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
+import frc.robot.commands.NoteVisualizer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -23,6 +25,8 @@ public class AutoShoot extends Command {
   private final Swerve swerve;
 
   private Debouncer setpointDebouncer = new Debouncer(0.30);
+
+  private boolean simShotNote = false;
 
   /** Creates a new AutoShoot. */
   public AutoShoot(Arm arm, Intake intake, Shooter shooter, Swerve swerve) {
@@ -39,6 +43,7 @@ public class AutoShoot extends Command {
   @Override
   public void initialize() {
     setpointDebouncer.calculate(false);
+    simShotNote = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -61,6 +66,11 @@ public class AutoShoot extends Command {
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
             && shooter.nearSetpoint())) {
       intake.feedToShooter();
+
+      if (!simShotNote && RobotBase.isSimulation()) {
+        NoteVisualizer.shoot().schedule();
+        simShotNote = true;
+      }
     }
   }
 

@@ -229,8 +229,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
       visionSim.addAprilTags(FieldConstants.aprilTagLayout);
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
-      cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(100.0));
-      cameraProperties.setCalibError(0.25, 0.15);
+      cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(68.97));
+      cameraProperties.setCalibError(0.79, 0.015);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);

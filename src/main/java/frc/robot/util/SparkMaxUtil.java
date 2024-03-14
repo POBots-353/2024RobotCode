@@ -17,7 +17,7 @@ public class SparkMaxUtil {
 
   public static void configureFollower(CANSparkMax follower) {
     for (PeriodicFrame frame : peridicFrames) {
-      configure(follower, () -> follower.setPeriodicFramePeriod(frame, disableFramePeriod));
+      configureNoReset(follower, () -> follower.setPeriodicFramePeriod(frame, disableFramePeriod));
     }
   }
 

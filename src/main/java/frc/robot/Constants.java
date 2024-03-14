@@ -320,7 +320,7 @@ public final class Constants {
     public static final double subwooferVelocity = 2500.0;
     public static final double ampVelocity = 750.0;
 
-    public static final ShooterState defaultState = new ShooterState(4500.0, 3200.0);
+    public static final ShooterState defaultState = new ShooterState(4500.0, 2800.0);
     public static final ShooterState defaultSameSpeed = new ShooterState(4000.0);
     public static final ShooterState subwooferState = new ShooterState(2500.0);
     public static final ShooterState ampState = new ShooterState(750.0);
@@ -385,6 +385,7 @@ public final class Constants {
       autoShootAngleMap.put(2.50, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
       autoShootAngleMap.put(3.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
       autoShootAngleMap.put(3.53, Rotation2d.fromDegrees(31.604855866583044 - 2.0 - 1.5));
+      autoShootAngleMap.put(3.98, Rotation2d.fromDegrees(29.137217802484155));
     }
 
     public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeedMap =
@@ -397,13 +398,16 @@ public final class Constants {
       autoShootSpeedMap.put(1.5 + 0.00000001, new ShooterState(4500.0, 3200.0));
       autoShootSpeedMap.put(2.91 - 0.00000001, new ShooterState(4500.0, 3200.0));
       autoShootSpeedMap.put(2.91, new ShooterState(4500.0, 3200.0));
+      autoShootSpeedMap.put(3.98 - 0.00000001, new ShooterState(4500.0, 3200.0));
+      autoShootSpeedMap.put(3.98, new ShooterState(4500.0, 3000.0));
     }
 
     // (distance, time)
     public static final Point2D[] autoShootTimes =
         new Point2D.Double[] {
-          new Point2D.Double(Units.feetToMeters(8.0), 0.24),
-          new Point2D.Double(Units.feetToMeters(10.0), 0.29),
+          new Point2D.Double(1.7, 0.19),
+          new Point2D.Double(2.70, 0.23),
+          new Point2D.Double(3.35, 0.23),
         };
 
     public static final LinearInterpolation autoShootTimeInterpolation =
@@ -454,7 +458,7 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelRadius = Units.inchesToMeters(3.94) / 2;
+    public static final double wheelRadius = Units.inchesToMeters(3.9353) / 2;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
@@ -519,27 +523,27 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(86.044921875);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(88.330078125);
   }
 
   public static class FrontRightModule {
     public static final int driveID = 1;
     public static final int turnID = 5;
     public static final int encoderID = 9;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-124.365234375);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-129.462890625);
   }
 
   public static class BackLeftModule {
     public static final int driveID = 2;
     public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.525390625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-54.755859375);
   }
 
   public static final class BackRightModule {
     public static final int driveID = 4;
     public static final int turnID = 8;
     public static final int encoderID = 12;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-77.080078125);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-76.904296875);
   }
 }

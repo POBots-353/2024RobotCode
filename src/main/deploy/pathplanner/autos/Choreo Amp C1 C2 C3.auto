@@ -127,13 +127,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 0.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -227,13 +227,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 0.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Auto Shoot"
           }
         },
         {

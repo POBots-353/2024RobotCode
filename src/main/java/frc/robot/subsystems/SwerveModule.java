@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -69,6 +70,9 @@ public class SwerveModule implements Logged {
 
   @Log.NT private double characterizationVolts = 0.0;
   @Log.NT private boolean characterizing = false;
+
+  private double initialAngleRadians = 0.0;
+  private double previousAngleDelta = 0.0;
 
   private Alert noAbsoluteValue;
   private Alert motorPositionNotSet;
@@ -225,6 +229,7 @@ public class SwerveModule implements Logged {
   public void resetToAbsolute() {
     if (!waitForCANCoder()) {
       noAbsoluteValue.set(true);
+      initialAngleRadians = turnEncoder.getPosition();
       return;
     } else {
       noAbsoluteValue.set(false);
@@ -245,6 +250,8 @@ public class SwerveModule implements Logged {
       }
       Timer.delay(0.010);
     }
+
+    initialAngleRadians = position.getRadians();
 
     if (failed) {
       DataLogManager.log("Failed to set absolute angle of " + moduleName + " module!");
@@ -325,7 +332,22 @@ public class SwerveModule implements Logged {
 
   public double getPosition() {
     if (RobotBase.isReal()) {
-      return driveEncoder.getPosition();
+      double drivePosition = driveEncoder.getPosition();
+      double angleDelta = Units.radiansToRotations(turnEncoder.getPosition() - initialAngleRadians);
+      // REV please fix this...
+      if (turnMotor.getLastError() != REVLibError.kOk) {
+        angleDelta = previousAngleDelta;
+      } else {
+        previousAngleDelta = angleDelta;
+      }
+
+      drivePosition -=
+          angleDelta
+              * SwerveConstants.driveCouplingRatio
+              * SwerveConstants.driveGearRatio
+              * SwerveConstants.wheelCircumference;
+
+      return drivePosition;
     } else {
       return simPosition;
     }

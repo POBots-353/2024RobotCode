@@ -461,6 +461,7 @@ public final class Constants {
     public static final double wheelRadius = Units.inchesToMeters(3.9353) / 2;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
+    public static final double driveCouplingRatio = 14.0 / 50.0;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
 
     public static final double drivePositionConversion = wheelCircumference * driveGearRatio;

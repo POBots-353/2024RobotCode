@@ -72,8 +72,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import monologue.Annotations.Log;
 import monologue.Logged;
 import org.photonvision.EstimatedRobotPose;
@@ -140,7 +140,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Log.NT(key = "Angle Offset")
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
 
-  public static final Lock odometryLock = new ReentrantLock();
+  public static final ReadWriteLock odometryLock = new ReentrantReadWriteLock();
+
   private SwerveDrivePoseEstimator poseEstimator;
   private SwerveDriveOdometry simOdometry;
 
@@ -344,10 +345,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public void resetModulesToAbsolute() {
     DataLogManager.log("[Swerve] Resetting modules to absolute");
+    odometryLock.writeLock().lock();
     frontLeftModule.resetToAbsolute();
     frontRightModule.resetToAbsolute();
     backLeftModule.resetToAbsolute();
     backRightModule.resetToAbsolute();
+    odometryLock.writeLock().unlock();
   }
 
   @Log.NT
@@ -460,14 +463,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
             ? Rotation2d.fromDegrees(180.0)
             : Rotation2d.fromDegrees(0.0);
 
-    odometryLock.lock();
+    odometryLock.writeLock().lock();
     poseEstimator.resetPosition(
         getHeading(),
         getModulePositions(),
         new Pose2d(
             originalOdometryPosition.getTranslation(),
             AllianceUtil.getZeroRotation().plus(orientationOffset)));
-    odometryLock.unlock();
+    odometryLock.writeLock().unlock();
 
     if (RobotBase.isSimulation()) {
       simOdometry.resetPosition(
@@ -488,14 +491,17 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void setHeading(Rotation2d rotation) {
-    odometryLock.lock();
+    odometryLock.writeLock().lock();
     angleOffset = getRawHeading().minus(rotation);
-    odometryLock.unlock();
+    odometryLock.writeLock().unlock();
   }
 
   @Log.NT(key = "Heading")
   public Rotation2d getHeading() {
-    return getRawHeading().minus(angleOffset);
+    odometryLock.readLock().lock();
+    Rotation2d heading = getRawHeading().minus(angleOffset);
+    odometryLock.readLock().unlock();
+    return heading;
   }
 
   @Log.NT(key = "Rotation3d")
@@ -508,9 +514,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Optional<Rotation2d> getRotationAtTime(double time) {
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     Optional<Rotation2d> rotationAtTime = rotationBuffer.getSample(time);
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
     return rotationAtTime;
   }
 
@@ -527,9 +533,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Estimated Pose")
   public Pose2d getPose() {
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     Pose2d pose = poseEstimator.getEstimatedPosition();
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
     return pose;
   }
 
@@ -550,9 +556,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
   public void resetPose(Pose2d pose) {
     setHeading(pose.getRotation().plus(AllianceUtil.getZeroRotation()));
 
-    odometryLock.lock();
+    odometryLock.writeLock().lock();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
-    odometryLock.unlock();
+    odometryLock.writeLock().unlock();
 
     if (RobotBase.isSimulation()) {
       simOdometry.resetPosition(getHeading(), getModulePositions(), pose);
@@ -593,9 +599,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
     Twist2d twist = kinematics.toTwist2d(previousWheelPositions, positions);
     twist.dtheta = heading.minus(previousAngle).getRadians();
 
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     Pose2d currentPose = poseEstimator.getEstimatedPosition();
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
     Pose2d newPose = currentPose.exp(twist);
 
     previousAngle = heading;
@@ -612,7 +618,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void updateOdometry() {
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     Rotation2d heading = getHeading();
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
     double timestamp = Timer.getFPGATimestamp();
@@ -621,19 +627,19 @@ public class Swerve extends VirtualSubsystem implements Logged {
         || !frontRightModule.motorsValid()
         || !backLeftModule.motorsValid()
         || !backRightModule.motorsValid()) {
-      odometryLock.unlock();
+      odometryLock.readLock().unlock();
       return;
     }
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
 
     if (!odometryUpdateValid(positions, heading)) {
       return;
     }
 
-    odometryLock.lock();
+    odometryLock.writeLock().lock();
     Pose2d newPose = poseEstimator.update(heading, positions);
     rotationBuffer.addSample(timestamp, newPose.getRotation());
-    odometryLock.unlock();
+    odometryLock.writeLock().unlock();
   }
 
   private Vector<N3> getLLStandardDeviations(
@@ -809,9 +815,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
       return;
     }
 
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     arducamPoseEstimator.setReferencePose(poseEstimator.getEstimatedPosition());
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
 
     Optional<EstimatedRobotPose> optionalVisionPose = arducamPoseEstimator.update(result);
     if (optionalVisionPose.isEmpty()) {
@@ -891,14 +897,14 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Collections.sort(poseEstimates);
 
-    odometryLock.lock();
+    odometryLock.writeLock().lock();
     for (PoseEstimate poseEstimate : poseEstimates) {
       poseEstimator.addVisionMeasurement(
           poseEstimate.estimatedPose().toPose2d(),
           poseEstimate.timestamp(),
           poseEstimate.standardDevs());
     }
-    odometryLock.unlock();
+    odometryLock.writeLock().unlock();
 
     log("Detected Tags", detectedTargets.toArray(Pose3d[]::new));
     log("Rejected Poses", rejectedPoses.toArray(Pose3d[]::new));
@@ -939,9 +945,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     updateVisionPoseEstimates();
 
-    odometryLock.lock();
+    odometryLock.readLock().lock();
     field.setRobotPose(poseEstimator.getEstimatedPosition());
-    odometryLock.unlock();
+    odometryLock.readLock().unlock();
 
     SmartDashboard.putNumber("Distance to Speaker", getSpeakerDistance());
   }

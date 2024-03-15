@@ -345,11 +345,15 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   public void resetModulesToAbsolute() {
     DataLogManager.log("[Swerve] Resetting modules to absolute");
+    Pose2d originalPose = getPose();
+
     odometryLock.writeLock().lock();
     frontLeftModule.resetToAbsolute();
     frontRightModule.resetToAbsolute();
     backLeftModule.resetToAbsolute();
     backRightModule.resetToAbsolute();
+
+    poseEstimator.resetPosition(getHeading(), getModulePositions(), originalPose);
     odometryLock.writeLock().unlock();
   }
 
@@ -557,6 +561,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     setHeading(pose.getRotation().plus(AllianceUtil.getZeroRotation()));
 
     odometryLock.writeLock().lock();
+    rotationBuffer.clear();
     poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
     odometryLock.writeLock().unlock();
 

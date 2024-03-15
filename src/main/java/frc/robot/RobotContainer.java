@@ -117,13 +117,14 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand("Stop Intake", intake.runOnce(intake::stopIntakeMotor).asProxy());
 
     NamedCommands.registerCommand(
-        "Arm to Pickup", arm.moveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
+        "Arm to Pickup",
+        arm.preciseMoveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.moveToPosition(ArmConstants.autoSubwooferAngle).withTimeout(1.50).asProxy());
+        arm.preciseMoveToPosition(ArmConstants.autoSubwooferAngle).withTimeout(1.50).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
-        arm.moveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
+        arm.preciseMoveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Amp Podium",
         arm.autoMoveToPosition(ArmConstants.autoAmpPodiumAngle).withTimeout(3.0).asProxy());
@@ -141,7 +142,7 @@ public class RobotContainer implements Logged {
         arm.autoMoveToPosition(ArmConstants.autoAmpWingAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Behind W1",
-        arm.moveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
+        arm.preciseMoveToPosition(ArmConstants.behindWing1Angle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Behind W2",
         arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());

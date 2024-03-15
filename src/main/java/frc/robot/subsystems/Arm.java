@@ -316,10 +316,10 @@ public class Arm extends VirtualSubsystem implements Logged {
                   Math.abs(positionError) <= ArmConstants.autonomousAngleTolerance);
             },
             this)
-        .withName("Arm (Auto) Move to " + position.getDegrees() + " Degrees");
+        .withName("Arm Auto Move to " + position.getDegrees() + " Degrees");
   }
 
-  public Command moveToPosition(Rotation2d position) {
+  public Command preciseMoveToPosition(Rotation2d position) {
     return new FunctionalCommand(
             () -> previousSetpoint = getCurrentState(),
             () -> setDesiredPosition(position),
@@ -330,7 +330,17 @@ public class Arm extends VirtualSubsystem implements Logged {
                   Math.abs(positionError) <= ArmConstants.angleTolerance);
             },
             this)
-        .withName("Arm Move to " + position.getDegrees() + " Degrees");
+        .withName("Arm Precise Move to " + position.getDegrees() + " Degrees");
+  }
+
+  public Command moveToPosition(Rotation2d position) {
+    return new FunctionalCommand(
+            () -> previousSetpoint = getCurrentState(),
+            () -> setDesiredPosition(position),
+            (interrupted) -> setSpeed(0.0),
+            () -> false,
+            this)
+        .withName("Arm Continuous Move to " + position.getDegrees() + " Degrees");
   }
 
   private void setMotionProfileState(TrapezoidProfile.State state) {

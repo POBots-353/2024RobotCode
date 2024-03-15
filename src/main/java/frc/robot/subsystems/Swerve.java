@@ -152,6 +152,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
       new SwerveDriveWheelPositions(getModulePositions());
   private Rotation2d previousAngle = Rotation2d.fromDegrees(0.0);
 
+  private int odometryUpdateCount = 0;
+  private int odometryRejectCount = 0;
+
   private PhotonCamera arducam = new PhotonCamera(VisionConstants.arducamName);
   private PhotonPoseEstimator arducamPoseEstimator =
       new PhotonPoseEstimator(
@@ -623,22 +626,28 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public void updateOdometry() {
+    double timestamp = Timer.getFPGATimestamp();
+    odometryLock.writeLock().lock();
+    odometryUpdateCount++;
+    odometryLock.writeLock().unlock();
+
     odometryLock.readLock().lock();
     Rotation2d heading = getHeading();
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
-    double timestamp = Timer.getFPGATimestamp();
-
-    if (!frontLeftModule.motorsValid()
-        || !frontRightModule.motorsValid()
-        || !backLeftModule.motorsValid()
-        || !backRightModule.motorsValid()) {
-      odometryLock.readLock().unlock();
-      return;
-    }
     odometryLock.readLock().unlock();
 
-    if (!odometryUpdateValid(positions, heading)) {
-      return;
+    boolean rejectUpdate =
+        !frontLeftModule.motorsValid()
+            || !frontRightModule.motorsValid()
+            || !backLeftModule.motorsValid()
+            || !backRightModule.motorsValid();
+
+    rejectUpdate = rejectUpdate || !odometryUpdateValid(positions, heading);
+
+    if (rejectUpdate) {
+      odometryLock.writeLock().lock();
+      odometryRejectCount++;
+      odometryLock.writeLock().unlock();
     }
 
     odometryLock.writeLock().lock();
@@ -955,6 +964,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.readLock().unlock();
 
     SmartDashboard.putNumber("Distance to Speaker", getSpeakerDistance());
+    odometryLock.readLock().lock();
+    log("odometryUpdateCount", odometryUpdateCount);
+    log("odometryRejectCount", odometryRejectCount);
+    log(
+        "Odometry Update %",
+        ((odometryUpdateCount - odometryRejectCount) / odometryUpdateCount) * 100.0);
+    odometryLock.readLock().unlock();
   }
 
   @Override

@@ -234,10 +234,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
       cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(68.97));
-      cameraProperties.setCalibError(0.79, 0.015);
+      cameraProperties.setCalibError(0.21, 0.015);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);
+      cameraProperties.setExposureTimeMs(45);
 
       arducamSim = new PhotonCameraSim(arducam, cameraProperties);
       visionSim.addCamera(arducamSim, VisionConstants.arducamTransform);
@@ -642,7 +643,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
             || !backLeftModule.motorsValid()
             || !backRightModule.motorsValid();
 
-    rejectUpdate = rejectUpdate || !odometryUpdateValid(positions, heading);
+    if (!rejectUpdate) {
+      rejectUpdate = !odometryUpdateValid(positions, heading);
+    } else {
+      previousWheelPositions = positions;
+      previousAngle = heading;
+    }
 
     if (rejectUpdate) {
       odometryLock.writeLock().lock();

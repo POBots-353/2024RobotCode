@@ -281,6 +281,7 @@ public final class Constants {
 
     public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
+    public static final Rotation2d autoFarAmpPodiumAngle = Rotation2d.fromDegrees(35.3);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
@@ -458,10 +459,10 @@ public final class Constants {
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
     public static final double maxAngularAcceleration = Units.feetToMeters(270.0);
 
-    public static final double wheelRadius = Units.inchesToMeters(3.9353) / 2;
+    public static final double wheelRadius = Units.inchesToMeters(3.86) / 2;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double driveGearRatio = 1 / 6.12;
-    public static final double driveCouplingRatio = 14.0 / 50.0;
+    public static final double driveCouplingRatio = 50.0 / 14.0;
     public static final double turnGearRatio = 1 / (150.0 / 7.0);
 
     public static final double drivePositionConversion = wheelCircumference * driveGearRatio;

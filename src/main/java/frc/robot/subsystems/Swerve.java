@@ -634,8 +634,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     odometryLock.readLock().lock();
     Rotation2d heading = getHeading();
-    SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
     odometryLock.readLock().unlock();
+    SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
 
     boolean rejectUpdate =
         !frontLeftModule.motorsValid()
@@ -643,17 +643,13 @@ public class Swerve extends VirtualSubsystem implements Logged {
             || !backLeftModule.motorsValid()
             || !backRightModule.motorsValid();
 
-    if (!rejectUpdate) {
-      rejectUpdate = !odometryUpdateValid(positions, heading);
-    } else {
-      previousWheelPositions = positions;
-      previousAngle = heading;
-    }
+    rejectUpdate = rejectUpdate || !odometryUpdateValid(positions, heading);
 
     if (rejectUpdate) {
       odometryLock.writeLock().lock();
       odometryRejectCount++;
       odometryLock.writeLock().unlock();
+      return;
     }
 
     odometryLock.writeLock().lock();

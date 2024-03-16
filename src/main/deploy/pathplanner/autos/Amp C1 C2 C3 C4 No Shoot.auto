@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3707187175750732,
-      "y": 5.564220905303955
+      "x": 0.7502669095993042,
+      "y": 6.693497180938721
     },
-    "rotation": 180.0
+    "rotation": -120.31122089968588
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Warm Up Shooter"
+                  "name": "Warm Up Shooter Differential"
                 }
               }
             ]
@@ -43,13 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Wing W1 W2 W3 C3.1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
+                  "pathName": "Amp C1 C2 C3 No Shoot.1"
                 }
               },
               {
@@ -59,7 +53,100 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 2.2
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Start Intake"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Idle"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp C1 C2 C3 No Shoot.2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Differential"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Far Amp Podium"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp C1 C2 C3 No Shoot.3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Idle"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
                       }
                     },
                     {
@@ -85,15 +172,21 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Arm to Wing Shoot"
+                  "pathName": "Amp C1 C2 C3 No Shoot.4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Warm Up Shooter"
+                  "name": "Warm Up Shooter Differential"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Far Amp Podium"
                 }
               }
             ]
@@ -112,7 +205,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Wing W1 W2 W3 C3.2"
+                  "pathName": "Amp C1 C2 C3 No Shoot.5"
                 }
               },
               {
@@ -122,13 +215,19 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Idle"
+                }
+              },
+              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.75
+                        "waitTime": 1.2
                       }
                     },
                     {
@@ -154,53 +253,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Center Wing Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Warm Up Shooter"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Wing W1 W2 W3 C3.3"
-                }
-              },
-              {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 0.7
+                        "pathName": "Amp C1 C2 C3 No Shoot.6"
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "sequential",
                       "data": {
-                        "name": "Start Intake"
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.5
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Auto Shoot"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Differential"
                 }
               },
               {
@@ -215,76 +302,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake Until Beam Break"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Wing Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Warm Up Shooter"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Wing W1 W2 W3 C3.4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Pickup"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Start Intake"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Until Beam Break"
           }
         }
       ]

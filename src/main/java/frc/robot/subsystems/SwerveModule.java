@@ -449,6 +449,13 @@ public class SwerveModule implements Logged {
       setAngle(Rotation2d.fromDegrees(0.0));
     }
 
+    if (DriverStation.isDisabled()) {
+      desiredState.angle = getAngle();
+      desiredState.speedMetersPerSecond = 0.0;
+
+      previousState = desiredState;
+    }
+
     updateTelemetry();
   }
 

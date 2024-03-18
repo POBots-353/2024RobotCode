@@ -17,7 +17,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -118,10 +117,15 @@ public class ShootWhileMoving extends Command {
     double distance = swerve.getSpeakerDistance();
 
     double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
+    Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
 
     Translation2d virtualGoalLocation = new Translation2d();
 
+    int iterations = 0;
+
     for (int i = 0; i < 5; i++) {
+      iterations = i + 1;
+
       double virtualGoalX =
           speakerPose.getX() - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime);
       double virtualGoalY =
@@ -132,23 +136,27 @@ public class ShootWhileMoving extends Command {
       double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
       double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
 
-      if (Math.abs(shotTime - newShotTime) <= 0.05) {
+      Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
+
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.05) {
         shotTime = newShotTime;
+        armAngle = newArmAngle;
         distance = newDistance;
         break;
       }
 
       shotTime = newShotTime;
       distance = newDistance;
+      armAngle = newArmAngle;
     }
+
+    SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
 
     swerve
         .getField()
         .getObject("Moving Goal")
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
-    // Calculate arm angle
-    Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
     arm.setDesiredPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
@@ -210,7 +218,7 @@ public class ShootWhileMoving extends Command {
       intake.feedToShooter();
 
       if (!simShotNote && RobotBase.isSimulation()) {
-        NoteVisualizer.shoot().beforeStarting(Commands.waitSeconds(0.250)).schedule();
+        NoteVisualizer.shoot().schedule();
 
         simShotNote = true;
       }

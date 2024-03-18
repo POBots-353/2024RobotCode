@@ -89,7 +89,11 @@ public class AutoShootWhileMoving extends Command {
 
     Translation2d virtualGoalLocation = new Translation2d();
 
+    int iterations = 0;
+
     for (int i = 0; i < 5; i++) {
+      iterations = i + 1;
+
       double virtualGoalX =
           speakerPose.getX() - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime);
       double virtualGoalY =
@@ -114,12 +118,13 @@ public class AutoShootWhileMoving extends Command {
       armAngle = newArmAngle;
     }
 
+    SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
+
     swerve
         .getField()
         .getObject("Moving Goal")
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
-    // Calculate arm angle
     arm.setDesiredPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
@@ -134,7 +139,6 @@ public class AutoShootWhileMoving extends Command {
     if (setpointDebouncer.calculate(
         Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
             && shooter.nearSetpoint())) {
-
       if (!simShotNote && RobotBase.isSimulation()) {
         NoteVisualizer.shoot().beforeStarting(Commands.waitSeconds(0.250)).schedule();
 

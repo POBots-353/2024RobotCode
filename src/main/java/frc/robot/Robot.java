@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -123,6 +124,8 @@ public class Robot extends TimedRobot {
     addPeriodic(FaultLogger::update, 1);
 
     // CameraServer.startAutomaticCapture();
+
+    FollowPathCommand.warmupCommand().schedule();
 
     double startupTimeSeconds = Timer.getFPGATimestamp() - startTime;
     DataLogManager.log("Startup Time (ms): " + startupTimeSeconds * 1000.0);

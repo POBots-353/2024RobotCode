@@ -13,12 +13,18 @@ import java.util.function.Supplier;
  */
 public class SparkMaxUtil {
   public static final int disableFramePeriod = 65535;
-  private static final PeriodicFrame[] peridicFrames = PeriodicFrame.values();
 
   public static void configureFollower(CANSparkMax follower) {
-    for (PeriodicFrame frame : peridicFrames) {
-      configureNoReset(follower, () -> follower.setPeriodicFramePeriod(frame, disableFramePeriod));
-    }
+    configureNoReset(
+        follower,
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus0, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus1, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus2, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus3, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus4, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus5, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus6, disableFramePeriod),
+        () -> follower.setPeriodicFramePeriod(PeriodicFrame.kStatus7, disableFramePeriod));
   }
 
   public static final int MAX_ATTEMPTS = 5;
@@ -92,8 +98,13 @@ public class SparkMaxUtil {
       if (error != REVLibError.kOk) {
         if (attempt >= MAX_ATTEMPTS) {
           FaultLogger.error(name(spark), "Failed to set parameter!");
+        } else {
+          FaultLogger.warning(
+              name(spark), "Failed to set parameter: attempt " + attempt + "/" + MAX_ATTEMPTS);
         }
         continue;
+      } else {
+        break;
       }
     }
   }

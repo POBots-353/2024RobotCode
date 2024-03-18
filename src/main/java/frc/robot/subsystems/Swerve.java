@@ -146,7 +146,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private SwerveDriveOdometry simOdometry;
 
   private TimeInterpolatableBuffer<Rotation2d> rotationBuffer =
-      TimeInterpolatableBuffer.createBuffer(5.0);
+      TimeInterpolatableBuffer.createBuffer(2.0);
 
   private SwerveDriveWheelPositions previousWheelPositions =
       new SwerveDriveWheelPositions(getModulePositions());
@@ -750,7 +750,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     Optional<Rotation2d> angleAtTime = getRotationAtTime(timestampSeconds);
     if (angleAtTime.isEmpty()) {
-      angleAtTime = Optional.of(getHeading());
+      angleAtTime = Optional.of(getPose().getRotation());
     }
 
     Rotation2d angleDifference = angleAtTime.get().minus(visionPose.getRotation().toRotation2d());
@@ -971,7 +971,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     log("odometryRejectCount", odometryRejectCount);
     log(
         "Odometry Update %",
-        ((odometryUpdateCount - odometryRejectCount) / odometryUpdateCount) * 100.0);
+        ((double) (odometryUpdateCount - odometryRejectCount) / odometryUpdateCount) * 100.0);
     odometryLock.readLock().unlock();
   }
 

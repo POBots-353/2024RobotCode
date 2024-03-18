@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * to make your product usable on the software end.
  */
 public class SparkMaxUtil {
-  public static final int disableFramePeriod = 65535;
+  public static final int disableFramePeriod = 32767;
 
   public static void configureFollower(CANSparkMax follower) {
     configureNoReset(

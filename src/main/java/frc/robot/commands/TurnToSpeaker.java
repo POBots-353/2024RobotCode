@@ -116,10 +116,6 @@ public class TurnToSpeaker extends Command {
 
     turningSpeed = MathUtil.clamp(turningSpeed, -1.00, 1.00);
 
-    System.out.println("Speed: " + turningSpeed);
-    System.out.println("Current Rotation: " + swerve.getPose().getRotation().getDegrees());
-    System.out.println("Desired Rotation: " + desiredRotation.getDegrees());
-
     double forwardMetersPerSecond =
         -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
     double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();

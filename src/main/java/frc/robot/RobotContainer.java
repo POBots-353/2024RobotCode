@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -38,6 +39,7 @@ import frc.robot.commands.arm.ArmHold;
 import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.auto.AutoShootWhileMoving;
 import frc.robot.commands.auto.AutonomousAutoShoot;
+import frc.robot.commands.leds.Binary353;
 import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
@@ -55,6 +57,7 @@ import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import monologue.Logged;
 
 /**
@@ -96,8 +99,8 @@ public class RobotContainer implements Logged {
 
     new StartupConnectionCheck(
             new LoadingAnimation(Color.kBlue, leds),
-            new SolidColor(Color.kGreen, leds).withTimeout(5.0),
-            new SolidColor(Color.kRed, leds).withTimeout(5.0))
+            new SolidColor(Color.kGreen, leds).withTimeout(2.5),
+            new SolidColor(Color.kRed, leds).withTimeout(2.5))
         .schedule();
 
     // Configure the trigger bindings
@@ -232,7 +235,16 @@ public class RobotContainer implements Logged {
                     })
                 .ignoringDisable(true));
 
-    leds.setDefaultCommand(new RSLSync(leds));
+    leds.setDefaultCommand(
+        new DeferredCommand(
+            () -> {
+              if (DriverStation.isEnabled()) {
+                return new RSLSync(leds).ignoringDisable(false);
+              } else {
+                return new Binary353(Color.kBlue, leds).until(DriverStation::isEnabled);
+              }
+            },
+            Set.of(leds)));
 
     arm.setDefaultCommand(new ArmHold(arm));
 

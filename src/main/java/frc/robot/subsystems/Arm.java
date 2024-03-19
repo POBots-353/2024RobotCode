@@ -338,9 +338,13 @@ public class Arm extends VirtualSubsystem implements Logged {
             () -> previousSetpoint = getCurrentState(),
             () -> setDesiredPosition(position),
             (interrupted) -> setSpeed(0.0),
-            () -> false,
+            () -> {
+              double positionError = getPosition().getRadians() - position.getRadians();
+              return setpointDebouncer.calculate(
+                  Math.abs(positionError) <= ArmConstants.angleTolerance);
+            },
             this)
-        .withName("Arm Continuous Move to " + position.getDegrees() + " Degrees");
+        .withName("Arm Move to " + position.getDegrees() + " Degrees");
   }
 
   private void setMotionProfileState(TrapezoidProfile.State state) {

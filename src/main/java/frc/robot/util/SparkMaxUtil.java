@@ -56,6 +56,11 @@ public class SparkMaxUtil {
     return spark.getLastError();
   }
 
+  public static REVLibError setPeriodicTimeout(CANSparkBase spark, int timeout) {
+    spark.setPeriodicFrameTimeout(timeout);
+    return spark.getLastError();
+  }
+
   /**
    * Fully configures a Spark Max/Flex with all provided configs.
    *
@@ -67,21 +72,25 @@ public class SparkMaxUtil {
    */
   @SafeVarargs
   public static void configure(CANSparkBase spark, Supplier<REVLibError>... config) {
+    spark.setCANMaxRetries(MAX_ATTEMPTS);
     configure(spark, spark::restoreFactoryDefaults);
     configure(spark, () -> spark.setCANTimeout(100));
     for (var f : config) {
       configure(spark, f::get);
     }
     configure(spark, () -> spark.setCANTimeout(0));
+    configure(spark, () -> setPeriodicTimeout(spark, 0));
   }
 
   @SafeVarargs
   public static void configureNoReset(CANSparkBase spark, Supplier<REVLibError>... config) {
+    spark.setCANMaxRetries(MAX_ATTEMPTS);
     configure(spark, () -> spark.setCANTimeout(100));
     for (var f : config) {
       configure(spark, f::get);
     }
     configure(spark, () -> spark.setCANTimeout(0));
+    configure(spark, () -> setPeriodicTimeout(spark, 0));
   }
 
   /**

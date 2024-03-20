@@ -12,6 +12,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -29,6 +30,15 @@ import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class ShootWhileMoving extends Command {
+  private static InterpolatingDoubleTreeMap angleToleranceMap = new InterpolatingDoubleTreeMap();
+
+  static {
+    angleToleranceMap.put(1.36, 30.0353);
+    angleToleranceMap.put(1.88, 25.0);
+    angleToleranceMap.put(3.0, 15.0);
+    angleToleranceMap.put(4.6, 10.0);
+  }
+
   private final Arm arm;
   private final Intake intake;
   private final Shooter shooter;
@@ -37,14 +47,14 @@ public class ShootWhileMoving extends Command {
   private DoubleSupplier forwardSpeed;
   private DoubleSupplier strafeSpeed;
 
-  private double maxTranslationalSpeed;
+  private DoubleSupplier maxTranslationalSpeed;
 
   private SlewRateLimiter forwardRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController = new PIDController(0.6, 0, 0.02);
+  private PIDController turnToAngleController = new PIDController(1.0, 0, 0.001);
 
   private Pose2d speakerPose;
 
@@ -53,8 +63,8 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.30;
-  private final double feedTime = 0.250;
+  private final double setpointDebounceTime = 0.20;
+  private final double feedTime = 0.100;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
@@ -64,7 +74,7 @@ public class ShootWhileMoving extends Command {
   public ShootWhileMoving(
       DoubleSupplier forwardSpeed,
       DoubleSupplier strafeSpeed,
-      double maxTranslationalSpeed,
+      DoubleSupplier maxTranslationalSpeed,
       Arm arm,
       Intake intake,
       Shooter shooter,
@@ -81,7 +91,7 @@ public class ShootWhileMoving extends Command {
     turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake, shooter);
+    addRequirements(arm, intake, shooter, swerve);
   }
 
   // Called when the command is initially scheduled.
@@ -127,9 +137,11 @@ public class ShootWhileMoving extends Command {
       iterations = i + 1;
 
       double virtualGoalX =
-          speakerPose.getX() - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime);
+          speakerPose.getX()
+              - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime * 0.5);
       double virtualGoalY =
-          speakerPose.getY() - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime);
+          speakerPose.getY()
+              - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime * 0.5);
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
@@ -167,8 +179,9 @@ public class ShootWhileMoving extends Command {
     shooter.setShooterState(shooterState);
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
-    double forwardMetersPerSecond = -forwardSpeed.getAsDouble() * maxTranslationalSpeed;
-    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed;
+    double forwardMetersPerSecond =
+        -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
+    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
 
     forwardMetersPerSecond = forwardRateLimiter.calculate(forwardMetersPerSecond);
     strafeMetersPerSecond = strafeRateLimiter.calculate(strafeMetersPerSecond);
@@ -195,15 +208,15 @@ public class ShootWhileMoving extends Command {
     double angularSpeed =
         turnToAngleController.calculate(robotAngle.getRadians(), desiredAngle.getRadians());
 
-    angularSpeed = MathUtil.clamp(angularSpeed, -0.8, 0.8);
+    angularSpeed = MathUtil.clamp(angularSpeed, -1.0, 1.0);
 
-    // swerve.driveFieldOriented(
-    //     forwardMetersPerSecond,
-    //     strafeMetersPerSecond,
-    //     angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
-    //     true,
-    //     true,
-    //     false);
+    swerve.driveFieldOriented(
+        forwardMetersPerSecond,
+        strafeMetersPerSecond,
+        angularSpeed * SwerveConstants.turnToAngleMaxVelocity,
+        true,
+        true,
+        false);
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
@@ -211,10 +224,9 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
     if (setpointDebouncer.calculate(
-        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-            && shooter.nearSetpoint())
-    // && Math.abs(driveAngleError.getDegrees()) <= 7.00
-    ) {
+            Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
+                && shooter.nearSetpoint())
+        && Math.abs(driveAngleError.getDegrees()) <= angleToleranceMap.get(distance)) {
       intake.feedToShooter();
 
       if (!simShotNote && RobotBase.isSimulation()) {

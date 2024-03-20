@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8053956031799316,
-      "y": 4.472688674926758
+      "x": 0.7518795728683472,
+      "y": 4.406198024749756
     },
     "rotation": 120.76271625382297
   },
@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source C4 C3.1"
+                  "pathName": "Source C5 C4 C3.1"
                 }
               },
               {
@@ -87,7 +87,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source C4 C3.2"
+                  "pathName": "Source C5 C4 C3.2"
                 }
               },
               {
@@ -103,7 +103,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5500000000000003
+                        "waitTime": 0.4
                       }
                     },
                     {
@@ -131,7 +131,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source C4 C3.3"
+                  "pathName": "Source C5 C4 C3.3"
                 }
               },
               {
@@ -147,7 +147,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.8799999999999999
+                        "waitTime": 0.6
                       }
                     },
                     {
@@ -175,7 +175,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source C4 C3.4"
+                  "pathName": "Source C5 C4 C3.4"
                 }
               },
               {
@@ -191,13 +191,108 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5499999999999998
+                        "waitTime": 0.1
                       }
                     },
                     {
                       "type": "named",
                       "data": {
                         "name": "Warm Up Shooter"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source C5 C4 C3.5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm to Pickup"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.95
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Start Intake"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source C5 C4 C3.6"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.55
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Arm to Behind W2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Warm Up Shooter"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]

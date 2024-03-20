@@ -31,6 +31,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.NoteVisualizer;
+import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
@@ -124,7 +125,7 @@ public class RobotContainer implements Logged {
         arm.preciseMoveToPosition(ArmConstants.pickupAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Subwoofer",
-        arm.preciseMoveToPosition(ArmConstants.autoSubwooferAngle).withTimeout(1.50).asProxy());
+        arm.autoMoveToPosition(ArmConstants.autoSubwooferAngle).withTimeout(1.50).asProxy());
     NamedCommands.registerCommand(
         "Arm to Source Podium",
         arm.preciseMoveToPosition(ArmConstants.autoSourcePodiumAngle).withTimeout(3.0).asProxy());
@@ -134,6 +135,9 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Far Amp Podium",
         arm.autoMoveToPosition(ArmConstants.autoFarAmpPodiumAngle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to RC Amp Podium",
+        arm.autoMoveToPosition(ArmConstants.autoRCAmpPodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
         "Arm to Close Shoot",
         arm.autoMoveToPosition(ArmConstants.autoCloseShootAngle).withTimeout(3.0).asProxy());
@@ -237,14 +241,15 @@ public class RobotContainer implements Logged {
 
     leds.setDefaultCommand(
         new DeferredCommand(
-            () -> {
-              if (DriverStation.isEnabled()) {
-                return new RSLSync(leds).ignoringDisable(false);
-              } else {
-                return new Binary353(Color.kBlue, leds).until(DriverStation::isEnabled);
-              }
-            },
-            Set.of(leds)));
+                () -> {
+                  if (DriverStation.isEnabled()) {
+                    return new RSLSync(leds).until(DriverStation::isDisabled);
+                  } else {
+                    return new Binary353(Color.kBlue, leds).until(DriverStation::isEnabled);
+                  }
+                },
+                Set.of(leds))
+            .ignoringDisable(true));
 
     arm.setDefaultCommand(new ArmHold(arm));
 
@@ -277,6 +282,7 @@ public class RobotContainer implements Logged {
     configureArmBindings();
     configureShooterBindings();
     configureClimbingBindings();
+    configureAutoShootBindings();
 
     // operatorStick
     //     .button(OperatorConstants.ledWarningButton)
@@ -315,23 +321,10 @@ public class RobotContainer implements Logged {
                 driverController::getLeftX,
                 driverController::getRightX,
                 driverController::getRightY,
-                () -> driverController.getLeftBumper(),
+                driverController::getLeftBumper,
                 SwerveConstants.slowMotionMaxTranslationalSpeed,
                 SwerveConstants.maxAngularSpeed,
                 swerve));
-
-    turnToSpeaker.whileTrue(
-        new TurnToSpeaker(
-            driverController::getLeftY,
-            driverController::getLeftX,
-            () -> {
-              if (slowMode.getAsBoolean()) {
-                return SwerveConstants.slowMotionMaxTranslationalSpeed;
-              }
-
-              return SwerveConstants.maxTranslationalSpeed;
-            },
-            swerve));
 
     driverController
         .a()
@@ -432,10 +425,6 @@ public class RobotContainer implements Logged {
         .and(armSlowAdjustment.negate())
         .whileTrue(arm.run(() -> arm.setSpeed(-ArmConstants.manualSpeed)));
 
-    operatorStick
-        .button(OperatorConstants.armAutoShoot)
-        .whileTrue(new AutoShoot(arm, intake, shooter, swerve));
-
     // operatorStick
     //     .button(OperatorConstants.armAutoShoot)
     //     .whileTrue(
@@ -481,6 +470,47 @@ public class RobotContainer implements Logged {
                       }
                     })
                 .finallyDo(shooter::stopMotor));
+  }
+
+  private void configureAutoShootBindings() {
+    Trigger autoShoot = operatorStick.button(OperatorConstants.armAutoShoot);
+    Trigger autoAlign = driverController.rightTrigger();
+    Trigger slowMode = driverController.leftTrigger();
+
+    autoShoot.and(autoAlign.negate()).whileTrue(new AutoShoot(arm, intake, shooter, swerve));
+
+    autoAlign
+        .and(autoShoot.negate())
+        .whileTrue(
+            new TurnToSpeaker(
+                driverController::getLeftY,
+                driverController::getLeftX,
+                () -> {
+                  if (slowMode.getAsBoolean()) {
+                    return SwerveConstants.slowMotionMaxTranslationalSpeed;
+                  }
+
+                  return SwerveConstants.maxTranslationalSpeed;
+                },
+                swerve));
+
+    autoShoot
+        .and(autoAlign)
+        .whileTrue(
+            new ShootWhileMoving(
+                driverController::getLeftY,
+                driverController::getLeftX,
+                () -> {
+                  if (slowMode.getAsBoolean()) {
+                    return SwerveConstants.slowMotionMaxTranslationalSpeed;
+                  }
+
+                  return SwerveConstants.maxTranslationalSpeed;
+                },
+                arm,
+                intake,
+                shooter,
+                swerve));
   }
 
   private void configureAutoChooser() {

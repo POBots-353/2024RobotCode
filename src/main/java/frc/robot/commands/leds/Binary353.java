@@ -14,7 +14,7 @@ public class Binary353 extends Command {
   private final Color color;
   private final LEDs leds;
 
-  private static final String binaryString = "101100001";
+  private static final String binaryString = "3330555550333"; // "101100001";
 
   /** Creates a new Binary353. */
   public Binary353(Color color, LEDs leds) {
@@ -44,6 +44,10 @@ public class Binary353 extends Command {
       }
       if (binaryString.charAt(i) == '1') {
         buffer.setLED(i + startIndex, color);
+      } else if (binaryString.charAt(i) == '3') {
+        buffer.setLED(i + startIndex, Color.kBlue);
+      } else if (binaryString.charAt(i) == '5') {
+        buffer.setLED(i + startIndex, Color.kRed);
       } else {
         buffer.setLED(i + startIndex, LEDConstants.transparent);
       }

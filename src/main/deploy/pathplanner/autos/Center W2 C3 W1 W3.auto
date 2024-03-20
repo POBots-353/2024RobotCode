@@ -118,6 +118,12 @@
                       "data": {
                         "name": "Shoot"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Warm Up Shooter Idle"
+                      }
                     }
                   ]
                 }
@@ -186,7 +192,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.86
+                        "waitTime": 1.39
                       }
                     },
                     {
@@ -205,7 +211,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.8600000000000003
+                        "waitTime": 1.4
                       }
                     },
                     {
@@ -224,13 +230,19 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.9
+                        "waitTime": 2.7
                       }
                     },
                     {
                       "type": "named",
                       "data": {
                         "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Warm Up Shooter Idle"
                       }
                     }
                   ]
@@ -300,7 +312,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.2
+                        "waitTime": 0.075
                       }
                     },
                     {
@@ -385,19 +397,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.8
+                  "waitTime": 0.9
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm to Wing Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Warm Up Shooter Differential"
+                  "name": "Auto Shoot"
                 }
               }
             ]

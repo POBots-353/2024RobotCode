@@ -282,6 +282,7 @@ public final class Constants {
     public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoFarAmpPodiumAngle = Rotation2d.fromDegrees(35.3);
+    public static final Rotation2d autoRCAmpPodiumAngle = Rotation2d.fromDegrees(38.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
@@ -387,6 +388,7 @@ public final class Constants {
       autoShootAngleMap.put(3.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
       autoShootAngleMap.put(3.53, Rotation2d.fromDegrees(31.604855866583044 - 2.0 - 1.5));
       autoShootAngleMap.put(3.98, Rotation2d.fromDegrees(29.137217802484155));
+      autoShootAngleMap.put(4.98, Rotation2d.fromDegrees(30.921454458988247));
     }
 
     public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeedMap =
@@ -453,7 +455,7 @@ public final class Constants {
 
     public static final double maxTranslationalSpeed = Units.feetToMeters(14.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
-    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(4.53);
+    public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(3.53);
     public static final double turboMaxTranslationalSpeed = Units.feetToMeters(14.5);
 
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);
@@ -525,27 +527,28 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(88.330078125);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(87.451171875);
   }
 
   public static class FrontRightModule {
     public static final int driveID = 1;
     public static final int turnID = 5;
     public static final int encoderID = 9;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-129.462890625);
+    public static final Rotation2d angleOffset =
+        Rotation2d.fromDegrees(-127.88085937499999); // -133.06640625
   }
 
   public static class BackLeftModule {
     public static final int driveID = 2;
     public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-54.755859375);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.173828125);
   }
 
   public static final class BackRightModule {
     public static final int driveID = 4;
     public static final int turnID = 8;
     public static final int encoderID = 12;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-76.904296875);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-78.134765625);
   }
 }

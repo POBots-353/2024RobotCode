@@ -472,6 +472,10 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
     setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
+
+    if (mainMotor.get() < 0.0 && getPosition().getDegrees() < -3.0) {
+      setSpeed(0.0);
+    }
   }
 
   @Override

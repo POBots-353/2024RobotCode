@@ -671,7 +671,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     // }
 
     // If we're semi-close to it, use polynomial regression or a super low stdandard dev
-    if (detectedTargets > 1) {
+    if (detectedTargets > 1 && distance < Units.feetToMeters(21.5)) {
       return VecBuilder.fill(
           Units.inchesToMeters(2.25),
           Units.inchesToMeters(2.25),
@@ -695,7 +695,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
     // }
 
-    if (detectedTargets > 1) {
+    if (detectedTargets > 1 && distance < Units.feetToMeters(21.5)) {
       return VecBuilder.fill(
           Units.inchesToMeters(4.5),
           Units.inchesToMeters(4.5),

@@ -84,7 +84,6 @@ public class Robot extends TimedRobot {
     odometryNotifier.setName("OdometryThread");
     odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
 
-    // NetworkTableInstance.stopEntryDataLog(temporaryLogHandle);
     Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
 
     if (RobotBase.isReal()) {
@@ -127,6 +126,8 @@ public class Robot extends TimedRobot {
 
     FollowPathCommand.warmupCommand().schedule();
 
+    System.gc();
+
     double startupTimeSeconds = Timer.getFPGATimestamp() - startTime;
     DataLogManager.log("Startup Time (ms): " + startupTimeSeconds * 1000.0);
   }
@@ -161,7 +162,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    System.gc();
+  }
 
   @Override
   public void disabledPeriodic() {}

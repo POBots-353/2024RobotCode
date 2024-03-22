@@ -124,7 +124,8 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
     SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
 
-    double distance = swerve.getSpeakerDistance();
+    double speakerDistance = swerve.getSpeakerDistance();
+    double distance = speakerDistance;
 
     double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
     Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
@@ -226,7 +227,7 @@ public class ShootWhileMoving extends Command {
     if (setpointDebouncer.calculate(
             Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
                 && shooter.nearSetpoint())
-        && Math.abs(driveAngleError.getDegrees()) <= angleToleranceMap.get(distance)) {
+        && Math.abs(driveAngleError.getDegrees()) <= angleToleranceMap.get(speakerDistance)) {
       intake.feedToShooter();
 
       if (!simShotNote && RobotBase.isSimulation()) {

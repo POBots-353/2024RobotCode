@@ -195,17 +195,15 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-      public static final double[] distances =
-          new double[] {
-            0.50, 1.00, 1.50, 2.00, 2.50,
-          };
+      public static final double[] distances = new double[] {0.50, 1.00, 1.50, 2.00, 2.50, 5.00};
       public static final double[] xyStandardDeviations =
           new double[] {
             0.014, // 0.50
             0.020, // 1.00
             0.070, // 1.50
             0.120, // 2.00
-            0.140, // 2.5
+            0.160, // 2.5
+            0.853, // 5.0
           };
       public static final double[] thetaStandardDeviations =
           new double[] {
@@ -214,6 +212,7 @@ public final class Constants {
             0.190, // 1.50
             0.250, // 2.00
             0.350, // 2.5
+            0.500, // 5.0
           };
 
       public static PolynomialRegression xyPolynomialRegression =
@@ -281,7 +280,7 @@ public final class Constants {
 
     public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
-    public static final Rotation2d autoFarAmpPodiumAngle = Rotation2d.fromDegrees(35.3);
+    public static final Rotation2d autoFarAmpPodiumAngle = Rotation2d.fromDegrees(35.3 - 1.0 - 1.0);
     public static final Rotation2d autoRCAmpPodiumAngle = Rotation2d.fromDegrees(38.5);
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
@@ -294,7 +293,7 @@ public final class Constants {
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
     public static final double subwooferSpeedAngle = Units.degreesToRadians(12.0);
 
-    public static final double reverseMovementLimitAngle = Units.degreesToRadians(-3.5);
+    public static final double reverseMovementLimitAngle = Units.degreesToRadians(-5.2);
     public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
 
     public static final double armPivotZ = Units.inchesToMeters(10.3);
@@ -527,7 +526,7 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(87.451171875);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(86.66015625);
   }
 
   public static class FrontRightModule {
@@ -542,7 +541,7 @@ public final class Constants {
     public static final int driveID = 2;
     public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.173828125);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-57.216796875);
   }
 
   public static final class BackRightModule {

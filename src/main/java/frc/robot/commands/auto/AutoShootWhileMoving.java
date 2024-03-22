@@ -36,7 +36,7 @@ public class AutoShootWhileMoving extends Command {
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
   private final double setpointDebounceTime = 0.30;
-  private final double feedTime = 0.250;
+  private final double feedTime = 0.100;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
 
@@ -95,9 +95,11 @@ public class AutoShootWhileMoving extends Command {
       iterations = i + 1;
 
       double virtualGoalX =
-          speakerPose.getX() - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime);
+          speakerPose.getX()
+              - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime * 0.5);
       double virtualGoalY =
-          speakerPose.getY() - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime);
+          speakerPose.getY()
+              - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime * 0.5);
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 

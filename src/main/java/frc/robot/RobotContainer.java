@@ -32,7 +32,6 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.ShootWhileMoving;
-import frc.robot.commands.StartupConnectionCheck;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
@@ -41,7 +40,6 @@ import frc.robot.commands.arm.AutoShoot;
 import frc.robot.commands.auto.AutoShootWhileMoving;
 import frc.robot.commands.auto.AutonomousAutoShoot;
 import frc.robot.commands.leds.Binary353;
-import frc.robot.commands.leds.LoadingAnimation;
 import frc.robot.commands.leds.RSLSync;
 import frc.robot.commands.leds.SolidColor;
 import frc.robot.subsystems.Arm;
@@ -98,11 +96,11 @@ public class RobotContainer implements Logged {
   public RobotContainer() {
     DataLogManager.log("Initializing Robot Container");
 
-    new StartupConnectionCheck(
-            new LoadingAnimation(Color.kBlue, leds),
-            new SolidColor(Color.kGreen, leds).withTimeout(2.5),
-            new SolidColor(Color.kRed, leds).withTimeout(2.5))
-        .schedule();
+    // new StartupConnectionCheck(
+    //         new LoadingAnimation(Color.kBlue, leds),
+    //         new SolidColor(Color.kGreen, leds).withTimeout(2.5),
+    //         new SolidColor(Color.kRed, leds).withTimeout(2.5))
+    //     .schedule();
 
     // Configure the trigger bindings
     configureBindings();

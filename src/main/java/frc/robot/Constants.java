@@ -280,8 +280,11 @@ public final class Constants {
 
     public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
-    public static final Rotation2d autoFarAmpPodiumAngle = Rotation2d.fromDegrees(35.3 - 1.0 - 1.0);
+    public static final Rotation2d autoFarAmpPodiumAngle =
+        Rotation2d.fromDegrees(35.3 - 1.0 - 1.0 - 0.25); // 35.3 - 1.0 - 1.0 - 0.25 + 0.5 32.3
     public static final Rotation2d autoRCAmpPodiumAngle = Rotation2d.fromDegrees(38.5);
+    public static final Rotation2d autoAmp4PieceFinalAngle =
+        Rotation2d.fromDegrees(26.007488521000912); // 26.007488521000912 + 0.5 26.7
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
@@ -385,8 +388,10 @@ public final class Constants {
       autoShootAngleMap.put(2.09, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
       autoShootAngleMap.put(2.50, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
       autoShootAngleMap.put(3.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
-      autoShootAngleMap.put(3.53, Rotation2d.fromDegrees(31.604855866583044 - 2.0 - 1.5));
+      autoShootAngleMap.put(
+          3.53, Rotation2d.fromDegrees(27.374591864513985)); // 31.604855866583044 - 2.0 - 1.5
       autoShootAngleMap.put(3.98, Rotation2d.fromDegrees(29.137217802484155));
+      autoShootAngleMap.put(4.1522590735236655, Rotation2d.fromDegrees(29.15150655822783));
       autoShootAngleMap.put(4.98, Rotation2d.fromDegrees(30.921454458988247));
     }
 

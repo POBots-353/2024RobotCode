@@ -162,6 +162,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConstants.arducamTransform);
 
+  // Temporary fix for inaccurate poses while auto shooting
+  private boolean ignoreArducam = false;
+
   private PhotonCameraSim arducamSim;
   private VisionSystemSim visionSim;
 
@@ -773,13 +776,18 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   private void updateLimelightPoses(String limelightName) {
-    if (!LimelightHelpers.getTV(limelightName)) {
-      return;
-    }
-    LimelightHelpers.Results results =
-        LimelightHelpers.getLatestResults(limelightName).targetingResults;
+    // if (!LimelightHelpers.getTV(limelightName)) {
+    //   return;
+    // }
     LimelightHelpers.PoseEstimate poseEstimate =
         LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+
+    if (poseEstimate.tagCount == 0) {
+      return;
+    }
+
+    LimelightHelpers.Results results =
+        LimelightHelpers.getLatestResults(limelightName).targetingResults;
 
     if (!results.valid) {
       return;
@@ -828,6 +836,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     PhotonPipelineResult result = arducam.getLatestResult();
 
     if (!result.hasTargets()) {
+      return;
+    }
+
+    if (ignoreArducam) {
       return;
     }
 
@@ -931,6 +943,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
     field
         .getObject("Rejected Poses")
         .setPoses(rejectedPoses.stream().map(p -> p.toPose2d()).toArray(Pose2d[]::new));
+  }
+
+  public void setIgnoreArducam(boolean ignore) {
+    ignoreArducam = ignore;
   }
 
   public double getSpeakerDistance() {

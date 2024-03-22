@@ -108,6 +108,8 @@ public class ShootWhileMoving extends Command {
 
     accelXFilter.reset();
     accelYFilter.reset();
+
+    swerve.setIgnoreArducam(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -130,10 +132,12 @@ public class ShootWhileMoving extends Command {
     double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
     Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
 
-    Translation2d virtualGoalLocation = new Translation2d();
+    Translation2d virtualGoalLocation = speakerPose.getTranslation();
 
     int iterations = 0;
 
+    // if (Math.abs(fieldSpeeds.vxMetersPerSecond) > Units.inchesToMeters(3.0)
+    //     || Math.abs(fieldSpeeds.vyMetersPerSecond) > Units.inchesToMeters(3.0)) {
     for (int i = 0; i < 5; i++) {
       iterations = i + 1;
 
@@ -162,6 +166,7 @@ public class ShootWhileMoving extends Command {
       distance = newDistance;
       armAngle = newArmAngle;
     }
+    // }
 
     SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
 
@@ -251,6 +256,7 @@ public class ShootWhileMoving extends Command {
     turnToAngleController.reset();
 
     swerve.getField().getObject("Moving Goal").setPoses();
+    swerve.setIgnoreArducam(false);
   }
 
   // Returns true when the command should end.

@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.CANSparkBase.FaultID;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -534,7 +535,8 @@ public class Arm extends VirtualSubsystem implements Logged {
         Commands.runOnce(
             () -> {
               if (Math.abs(getPosition().getRadians() - ArmConstants.ampAngle.getRadians())
-                  > prematchAngleTolerance) {
+                      > prematchAngleTolerance
+                  && !mainMotor.getFault(FaultID.kSoftLimitFwd)) {
                 addError("Arm did not sufficiently reach amp position");
               } else {
                 addInfo("Arm successfully reached amp position");

@@ -253,35 +253,9 @@
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Amp C1 C2 C3 No Shoot.6"
-                      }
-                    },
-                    {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 1.5
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Auto Shoot"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "pathName": "Amp C1 C2 C3 No Shoot.6"
                 }
               },
               {
@@ -295,8 +269,33 @@
                 "data": {
                   "name": "Arm to Pickup"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Arm to 4 Piece Amp Final"
+                      }
+                    }
+                  ]
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.12
           }
         },
         {

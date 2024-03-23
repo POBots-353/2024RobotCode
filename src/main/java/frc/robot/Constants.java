@@ -281,10 +281,10 @@ public final class Constants {
     public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoFarAmpPodiumAngle =
-        Rotation2d.fromDegrees(35.3 - 1.0 - 1.0 - 0.25); // 35.3 - 1.0 - 1.0 - 0.25 + 0.5 32.3
+        Rotation2d.fromDegrees(35.3 - 1.0 - 1.0 - 0.25 - 0.5); // 35.3 - 1.0 - 1.0 - 0.25 + 0.5 32.3
     public static final Rotation2d autoRCAmpPodiumAngle = Rotation2d.fromDegrees(38.5);
     public static final Rotation2d autoAmp4PieceFinalAngle =
-        Rotation2d.fromDegrees(26.007488521000912); // 26.007488521000912 + 0.5 26.7
+        Rotation2d.fromDegrees(26.007488521000912 - 0.5); // 26.007488521000912 + 0.5 26.7
     public static final Rotation2d autoSourcePodiumAngle = Rotation2d.fromDegrees(36.3);
     public static final Rotation2d autoCloseShootAngle = Rotation2d.fromDegrees(22.5);
     public static final Rotation2d autoWingShotAngle = Rotation2d.fromDegrees(27.00 - 1.0);
@@ -297,7 +297,7 @@ public final class Constants {
     public static final double subwooferSpeedAngle = Units.degreesToRadians(12.0);
 
     public static final double reverseMovementLimitAngle = Units.degreesToRadians(-5.2);
-    public static final double forwardMovementLimitAngle = Units.degreesToRadians(97.5);
+    public static final double forwardMovementLimitAngle = Units.degreesToRadians(103.53);
 
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-7.5);

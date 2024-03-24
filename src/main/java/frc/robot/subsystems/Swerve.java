@@ -227,7 +227,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
             getHeading(),
             getModulePositions(),
             new Pose2d(0.0, 0.0, navx.getRotation2d()));
-    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
+    arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     if (RobotBase.isSimulation()) {
       simOdometry = new SwerveDriveOdometry(kinematics, getHeading(), getModulePositions());
@@ -237,7 +237,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       SimCameraProperties cameraProperties = new SimCameraProperties();
       cameraProperties.setCalibration(800, 600, Rotation2d.fromDegrees(68.97));
-      cameraProperties.setCalibError(0.21, 0.015);
+      cameraProperties.setCalibError(0.21, 0.10);
       cameraProperties.setFPS(28);
       cameraProperties.setAvgLatencyMs(36);
       cameraProperties.setLatencyStdDevMs(15);
@@ -688,34 +688,23 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   private Vector<N3> getArducamStandardDeviations(
-      Pose3d visionPose, Pose3d targetPose, int detectedTargets) {
-    double distance = targetPose.getTranslation().toTranslation2d().getNorm();
-    // if (distance > 3.5 && detectedTargets < 2) {
-    //   double xyStandardDev = Math.pow(distance, 2) / 22.5;
-    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
-    // } else if (distance > 4.5 && detectedTargets > 1) {
-    //   double xyStandardDev = Math.pow(distance, 2) / 30.0;
-    //   return VecBuilder.fill(xyStandardDev, xyStandardDev, 10000000000.0);
-    // }
+      EstimatedRobotPose robotPose, double averageDistance, int tagCount) {
+    double stdDevScale = 1 + (averageDistance * averageDistance / 30);
+    if (tagCount > 1) {
+      Vector<N3> standardDeviation =
+          VecBuilder.fill(Units.inchesToMeters(4.5), Units.inchesToMeters(4.5), Double.MAX_VALUE);
 
-    if (detectedTargets > 1 && distance < Units.feetToMeters(21.5)) {
-      return VecBuilder.fill(
-          Units.inchesToMeters(4.5),
-          Units.inchesToMeters(4.5),
-          Units.degreesToRadians(10000000000000.0));
+      return standardDeviation.times(stdDevScale);
     } else {
-      double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(distance);
-      double thetaStandardDev = ArducamConstants.thetaPolynomialRegression.predict(distance);
+      double xyStandardDev = ArducamConstants.xyPolynomialRegression.predict(averageDistance);
 
-      return VecBuilder.fill(xyStandardDev, xyStandardDev, 1000000000000.0 * thetaStandardDev * 4);
+      return VecBuilder.fill(xyStandardDev, xyStandardDev, Double.MAX_VALUE);
     }
   }
 
   private boolean isValidPose(
-      Pose3d visionPose, Pose3d targetPose, int detectedTargets, double timestampSeconds) {
-    double distance = targetPose.getTranslation().getNorm();
-
-    if (distance > 6.5) {
+      Pose3d visionPose, double averageDistance, int detectedTargets, double timestampSeconds) {
+    if (averageDistance > 6.5) {
       return false;
     }
 
@@ -736,7 +725,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
       // }
     }
 
-    if (distance > 3.5 && detectedTargets < 2) {
+    if (averageDistance > 4.0 && detectedTargets < 2) {
       return false;
     }
 
@@ -746,7 +735,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
         || visionPose.getY() < 0.0
         || visionPose.getY() > FieldConstants.aprilTagLayout.getFieldWidth()
         || visionPose.getZ()
-            < -0.25 // To account for minor inaccuracies in the LL location on the robot
+            < -0.5 // To account for minor inaccuracies in the camera location on the robot
         || visionPose.getZ() > 1.6) {
       return false;
     }
@@ -761,12 +750,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     double angleTolerance =
         DriverStation.isAutonomous() ? 8.0 : (detectedTargets >= 2) ? 25.0 : 15.0;
 
-    // if (distance > 3.5 && detectedTargets < 2) {
-    //   angleTolerance = 10.0;
-    // } else if (distance > 5.5 && detectedTargets > 2) {
-    //   angleTolerance = 10.0;
-    // }
-
     // If the angle is too different from our gyro angle at the time of the image
     if (Math.abs(angleDifference.getDegrees()) > angleTolerance) {
       return false;
@@ -776,9 +759,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   private void updateLimelightPoses(String limelightName) {
-    // if (!LimelightHelpers.getTV(limelightName)) {
-    //   return;
-    // }
+    if (RobotBase.isSimulation()) {
+      return;
+    }
     LimelightHelpers.PoseEstimate poseEstimate =
         LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
@@ -811,7 +794,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     double timestamp = poseEstimate.timestampSeconds;
 
-    if (!isValidPose(visionPose, closestTagPose, detectedTags.length, timestamp)) {
+    if (!isValidPose(visionPose, poseEstimate.avgTagDist, detectedTags.length, timestamp)) {
       rejectedPoses.add(visionPose);
       return;
     }
@@ -854,14 +837,18 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     EstimatedRobotPose visionPose = optionalVisionPose.get();
 
-    Pose3d closestTargetPose =
-        new Pose3d(
-            result.getBestTarget().getBestCameraToTarget().getTranslation(),
-            result.getBestTarget().getBestCameraToTarget().getRotation());
+    double totalDistance = 0.0;
+    int tagCount = 0;
+    for (PhotonTrackedTarget target : visionPose.targetsUsed) {
+      tagCount++;
+      totalDistance += target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm();
+    }
+
+    double averageDistance = totalDistance / tagCount;
 
     if (!isValidPose(
         visionPose.estimatedPose,
-        closestTargetPose,
+        averageDistance,
         visionPose.targetsUsed.size(),
         visionPose.timestampSeconds)) {
       rejectedPoses.add(visionPose.estimatedPose);
@@ -869,8 +856,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     }
 
     Vector<N3> standardDevs =
-        getArducamStandardDeviations(
-            visionPose.estimatedPose, closestTargetPose, visionPose.targetsUsed.size());
+        getArducamStandardDeviations(visionPose, averageDistance, visionPose.targetsUsed.size());
 
     poseEstimates.add(
         new PoseEstimate(visionPose.estimatedPose, visionPose.timestampSeconds, standardDevs));

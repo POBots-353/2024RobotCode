@@ -33,8 +33,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -271,71 +269,55 @@ public class Swerve extends VirtualSubsystem implements Logged {
           field.getObject("trajectory").setPoses(path);
           if (path.size() == 0) {
             field.getObject("Target Pose").setPoses(path);
-            // lockModules();
             setChassisSpeeds(new ChassisSpeeds());
           }
         });
 
     PathPlannerLogging.setLogTargetPoseCallback(
-        pose -> {
-          field.getObject("Target Pose").setPose(pose);
-        });
+        pose -> field.getObject("Target Pose").setPose(pose));
 
     SmartDashboard.putData("Swerve/Field", field);
 
     SmartDashboard.putData(
         "Swerve/NavX Accelerometer",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.setSmartDashboardType("3AxisAccelerometer");
-            builder.addDoubleProperty("X", navx::getWorldLinearAccelX, null);
-            builder.addDoubleProperty("Y", navx::getWorldLinearAccelY, null);
-            builder.addDoubleProperty("Z", navx::getWorldLinearAccelZ, null);
-          }
+        builder -> {
+          builder.setSmartDashboardType("3AxisAccelerometer");
+          builder.addDoubleProperty("X", navx::getWorldLinearAccelX, null);
+          builder.addDoubleProperty("Y", navx::getWorldLinearAccelY, null);
+          builder.addDoubleProperty("Z", navx::getWorldLinearAccelZ, null);
         });
 
     SmartDashboard.putData("Swerve/Built-in Accelerometer", new BuiltInAccelerometer());
 
     SmartDashboard.putData(
         "Swerve/Swerve Drive",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.setSmartDashboardType("SwerveDrive");
+        builder -> {
+          builder.setSmartDashboardType("SwerveDrive");
 
-            builder.addDoubleProperty(
-                "Front Left Angle", () -> frontLeftModule.getAngle().getDegrees(), null);
-            builder.addDoubleProperty(
-                "Front Left Velocity", () -> frontLeftModule.getVelocity(), null);
+          builder.addDoubleProperty(
+              "Front Left Angle", () -> frontLeftModule.getAngle().getRadians(), null);
+          builder.addDoubleProperty("Front Left Velocity", frontLeftModule::getVelocity, null);
 
-            builder.addDoubleProperty(
-                "Front Right Angle", () -> frontRightModule.getAngle().getDegrees(), null);
-            builder.addDoubleProperty(
-                "Front Right Velocity", () -> frontRightModule.getVelocity(), null);
+          builder.addDoubleProperty(
+              "Front Right Angle", () -> frontRightModule.getAngle().getRadians(), null);
+          builder.addDoubleProperty("Front Right Velocity", frontRightModule::getVelocity, null);
 
-            builder.addDoubleProperty(
-                "Back Left Angle", () -> backLeftModule.getAngle().getDegrees(), null);
-            builder.addDoubleProperty(
-                "Back Left Velocity", () -> backLeftModule.getVelocity(), null);
+          builder.addDoubleProperty(
+              "Back Left Angle", () -> backLeftModule.getAngle().getRadians(), null);
+          builder.addDoubleProperty("Back Left Velocity", backLeftModule::getVelocity, null);
 
-            builder.addDoubleProperty(
-                "Back Right Angle", () -> backRightModule.getAngle().getDegrees(), null);
-            builder.addDoubleProperty(
-                "Back Right Velocity", () -> backRightModule.getVelocity(), null);
+          builder.addDoubleProperty(
+              "Back Right Angle", () -> backRightModule.getAngle().getRadians(), null);
+          builder.addDoubleProperty("Back Right Velocity", backRightModule::getVelocity, null);
 
-            builder.addDoubleProperty("Robot Angle", () -> getHeading().getDegrees(), null);
-          }
+          builder.addDoubleProperty("Robot Angle", () -> getHeading().getRadians(), null);
         });
 
     SmartDashboard.putData(
         "Swerve/Gyro",
-        new Sendable() {
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.setSmartDashboardType("Gyro");
-            builder.addDoubleProperty("Value", () -> getHeading().getDegrees(), null);
-          }
+        builder -> {
+          builder.setSmartDashboardType("Gyro");
+          builder.addDoubleProperty("Value", () -> getHeading().getDegrees(), null);
         });
 
     DataLogManager.log("NavX Firmware: " + navx.getFirmwareVersion());

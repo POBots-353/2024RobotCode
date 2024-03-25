@@ -476,6 +476,8 @@ public final class Constants {
 
     public static final double turnPositionConversion = 2 * Math.PI * turnGearRatio;
 
+    public static final int pigeonID = 0;
+
     public static final boolean driveMotorInverted = false;
     public static final boolean turnMotorInverted = true;
     public static final boolean canCoderInverted = false;

@@ -4,19 +4,14 @@
 
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
-import frc.robot.commands.NoteVisualizer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -35,12 +30,7 @@ public class AutoShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.30;
   private final double feedTime = 0.100;
-
-  private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
-
-  private boolean simShotNote = false;
 
   /** Creates a new ShootWhileMoving. */
   public AutoShootWhileMoving(Arm arm, Shooter shooter, Swerve swerve) {
@@ -60,9 +50,6 @@ public class AutoShootWhileMoving extends Command {
     previouSpeeds = swerve.getFieldRelativeSpeeds();
 
     arm.setProfileSetpoint(arm.getCurrentState());
-
-    setpointDebouncer.calculate(false);
-    simShotNote = false;
 
     accelXFilter.reset();
     accelYFilter.reset();
@@ -87,7 +74,7 @@ public class AutoShootWhileMoving extends Command {
     double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
     Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
 
-    Translation2d virtualGoalLocation = new Translation2d();
+    Translation2d virtualGoalLocation = speakerPose.getTranslation();
 
     int iterations = 0;
 
@@ -103,12 +90,12 @@ public class AutoShootWhileMoving extends Command {
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
-      double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
+      double newDistance = robotPose.getDistance(virtualGoalLocation);
       double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
 
       Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
 
-      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.05) {
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0025) {
         shotTime = newShotTime;
         armAngle = newArmAngle;
         distance = newDistance;
@@ -135,18 +122,6 @@ public class AutoShootWhileMoving extends Command {
     ShooterState shooterState = AutoShootConstants.autoShootSpeedMap.get(distance);
 
     shooter.setShooterState(shooterState);
-
-    Rotation2d armAngleError = armAngle.minus(arm.getPosition());
-
-    if (setpointDebouncer.calculate(
-        Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-            && shooter.nearSetpoint())) {
-      if (!simShotNote && RobotBase.isSimulation()) {
-        NoteVisualizer.shoot().beforeStarting(Commands.waitSeconds(0.250)).schedule();
-
-        simShotNote = true;
-      }
-    }
 
     previouSpeeds = fieldSpeeds;
   }

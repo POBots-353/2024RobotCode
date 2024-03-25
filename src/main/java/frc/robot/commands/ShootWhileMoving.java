@@ -18,7 +18,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
@@ -30,13 +29,22 @@ import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class ShootWhileMoving extends Command {
-  private static InterpolatingDoubleTreeMap angleToleranceMap = new InterpolatingDoubleTreeMap();
+  private static InterpolatingDoubleTreeMap driveAngleToleranceMap =
+      new InterpolatingDoubleTreeMap();
 
   static {
-    angleToleranceMap.put(1.36, 30.0353);
-    angleToleranceMap.put(1.88, 25.0);
-    angleToleranceMap.put(3.0, 15.0);
-    angleToleranceMap.put(4.6, 10.0);
+    driveAngleToleranceMap.put(1.36, 30.0353);
+    driveAngleToleranceMap.put(1.88, 25.0);
+    driveAngleToleranceMap.put(3.0, 15.0);
+    driveAngleToleranceMap.put(4.6, 10.0);
+  }
+
+  private static InterpolatingDoubleTreeMap armAngleToleranceMap = new InterpolatingDoubleTreeMap();
+
+  static {
+    armAngleToleranceMap.put(1.36, 1.5);
+    armAngleToleranceMap.put(1.8, 0.80);
+    armAngleToleranceMap.put(3.53, 0.60);
   }
 
   private final Arm arm;
@@ -150,12 +158,12 @@ public class ShootWhileMoving extends Command {
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
-      double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
+      double newDistance = robotPose.getDistance(virtualGoalLocation);
       double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
 
       Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
 
-      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.05) {
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0025) {
         shotTime = newShotTime;
         armAngle = newArmAngle;
         distance = newDistance;
@@ -230,16 +238,15 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
     if (setpointDebouncer.calculate(
-            Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
+            Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(speakerDistance)
                 && shooter.nearSetpoint())
-        && Math.abs(driveAngleError.getDegrees()) <= angleToleranceMap.get(speakerDistance)) {
+        && Math.abs(driveAngleError.getDegrees()) <= driveAngleToleranceMap.get(speakerDistance)) {
       intake.feedToShooter();
 
       if (!simShotNote && RobotBase.isSimulation()) {
         NoteVisualizer.shoot().schedule();
-
-        simShotNote = true;
       }
+      simShotNote = true;
     }
 
     previouSpeeds = fieldSpeeds;

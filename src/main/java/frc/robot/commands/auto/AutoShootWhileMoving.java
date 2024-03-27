@@ -30,7 +30,7 @@ public class AutoShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double feedTime = 0.100;
+  private final double feedTime = 0.0353;
 
   /** Creates a new ShootWhileMoving. */
   public AutoShootWhileMoving(Arm arm, Shooter shooter, Swerve swerve) {
@@ -95,7 +95,7 @@ public class AutoShootWhileMoving extends Command {
 
       Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
 
-      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0025) {
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0005) {
         shotTime = newShotTime;
         armAngle = newArmAngle;
         distance = newDistance;
@@ -114,7 +114,7 @@ public class AutoShootWhileMoving extends Command {
         .getObject("Moving Goal")
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
-    arm.setDesiredPosition(armAngle);
+    arm.setAutoShootPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 

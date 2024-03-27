@@ -33,7 +33,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot No Stop"
           }
         },
         {
@@ -44,6 +44,12 @@
                 "type": "path",
                 "data": {
                   "pathName": "Center W2 C3 W1 W3.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Differential"
                 }
               },
               {
@@ -110,7 +116,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.55
+                        "waitTime": 1.8
                       }
                     },
                     {
@@ -122,7 +128,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Warm Up Shooter Idle"
+                        "name": "Warm Up Shooter Differential"
                       }
                     }
                   ]
@@ -135,7 +141,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.71
+                        "waitTime": 1.81
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Arm to Pickup"
                       }
                     },
                     {
@@ -242,7 +254,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Warm Up Shooter Idle"
+                        "name": "Warm Up Shooter Differential"
                       }
                     }
                   ]
@@ -337,7 +349,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Shoot No Stop"
                       }
                     }
                   ]
@@ -403,7 +415,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Shoot"
+                  "name": "Arm to 5 Piece Finale"
                 }
               }
             ]

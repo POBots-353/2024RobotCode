@@ -62,7 +62,7 @@ public class ShootWhileMoving extends Command {
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController = new PIDController(1.0, 0, 0.001);
+  private PIDController turnToAngleController = new PIDController(1.0, 0.10, 0.001);
 
   private Pose2d speakerPose;
 
@@ -71,10 +71,11 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.20;
+  private final double setpointDebounceTime = 0.10;
   private final double feedTime = 0.100;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
+  private Debouncer shooterDebouncer = new Debouncer(setpointDebounceTime);
 
   private boolean simShotNote = false;
 
@@ -112,6 +113,7 @@ public class ShootWhileMoving extends Command {
     arm.setProfileSetpoint(arm.getCurrentState());
 
     setpointDebouncer.calculate(false);
+    shooterDebouncer.calculate(false);
     simShotNote = false;
 
     accelXFilter.reset();
@@ -144,8 +146,6 @@ public class ShootWhileMoving extends Command {
 
     int iterations = 0;
 
-    // if (Math.abs(fieldSpeeds.vxMetersPerSecond) > Units.inchesToMeters(3.0)
-    //     || Math.abs(fieldSpeeds.vyMetersPerSecond) > Units.inchesToMeters(3.0)) {
     for (int i = 0; i < 5; i++) {
       iterations = i + 1;
 
@@ -163,7 +163,7 @@ public class ShootWhileMoving extends Command {
 
       Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
 
-      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0025) {
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0005) {
         shotTime = newShotTime;
         armAngle = newArmAngle;
         distance = newDistance;
@@ -174,7 +174,6 @@ public class ShootWhileMoving extends Command {
       distance = newDistance;
       armAngle = newArmAngle;
     }
-    // }
 
     SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
 
@@ -183,7 +182,7 @@ public class ShootWhileMoving extends Command {
         .getObject("Moving Goal")
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
-    arm.setDesiredPosition(armAngle);
+    arm.setAutoShootPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
@@ -238,8 +237,8 @@ public class ShootWhileMoving extends Command {
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
     if (setpointDebouncer.calculate(
-            Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(speakerDistance)
-                && shooter.nearSetpoint())
+            Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(speakerDistance))
+        && shooterDebouncer.calculate(shooter.nearSetpoint())
         && Math.abs(driveAngleError.getDegrees()) <= driveAngleToleranceMap.get(speakerDistance)) {
       intake.feedToShooter();
 

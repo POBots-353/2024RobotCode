@@ -399,6 +399,15 @@ public class Arm extends VirtualSubsystem implements Logged {
     setMotionProfileState(setpoint);
   }
 
+  public void setAutoShootPosition(Rotation2d position) {
+    TrapezoidProfile.State currentState = previousSetpoint;
+    TrapezoidProfile.State goalState = new TrapezoidProfile.State(position.getRadians(), 0.0);
+
+    TrapezoidProfile.State setpoint = armProfile.calculate(0.020, currentState, goalState);
+
+    setMotionProfileState(setpoint);
+  }
+
   public void setHoldPosition(Rotation2d position) {
     TrapezoidProfile.State currentState = previousSetpoint;
     TrapezoidProfile.State goalState = new TrapezoidProfile.State(position.getRadians(), 0.0);

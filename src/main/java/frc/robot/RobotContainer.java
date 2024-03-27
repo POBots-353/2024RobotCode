@@ -137,6 +137,9 @@ public class RobotContainer implements Logged {
         "Arm to 4 Piece Amp Final",
         arm.autoMoveToPosition(ArmConstants.autoAmp4PieceFinalAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
+        "Arm to 5 Piece Finale",
+        arm.autoMoveToPosition(ArmConstants.fivePieceAutoFinale).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
         "Arm to RC Amp Podium",
         arm.autoMoveToPosition(ArmConstants.autoRCAmpPodiumAngle).withTimeout(3.0).asProxy());
     NamedCommands.registerCommand(
@@ -193,6 +196,20 @@ public class RobotContainer implements Logged {
                   }
                   intake.stopIntakeMotor();
                   shooter.stopMotor();
+                })
+            .asProxy());
+
+    NamedCommands.registerCommand(
+        "Shoot No Stop",
+        intake
+            .autoFeedToShooter()
+            .withTimeout(1.0)
+            .finallyDo(
+                () -> {
+                  if (RobotBase.isSimulation()) {
+                    NoteVisualizer.shoot().schedule();
+                  }
+                  intake.stopIntakeMotor();
                 })
             .asProxy());
 

@@ -11,10 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Swerve;
-import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
 import java.util.function.DoubleSupplier;
 
 public class TurnToNote extends Command {
@@ -53,25 +50,25 @@ public class TurnToNote extends Command {
   public void initialize() {}
 
   private void updateDesiredRotation() {
-    if (!LimelightHelpers.getTV(VisionConstants.limelightName)) {
-      return;
-    }
+    // if (!LimelightHelpers.getTV(VisionConstants.limelightName)) {
+    //   return;
+    // }
 
-    LimelightHelpers.Results results =
-        LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
-    if (results.timestamp_LIMELIGHT_publish == lastDetectionTime) {
-      return;
-    }
-    lastDetectionTime = results.timestamp_LIMELIGHT_publish;
-    LimelightTarget_Detector[] limelightDetector = results.targets_Detector;
+    // LimelightHelpers.Results results =
+    //     LimelightHelpers.getLatestResults(VisionConstants.limelightName).targetingResults;
+    // if (results.timestamp_LIMELIGHT_publish == lastDetectionTime) {
+    //   return;
+    // }
+    // lastDetectionTime = results.timestamp_LIMELIGHT_publish;
+    // LimelightTarget_Detector[] limelightDetector = results.targets_Detector;
 
-    if (limelightDetector.length == 0) {
-      return;
-    }
+    // if (limelightDetector.length == 0) {
+    //   return;
+    // }
 
-    double rotation = limelightDetector[0].tx;
+    // double rotation = limelightDetector[0].tx;
 
-    desiredRotation = swerve.getHeading().minus(Rotation2d.fromDegrees(rotation));
+    // desiredRotation = swerve.getHeading().minus(Rotation2d.fromDegrees(rotation));
   }
 
   // Called every time the scheduler runs while the command is scheduled.

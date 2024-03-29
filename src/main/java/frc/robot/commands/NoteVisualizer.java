@@ -74,6 +74,9 @@ public class NoteVisualizer implements Logged {
 
                   return Commands.run(
                           () -> {
+                            if (pathIndex >= pathPositions.size() - 1) {
+                              return;
+                            }
                             currentNotePose = pathPositions.get(pathIndex);
                             pathIndex++;
 
@@ -105,8 +108,9 @@ public class NoteVisualizer implements Logged {
             / 60.0
             / 2.00;
 
+    final Rotation2d shooterOffset = Rotation2d.fromDegrees(35.0);
     Rotation2d shootingAngle =
-        angleSupplier.get().plus(Rotation2d.fromDegrees(90.0)).plus(Rotation2d.fromDegrees(30.0));
+        angleSupplier.get().plus(Rotation2d.fromDegrees(90.0)).plus(shooterOffset);
     Rotation2d armPosition =
         angleSupplier.get().plus(Rotation2d.fromDegrees(180.0)); // flipped over origin
 
@@ -118,9 +122,11 @@ public class NoteVisualizer implements Logged {
                 new Transform3d(
                     new Translation3d(
                         ArmConstants.armPivotToShooter * armPosition.getCos()
+                            + ArmConstants.armPivotToShooter * shooterOffset.getCos()
                             + ArmConstants.armPivotX,
                         0.0,
                         -ArmConstants.armPivotToShooter * armPosition.getSin()
+                            + ArmConstants.armPivotToShooter * shooterOffset.getSin()
                             + ArmConstants.armPivotZ),
                     new Rotation3d(0, shootingAngle.getRadians(), 0)));
 

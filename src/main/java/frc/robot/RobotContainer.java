@@ -372,7 +372,16 @@ public class RobotContainer implements Logged {
     operatorStick
         .button(OperatorConstants.manualFeedButton)
         .whileTrue(intake.autoFeedToShooter())
-        .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
+        .onFalse(
+            intake
+                .runOnce(intake::stopIntakeMotor)
+                .finallyDo(
+                    () -> {
+                      if (RobotBase.isSimulation()) {
+                        NoteVisualizer.shoot().schedule();
+                      }
+                    })
+                .ignoringDisable(true));
   }
 
   private void configureClimbingBindings() {

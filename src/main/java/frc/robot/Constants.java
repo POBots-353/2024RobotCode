@@ -303,7 +303,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-7.5);
     public static final double armLength = Units.inchesToMeters(21.75);
-    public static final double armPivotToShooter = Units.inchesToMeters(14.0);
+    public static final double armPivotToShooter = Units.inchesToMeters(16.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
   }
 

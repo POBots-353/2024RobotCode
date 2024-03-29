@@ -495,7 +495,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     if (RobotBase.isSimulation()) {
       simOdometry.resetPosition(
-          getHeading(),
+          getRawHeading(),
           getModulePositions(),
           new Pose2d(
               originalOdometryPosition.getTranslation(),

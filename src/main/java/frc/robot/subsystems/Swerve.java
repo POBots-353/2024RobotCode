@@ -776,9 +776,20 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     double totalDistance = 0.0;
     int tagCount = 0;
+
+    boolean seenCenterTag = false;
+    int centerSpeakerID = AllianceUtil.getCenterSpeakerID();
     for (PhotonTrackedTarget target : visionPose.targetsUsed) {
       tagCount++;
       totalDistance += target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm();
+
+      if (target.getFiducialId() == centerSpeakerID) {
+        centerSpeakerTarget = Optional.of(target);
+        seenCenterTag = true;
+      }
+    }
+    if (!seenCenterTag) {
+      centerSpeakerTarget = Optional.empty();
     }
 
     double averageDistance = totalDistance / tagCount;
@@ -798,15 +809,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     poseEstimates.add(
         new PoseEstimate(visionPose.estimatedPose, visionPose.timestampSeconds, standardDevs));
 
-    boolean seenCenterTag = false;
-    int centerSpeakerID = AllianceUtil.getCenterSpeakerID();
     for (PhotonTrackedTarget target : visionPose.targetsUsed) {
       int aprilTagID = target.getFiducialId();
-
-      if (aprilTagID == centerSpeakerID) {
-        centerSpeakerTarget = Optional.of(target);
-        seenCenterTag = true;
-      }
 
       Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(aprilTagID);
       if (tagPose.isEmpty()) {
@@ -814,9 +818,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
       }
 
       detectedTargets.add(tagPose.get());
-    }
-    if (!seenCenterTag) {
-      centerSpeakerTarget = Optional.empty();
     }
   }
 

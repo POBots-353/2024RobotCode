@@ -36,6 +36,8 @@ public class Intake extends VirtualSubsystem implements Logged {
 
   private final double prematchDelay = 2.5;
 
+  private boolean stopWhenBeamBroken = false;
+
   public Intake() {
     DataLogManager.log("Configuring Intake");
     SparkMaxUtil.configure(
@@ -45,7 +47,7 @@ public class Intake extends VirtualSubsystem implements Logged {
         () -> intakeMotor.setSecondaryCurrentLimit(IntakeConstants.shutoffCurrentLimit),
         () -> intakeMotor.setOpenLoopRampRate(0.01),
         () -> intakeMotor.setIdleMode(IdleMode.kBrake),
-        () -> intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20),
+        () -> intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 10),
         () ->
             intakeMotor.setPeriodicFramePeriod(
                 PeriodicFrame.kStatus3, SparkMaxUtil.disableFramePeriod),
@@ -82,22 +84,36 @@ public class Intake extends VirtualSubsystem implements Logged {
   }
 
   public void feedToShooter() {
+    stopWhenBeamBroken = false;
     intakeMotor.set(1.0);
   }
 
   public void outtakeNoteInIntake() {
+    stopWhenBeamBroken = false;
     intakeMotor.set(-IntakeConstants.intakeSpeed);
   }
 
   public void stopIntakeMotor() {
+    stopWhenBeamBroken = false;
     intakeMotor.set(0.0);
   }
 
   public void intake() {
+    stopWhenBeamBroken = true;
     if (!beamBroken()) {
       intakeMotor.set(IntakeConstants.intakeSpeed);
     } else {
       stopIntakeMotor();
+    }
+  }
+
+  public void stopIfBeamBroken() {
+    if (!stopWhenBeamBroken) {
+      return;
+    }
+
+    if (intakeMotor.get() > 0.0 && beamBroken()) {
+      intakeMotor.set(0.0);
     }
   }
 

@@ -76,6 +76,8 @@ public final class Constants {
     public static final Pose2d speakerRedAlliance =
         new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0));
 
+    public static final double speakerWidth = Units.inchesToMeters(41.375);
+
     public static final int blueSpeakerCenterID = 7;
     public static final int redSpeakerCenterID = 4;
   }
@@ -303,7 +305,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-7.5);
     public static final double armLength = Units.inchesToMeters(21.75);
-    public static final double armPivotToShooter = Units.inchesToMeters(14.0);
+    public static final double armPivotToShooter = Units.inchesToMeters(16.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
   }
 

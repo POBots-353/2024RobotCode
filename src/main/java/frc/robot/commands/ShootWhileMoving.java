@@ -18,8 +18,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -30,14 +30,25 @@ import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class ShootWhileMoving extends Command {
-  private static InterpolatingDoubleTreeMap angleToleranceMap = new InterpolatingDoubleTreeMap();
+  private static InterpolatingDoubleTreeMap driveAngleToleranceMap =
+      new InterpolatingDoubleTreeMap();
 
   static {
-    angleToleranceMap.put(1.36, 30.0353);
-    angleToleranceMap.put(1.88, 25.0);
-    angleToleranceMap.put(3.0, 15.0);
-    angleToleranceMap.put(4.6, 10.0);
+    driveAngleToleranceMap.put(1.36, 30.0353);
+    driveAngleToleranceMap.put(1.88, 25.0);
+    driveAngleToleranceMap.put(3.0, 15.0);
+    driveAngleToleranceMap.put(4.6, 10.0);
   }
+
+  private static InterpolatingDoubleTreeMap armAngleToleranceMap = new InterpolatingDoubleTreeMap();
+
+  static {
+    armAngleToleranceMap.put(1.36, 1.5);
+    armAngleToleranceMap.put(1.8, 0.80);
+    armAngleToleranceMap.put(3.53, 0.60);
+  }
+
+  private static final Rotation2d desiredAngleOffset = Rotation2d.fromRadians(Math.PI);
 
   private final Arm arm;
   private final Intake intake;
@@ -54,7 +65,7 @@ public class ShootWhileMoving extends Command {
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController = new PIDController(1.0, 0, 0.001);
+  private PIDController turnToAngleController = new PIDController(1.0, 0.10, 0.001);
 
   private Pose2d speakerPose;
 
@@ -63,10 +74,11 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.20;
+  private final double setpointDebounceTime = 0.10;
   private final double feedTime = 0.100;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
+  private Debouncer shooterDebouncer = new Debouncer(setpointDebounceTime);
 
   private boolean simShotNote = false;
 
@@ -104,6 +116,7 @@ public class ShootWhileMoving extends Command {
     arm.setProfileSetpoint(arm.getCurrentState());
 
     setpointDebouncer.calculate(false);
+    shooterDebouncer.calculate(false);
     simShotNote = false;
 
     accelXFilter.reset();
@@ -112,10 +125,32 @@ public class ShootWhileMoving extends Command {
     swerve.setIgnoreArducam(true);
   }
 
+  private boolean isFacingSpeaker(Pose2d robotPose, Translation2d virtualGoalLocation) {
+    if (Math.abs(robotPose.getRotation().getCos()) == 0.0) {
+      return false;
+    }
+    // y = m(goalx) + b
+    // b = roboty - m(robotx)
+    double slope = Math.tan(robotPose.getRotation().getRadians());
+    if (Double.isInfinite(slope) || Double.isNaN(slope)) {
+      return false;
+    }
+
+    double b = robotPose.getY() - slope * robotPose.getX();
+
+    double yIntersect = slope * virtualGoalLocation.getX() + b;
+
+    double upperBound = virtualGoalLocation.getY() + FieldConstants.speakerWidth / 2;
+    double lowerBound = virtualGoalLocation.getY() - FieldConstants.speakerWidth / 2;
+
+    return yIntersect >= lowerBound && yIntersect <= upperBound;
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Translation2d robotPose = swerve.getPose().getTranslation();
+    Pose2d robotPose = swerve.getPose();
+    Translation2d robotTranslation = robotPose.getTranslation();
     ChassisSpeeds fieldSpeeds = swerve.getFieldRelativeSpeeds();
 
     ChassisSpeeds fieldAcceleration = fieldSpeeds.minus(previouSpeeds).div(0.020);
@@ -136,8 +171,6 @@ public class ShootWhileMoving extends Command {
 
     int iterations = 0;
 
-    // if (Math.abs(fieldSpeeds.vxMetersPerSecond) > Units.inchesToMeters(3.0)
-    //     || Math.abs(fieldSpeeds.vyMetersPerSecond) > Units.inchesToMeters(3.0)) {
     for (int i = 0; i < 5; i++) {
       iterations = i + 1;
 
@@ -150,12 +183,12 @@ public class ShootWhileMoving extends Command {
 
       virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
-      double newDistance = robotPose.minus(virtualGoalLocation).getNorm();
+      double newDistance = robotTranslation.getDistance(virtualGoalLocation);
       double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
 
       Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
 
-      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.05) {
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0005) {
         shotTime = newShotTime;
         armAngle = newArmAngle;
         distance = newDistance;
@@ -166,7 +199,6 @@ public class ShootWhileMoving extends Command {
       distance = newDistance;
       armAngle = newArmAngle;
     }
-    // }
 
     SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
 
@@ -175,7 +207,7 @@ public class ShootWhileMoving extends Command {
         .getObject("Moving Goal")
         .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
 
-    arm.setDesiredPosition(armAngle);
+    arm.setAutoShootPosition(armAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
 
@@ -203,16 +235,11 @@ public class ShootWhileMoving extends Command {
     }
 
     Rotation2d desiredAngle =
-        robotPose.minus(virtualGoalLocation).getAngle().plus(Rotation2d.fromRadians(Math.PI));
-
-    if (AllianceUtil.isRedAlliance()) {
-      desiredAngle = desiredAngle.plus(Rotation2d.fromRadians(Math.PI));
-    }
-
-    Rotation2d robotAngle = swerve.getHeading();
+        robotTranslation.minus(virtualGoalLocation).getAngle().plus(desiredAngleOffset);
 
     double angularSpeed =
-        turnToAngleController.calculate(robotAngle.getRadians(), desiredAngle.getRadians());
+        turnToAngleController.calculate(
+            robotPose.getRotation().getRadians(), desiredAngle.getRadians());
 
     angularSpeed = MathUtil.clamp(angularSpeed, -1.0, 1.0);
 
@@ -225,21 +252,24 @@ public class ShootWhileMoving extends Command {
         false);
 
     Rotation2d armAngleError = armAngle.minus(arm.getPosition());
-    Rotation2d driveAngleError = robotAngle.minus(desiredAngle);
+    Rotation2d driveAngleError = robotPose.getRotation().minus(desiredAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
+    boolean facingSpeaker = isFacingSpeaker(robotPose, virtualGoalLocation);
+
+    SmartDashboard.putBoolean("Auto Shoot/Facing Speaker", facingSpeaker);
+
     if (setpointDebouncer.calculate(
-            Math.abs(armAngleError.getRadians()) < ArmConstants.autoShootAngleTolerance
-                && shooter.nearSetpoint())
-        && Math.abs(driveAngleError.getDegrees()) <= angleToleranceMap.get(speakerDistance)) {
+            Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(speakerDistance))
+        && shooterDebouncer.calculate(shooter.nearSetpoint())
+        && facingSpeaker) {
       intake.feedToShooter();
 
       if (!simShotNote && RobotBase.isSimulation()) {
         NoteVisualizer.shoot().schedule();
-
-        simShotNote = true;
       }
+      simShotNote = true;
     }
 
     previouSpeeds = fieldSpeeds;

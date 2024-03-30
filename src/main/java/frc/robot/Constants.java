@@ -76,6 +76,8 @@ public final class Constants {
     public static final Pose2d speakerRedAlliance =
         new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0));
 
+    public static final double speakerWidth = Units.inchesToMeters(41.375);
+
     public static final int blueSpeakerCenterID = 7;
     public static final int redSpeakerCenterID = 4;
   }
@@ -292,6 +294,7 @@ public final class Constants {
     public static final Rotation2d autoAmpWingAngle = Rotation2d.fromDegrees(30.0);
     public static final Rotation2d behindWing1Angle = Rotation2d.fromDegrees(28.117);
     public static final Rotation2d behindWing2Angle = Rotation2d.fromDegrees(29.49);
+    public static final Rotation2d fivePieceAutoFinale = Rotation2d.fromDegrees(20.38);
 
     public static final double ampSpeedAngle = Units.degreesToRadians(85.0);
     public static final double subwooferSpeedAngle = Units.degreesToRadians(12.0);
@@ -302,7 +305,7 @@ public final class Constants {
     public static final double armPivotZ = Units.inchesToMeters(10.3);
     public static final double armPivotX = Units.inchesToMeters(-7.5);
     public static final double armLength = Units.inchesToMeters(21.75);
-    public static final double armPivotToShooter = Units.inchesToMeters(14.0);
+    public static final double armPivotToShooter = Units.inchesToMeters(16.0);
     public static final double armMass = Units.lbsToKilograms(30.0);
   }
 
@@ -340,7 +343,7 @@ public final class Constants {
 
     public static final double shooterKp = 0.0012;
 
-    public static final double velocityTolerance = 100.0; // 100.0
+    public static final double velocityTolerance = 50.0; // 100.0
 
     public static final double voltageCompensation = 12.0;
 
@@ -414,7 +417,7 @@ public final class Constants {
         new Point2D.Double[] {
           new Point2D.Double(1.7, 0.19),
           new Point2D.Double(2.70, 0.23),
-          new Point2D.Double(3.35, 0.23),
+          new Point2D.Double(3.35, 0.29),
         };
 
     public static final LinearInterpolation autoShootTimeInterpolation =

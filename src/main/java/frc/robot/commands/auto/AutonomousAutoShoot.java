@@ -6,10 +6,12 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoShootConstants;
+import frc.robot.commands.NoteVisualizer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -58,7 +60,11 @@ public class AutonomousAutoShoot extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    if (RobotBase.isSimulation() && !interrupted) {
+      NoteVisualizer.shoot().schedule();
+    }
+  }
 
   // Returns true when the command should end.
   @Override

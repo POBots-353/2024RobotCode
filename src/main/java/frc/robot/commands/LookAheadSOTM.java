@@ -26,16 +26,11 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.MovingShotData;
 import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class LookAheadSOTM extends Command {
-  private static record ShotData(
-      Translation2d virtualGoalLocation,
-      Rotation2d armAngle,
-      ShooterState shooterState,
-      double speakerDistance) {}
-
   private static InterpolatingDoubleTreeMap driveAngleToleranceMap =
       new InterpolatingDoubleTreeMap();
 
@@ -83,7 +78,8 @@ public class LookAheadSOTM extends Command {
   private final double feedTime = 0.100;
 
   private final Timer timer = new Timer();
-  private ShotData currentTarget;
+  private MovingShotData currentSetpoint = new MovingShotData();
+  private MovingShotData currentState = new MovingShotData();
   private double currentShotTime = 0.0;
 
   private boolean recalculateSetpoint = true;
@@ -111,6 +107,8 @@ public class LookAheadSOTM extends Command {
     turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
 
     SmartDashboard.putData("Auto Shoot/Look Ahead PID Controller", turnToAngleController);
+    SmartDashboard.putData("Auto Shoot/Current Setpoint", currentSetpoint);
+    SmartDashboard.putData("Auto Shoot/Current State", currentState);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm, intake, shooter, swerve);
@@ -160,6 +158,65 @@ public class LookAheadSOTM extends Command {
     return yIntersect >= lowerBound && yIntersect <= upperBound;
   }
 
+  private MovingShotData updateCurrentState(
+      MovingShotData currentState,
+      Pose2d robotPose,
+      ChassisSpeeds fieldSpeeds,
+      double fieldAccelX,
+      double fieldAccelY) {
+    Translation2d robotTranslation = robotPose.getTranslation();
+
+    double speakerDistance = swerve.getSpeakerDistance();
+    double distance = speakerDistance;
+
+    double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
+    Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
+
+    Translation2d virtualGoalLocation = speakerPose.getTranslation();
+
+    int iterations = 0;
+
+    for (int i = 0; i < 5; i++) {
+      iterations = i + 1;
+
+      double virtualGoalX =
+          speakerPose.getX()
+              - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime * 0.5);
+      double virtualGoalY =
+          speakerPose.getY()
+              - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime * 0.5);
+
+      virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+
+      double newDistance = robotTranslation.getDistance(virtualGoalLocation);
+      double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
+
+      Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
+
+      if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0005) {
+        shotTime = newShotTime;
+        armAngle = newArmAngle;
+        distance = newDistance;
+        break;
+      }
+
+      shotTime = newShotTime;
+      distance = newDistance;
+      armAngle = newArmAngle;
+    }
+
+    ShooterState shooterState = AutoShootConstants.autoShootSpeedMap.get(distance);
+
+    currentState.virtualGoalLocation = virtualGoalLocation;
+    currentState.armAngle = armAngle;
+    currentState.shooterState = shooterState;
+    currentState.shotTime = shotTime;
+    currentState.distance = distance;
+    currentState.iterations = iterations;
+
+    return currentState;
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -175,70 +232,29 @@ public class LookAheadSOTM extends Command {
     SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
     SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
 
+    updateCurrentState(currentState, robotPose, fieldSpeeds, fieldAccelX, fieldAccelY);
+
     if (recalculateSetpoint) {
-      Translation2d robotTranslation = robotPose.getTranslation();
-
-      double speakerDistance = swerve.getSpeakerDistance();
-      double distance = speakerDistance;
-
-      double shotTime = AutoShootConstants.autoShootTimeInterpolation.get(distance);
-      Rotation2d armAngle = AutoShootConstants.autoShootAngleMap.get(distance);
-
-      Translation2d virtualGoalLocation = speakerPose.getTranslation();
-
-      int iterations = 0;
-
-      for (int i = 0; i < 5; i++) {
-        iterations = i + 1;
-
-        double virtualGoalX =
-            speakerPose.getX()
-                - shotTime * (fieldSpeeds.vxMetersPerSecond + fieldAccelX * feedTime * 0.5);
-        double virtualGoalY =
-            speakerPose.getY()
-                - shotTime * (fieldSpeeds.vyMetersPerSecond + fieldAccelY * feedTime * 0.5);
-
-        virtualGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
-
-        double newDistance = robotTranslation.getDistance(virtualGoalLocation);
-        double newShotTime = AutoShootConstants.autoShootTimeInterpolation.get(newDistance);
-
-        Rotation2d newArmAngle = AutoShootConstants.autoShootAngleMap.get(newDistance);
-
-        if (Math.abs(newArmAngle.minus(armAngle).getDegrees()) <= 0.0005) {
-          shotTime = newShotTime;
-          armAngle = newArmAngle;
-          distance = newDistance;
-          break;
-        }
-
-        shotTime = newShotTime;
-        distance = newDistance;
-        armAngle = newArmAngle;
-      }
-
-      currentShotTime = shotTime;
-      timer.reset();
-
-      ShooterState shooterState = AutoShootConstants.autoShootSpeedMap.get(distance);
-
-      currentTarget = new ShotData(virtualGoalLocation, armAngle, shooterState, distance);
+      currentSetpoint.replaceAll(currentState);
 
       recalculateSetpoint = false;
 
-      SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
+      currentShotTime = currentSetpoint.shotTime;
+      timer.reset();
+
+      SmartDashboard.putNumber("Auto Shoot/Iterations", currentSetpoint.iterations);
 
       swerve
           .getField()
           .getObject("Moving Goal")
-          .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
+          .setPose(new Pose2d(currentSetpoint.virtualGoalLocation, new Rotation2d()));
     }
 
-    arm.setAutoShootPosition(currentTarget.armAngle());
+    arm.setAutoShootPosition(currentSetpoint.armAngle);
 
-    SmartDashboard.putNumber("Auto Shoot/Desired Angle", currentTarget.armAngle().getDegrees());
+    SmartDashboard.putNumber("Auto Shoot/Desired Angle", currentSetpoint.armAngle.getDegrees());
 
-    shooter.setShooterState(currentTarget.shooterState());
+    shooter.setShooterState(currentSetpoint.shooterState);
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
     double forwardMetersPerSecond =
@@ -261,7 +277,7 @@ public class LookAheadSOTM extends Command {
     Rotation2d driveAngle =
         robotPose
             .getTranslation()
-            .minus(currentTarget.virtualGoalLocation())
+            .minus(currentState.virtualGoalLocation)
             .getAngle()
             .plus(desiredAngleOffset);
 
@@ -279,20 +295,19 @@ public class LookAheadSOTM extends Command {
         true,
         false);
 
-    Rotation2d armAngleError = currentTarget.armAngle().minus(arm.getPosition());
+    Rotation2d armAngleError = currentSetpoint.armAngle.minus(arm.getPosition());
     Rotation2d driveAngleError = robotPose.getRotation().minus(driveAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
-    boolean facingSpeaker = isFacingSpeaker(robotPose, currentTarget.virtualGoalLocation());
+    boolean facingSpeaker = isFacingSpeaker(robotPose, currentState.virtualGoalLocation);
 
     SmartDashboard.putBoolean("Auto Shoot/Facing Speaker", facingSpeaker);
 
     double linearSpeed = Math.hypot(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond);
 
     if (timer.hasElapsed(currentShotTime) || Math.abs(linearSpeed) < Units.inchesToMeters(3.0)) {
-      if (Math.abs(armAngleError.getDegrees())
-              <= armAngleToleranceMap.get(currentTarget.speakerDistance())
+      if (Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(currentSetpoint.distance)
           && shooter.nearSetpoint()
           && facingSpeaker) {
         intake.feedToShooter();
@@ -303,7 +318,7 @@ public class LookAheadSOTM extends Command {
         simShotNote = true;
       }
       recalculateSetpoint = true;
-    } else if (arm.timeUntil(currentTarget.armAngle()) > (currentShotTime - timer.get())) {
+    } else if (arm.timeUntil(currentSetpoint.armAngle) > (currentShotTime - timer.get())) {
       // The arm won't reach the setpoint in time
       recalculateSetpoint = true;
     } else if (Math.abs(driveAngleError.getDegrees()) > 40.0

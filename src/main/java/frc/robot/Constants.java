@@ -355,6 +355,7 @@ public final class Constants {
   }
 
   public static final class AutoShootConstants {
+    public static final double speakerEdgeTolerance = Units.inchesToMeters(2.0);
     // (distance, angle)
     // This isn't being used, but the data could still be important at some point
     public static final Point2D[] autoShootArmAngles =

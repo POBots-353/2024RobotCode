@@ -19,13 +19,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoShootConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.AutoShootMathUtil;
 import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
@@ -123,27 +123,6 @@ public class ShootWhileMoving extends Command {
     accelYFilter.reset();
 
     swerve.setIgnoreArducam(true);
-  }
-
-  private boolean isFacingSpeaker(Pose2d robotPose, Translation2d virtualGoalLocation) {
-    if (Math.abs(robotPose.getRotation().getCos()) == 0.0) {
-      return false;
-    }
-    // y = m(goalx) + b
-    // b = roboty - m(robotx)
-    double slope = Math.tan(robotPose.getRotation().getRadians());
-    if (Double.isInfinite(slope) || Double.isNaN(slope)) {
-      return false;
-    }
-
-    double b = robotPose.getY() - slope * robotPose.getX();
-
-    double yIntersect = slope * virtualGoalLocation.getX() + b;
-
-    double upperBound = virtualGoalLocation.getY() + FieldConstants.speakerWidth / 2;
-    double lowerBound = virtualGoalLocation.getY() - FieldConstants.speakerWidth / 2;
-
-    return yIntersect >= lowerBound && yIntersect <= upperBound;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -256,7 +235,7 @@ public class ShootWhileMoving extends Command {
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
-    boolean facingSpeaker = isFacingSpeaker(robotPose, virtualGoalLocation);
+    boolean facingSpeaker = AutoShootMathUtil.isFacingSpeaker(robotPose, virtualGoalLocation);
 
     SmartDashboard.putBoolean("Auto Shoot/Facing Speaker", facingSpeaker);
 

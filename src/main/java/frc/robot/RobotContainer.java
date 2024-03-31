@@ -30,8 +30,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.LookAheadSOTM;
 import frc.robot.commands.NoteVisualizer;
-import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
@@ -524,7 +524,7 @@ public class RobotContainer implements Logged {
     autoShoot
         .and(autoAlign)
         .whileTrue(
-            new ShootWhileMoving(
+            new LookAheadSOTM(
                 driverController::getLeftY,
                 driverController::getLeftX,
                 () -> {

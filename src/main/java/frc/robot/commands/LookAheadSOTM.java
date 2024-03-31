@@ -86,7 +86,7 @@ public class LookAheadSOTM extends Command {
   private ShotData currentTarget;
   private double currentShotTime = 0.0;
 
-  private boolean recalculateTarget = true;
+  private boolean recalculateSetpoint = true;
 
   private boolean simShotNote = false;
 
@@ -136,7 +136,7 @@ public class LookAheadSOTM extends Command {
     timer.reset();
     timer.start();
 
-    recalculateTarget = true;
+    recalculateSetpoint = true;
   }
 
   private boolean isFacingSpeaker(Pose2d robotPose, Translation2d virtualGoalLocation) {
@@ -175,7 +175,7 @@ public class LookAheadSOTM extends Command {
     SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
     SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
 
-    if (recalculateTarget) {
+    if (recalculateSetpoint) {
       Translation2d robotTranslation = robotPose.getTranslation();
 
       double speakerDistance = swerve.getSpeakerDistance();
@@ -224,7 +224,7 @@ public class LookAheadSOTM extends Command {
 
       currentTarget = new ShotData(virtualGoalLocation, armAngle, shooterState, distance);
 
-      recalculateTarget = false;
+      recalculateSetpoint = false;
 
       SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
 
@@ -242,9 +242,8 @@ public class LookAheadSOTM extends Command {
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
     double forwardMetersPerSecond =
-        -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble() * 0.5;
-    double strafeMetersPerSecond =
-        strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble() * 0.5;
+        -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
+    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
 
     forwardMetersPerSecond = forwardRateLimiter.calculate(forwardMetersPerSecond);
     strafeMetersPerSecond = strafeRateLimiter.calculate(strafeMetersPerSecond);
@@ -303,8 +302,14 @@ public class LookAheadSOTM extends Command {
         }
         simShotNote = true;
       }
-      recalculateTarget = true;
-      timer.reset();
+      recalculateSetpoint = true;
+    } else if (arm.timeUntil(currentTarget.armAngle()) > (currentShotTime - timer.get())) {
+      // The arm won't reach the setpoint in time
+      recalculateSetpoint = true;
+    } else if (Math.abs(driveAngleError.getDegrees()) > 40.0
+        && timer.get() >= currentShotTime / 2) {
+      // We're halfway done and we're extremely far from the target rotation
+      recalculateSetpoint = true;
     }
 
     previouSpeeds = fieldSpeeds;

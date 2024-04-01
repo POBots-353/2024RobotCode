@@ -163,7 +163,7 @@ public final class Constants {
             Units.inchesToMeters(5.53),
             0.0,
             Units.inchesToMeters(10.35),
-            new Rotation3d(0.0, Units.degreesToRadians(-35.0), 0.0));
+            new Rotation3d(Units.degreesToRadians(180.0), Units.degreesToRadians(-35.0), 0.0));
 
     public static final class ArducamConstants {
       public static final double[] distances =

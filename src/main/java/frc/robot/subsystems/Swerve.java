@@ -9,11 +9,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.sim.Pigeon2SimState;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -41,6 +37,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -136,11 +133,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
           BackRightModule.encoderID,
           BackRightModule.angleOffset);
 
-  private Pigeon2 pigeon = new Pigeon2(SwerveConstants.pigeonID);
-  private Pigeon2SimState pigeonSim;
-
-  private StatusSignal<Double> yawSignal;
-  private StatusSignal<Double> angularVelocitySignal;
+  private AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.odometryUpdateFrequency);
 
   @Log.NT(key = "Angle Offset")
   private Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
@@ -224,31 +217,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     PhotonCamera.setVersionCheckEnabled(false);
 
-    pigeon.clearStickyFaults();
-
-    pigeon.getConfigurator().apply(new Pigeon2Configuration());
-
-    yawSignal = pigeon.getYaw().clone();
-    angularVelocitySignal = pigeon.getAngularVelocityZWorld().clone();
-
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        50,
-        pigeon.getAccelerationX(),
-        pigeon.getAccelerationY(),
-        pigeon.getAccelerationZ(),
-        pigeon.getYaw(),
-        pigeon.getPitch(),
-        pigeon.getRoll(),
-        pigeon.getQuatW(),
-        pigeon.getQuatX(),
-        pigeon.getQuatY(),
-        pigeon.getQuatZ());
-
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        SwerveConstants.odometryUpdateFrequency, yawSignal, angularVelocitySignal);
-
-    pigeon.optimizeBusUtilization();
-
     poseEstimator =
         new SwerveDrivePoseEstimator(
             kinematics,
@@ -258,7 +226,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     if (RobotBase.isSimulation()) {
-      pigeonSim = pigeon.getSimState();
       simOdometry = new SwerveDriveOdometry(kinematics, getRawHeading(), getModulePositions());
       visionSim = new VisionSystemSim("main");
 
@@ -313,9 +280,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
         "Swerve/NavX Accelerometer",
         builder -> {
           builder.setSmartDashboardType("3AxisAccelerometer");
-          builder.addDoubleProperty("X", () -> pigeon.getAccelerationX().getValue(), null);
-          builder.addDoubleProperty("Y", () -> pigeon.getAccelerationY().getValue(), null);
-          builder.addDoubleProperty("Z", () -> pigeon.getAccelerationZ().getValue(), null);
+          builder.addDoubleProperty("X", navx::getWorldLinearAccelX, null);
+          builder.addDoubleProperty("Y", navx::getWorldLinearAccelY, null);
+          builder.addDoubleProperty("Z", navx::getWorldLinearAccelZ, null);
         });
 
     SmartDashboard.putData("Swerve/Built-in Accelerometer", new BuiltInAccelerometer());
@@ -504,10 +471,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Rotation2d getRawHeading() {
-    double yawDegrees =
-        BaseStatusSignal.getLatencyCompensatedValue(
-            pigeon.getYaw(), pigeon.getAngularVelocityZWorld());
-    return Rotation2d.fromDegrees(yawDegrees);
+    return navx.getRotation2d();
   }
 
   public void setHeading(Rotation2d rotation) {
@@ -521,11 +485,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   @Log.NT(key = "Rotation3d")
   public Rotation3d getHeading3d() {
-    return pigeon.getRotation3d();
+    return navx.getRotation3d();
   }
 
   public double getYawRadians() {
-    return Units.degreesToRadians(pigeon.getYaw().getValue());
+    return Units.degreesToRadians(navx.getYaw());
   }
 
   public Optional<Rotation2d> getRotationAtTime(double time) {
@@ -639,11 +603,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryUpdateCount++;
     odometryLock.writeLock().unlock();
 
-    BaseStatusSignal.refreshAll(yawSignal, angularVelocitySignal);
-    double yawDegrees =
-        BaseStatusSignal.getLatencyCompensatedValue(yawSignal, angularVelocitySignal);
-
-    Rotation2d heading = Rotation2d.fromDegrees(yawDegrees);
+    Rotation2d heading = getRawHeading();
 
     SwerveDriveWheelPositions positions = new SwerveDriveWheelPositions(getModulePositions());
 
@@ -991,8 +951,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backLeftModule.simulationPeriodic();
     backRightModule.simulationPeriodic();
 
-    pigeonSim.addYaw(Units.radiansToDegrees(getChassisSpeeds().omegaRadiansPerSecond) * 0.020);
-
     simOdometry.update(getRawHeading(), getModulePositions());
     visionSim.update(simOdometry.getPoseMeters());
 
@@ -1008,10 +966,10 @@ public class Swerve extends VirtualSubsystem implements Logged {
         // Make sure gyro is connected
         Commands.runOnce(
             () -> {
-              if (!pigeon.getYaw().getStatus().isOK()) {
-                addError("Pigeon is not connected");
+              if (!navx.isConnected()) {
+                addError("NavX is not connected");
               } else {
-                addInfo("Pigeon is connected");
+                addInfo("NavX is connected");
               }
             }),
         // Test gyro zeroing

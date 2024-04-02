@@ -11,11 +11,7 @@ public class AllianceUtil {
   public static boolean isRedAlliance() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
 
-    if (alliance.isPresent()) {
-      return alliance.get() == Alliance.Red;
-    } else {
-      return false;
-    }
+    return alliance.isPresent() && alliance.get() == Alliance.Red;
   }
 
   public static Rotation2d getZeroRotation() {

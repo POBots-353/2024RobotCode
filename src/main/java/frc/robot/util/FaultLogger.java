@@ -3,7 +3,6 @@
 
 package frc.robot.util;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.FaultID;
 import com.revrobotics.REVLibError;
@@ -248,15 +247,6 @@ public final class FaultLogger {
         "Duty Cycle Encoder [" + encoder.getSourceChannel() + "]",
         "disconnected",
         FaultType.ERROR);
-  }
-
-  /**
-   * Registers fault suppliers for a NavX.
-   *
-   * @param ahrs The NavX to manage.
-   */
-  public static void register(AHRS ahrs) {
-    register(() -> !ahrs.isConnected(), "NavX", "disconnected", FaultType.ERROR);
   }
 
   /**

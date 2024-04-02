@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,6 +15,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoShootConstants;
@@ -26,10 +26,11 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.AutoShootMathUtil;
+import frc.robot.util.MovingShotData;
 import frc.robot.util.ShooterState;
 import java.util.function.DoubleSupplier;
 
-public class ShootWhileMoving extends Command {
+public class LookAheadSOTM extends Command {
   private static InterpolatingDoubleTreeMap driveAngleToleranceMap =
       new InterpolatingDoubleTreeMap();
 
@@ -65,7 +66,7 @@ public class ShootWhileMoving extends Command {
   private SlewRateLimiter strafeRateLimiter =
       new SlewRateLimiter(SwerveConstants.maxTranslationalAcceleration);
 
-  private PIDController turnToAngleController = new PIDController(1.0, 0.10, 0.001);
+  private PIDController turnToAngleController = new PIDController(0.8, 0.0, 0.01);
 
   private Pose2d speakerPose;
 
@@ -74,16 +75,19 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.10;
   private final double feedTime = 0.100;
 
-  private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
-  private Debouncer shooterDebouncer = new Debouncer(setpointDebounceTime);
+  private final Timer timer = new Timer();
+  private MovingShotData currentSetpoint = new MovingShotData();
+  private MovingShotData currentState = new MovingShotData();
+  private double currentShotTime = 0.0;
+
+  private boolean recalculateSetpoint = true;
 
   private boolean simShotNote = false;
 
   /** Creates a new ShootWhileMoving. */
-  public ShootWhileMoving(
+  public LookAheadSOTM(
       DoubleSupplier forwardSpeed,
       DoubleSupplier strafeSpeed,
       DoubleSupplier maxTranslationalSpeed,
@@ -102,6 +106,10 @@ public class ShootWhileMoving extends Command {
 
     turnToAngleController.enableContinuousInput(-Math.PI, Math.PI);
 
+    SmartDashboard.putData("Auto Shoot/Look Ahead PID Controller", turnToAngleController);
+    SmartDashboard.putData("Auto Shoot/Current Setpoint", currentSetpoint);
+    SmartDashboard.putData("Auto Shoot/Current State", currentState);
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm, intake, shooter, swerve);
   }
@@ -115,30 +123,27 @@ public class ShootWhileMoving extends Command {
 
     arm.setProfileSetpoint(arm.getCurrentState());
 
-    setpointDebouncer.calculate(false);
-    shooterDebouncer.calculate(false);
     simShotNote = false;
 
     accelXFilter.reset();
     accelYFilter.reset();
 
     swerve.setIgnoreArducam(true);
+
+    timer.stop();
+    timer.reset();
+    timer.start();
+
+    recalculateSetpoint = true;
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    Pose2d robotPose = swerve.getPose();
+  private MovingShotData updateCurrentState(
+      MovingShotData currentState,
+      Pose2d robotPose,
+      ChassisSpeeds fieldSpeeds,
+      double fieldAccelX,
+      double fieldAccelY) {
     Translation2d robotTranslation = robotPose.getTranslation();
-    ChassisSpeeds fieldSpeeds = swerve.getFieldRelativeSpeeds();
-
-    ChassisSpeeds fieldAcceleration = fieldSpeeds.minus(previouSpeeds).div(0.020);
-
-    double fieldAccelX = accelXFilter.calculate(fieldAcceleration.vxMetersPerSecond);
-    double fieldAccelY = accelYFilter.calculate(fieldAcceleration.vyMetersPerSecond);
-
-    SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
-    SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
 
     double speakerDistance = swerve.getSpeakerDistance();
     double distance = speakerDistance;
@@ -179,21 +184,56 @@ public class ShootWhileMoving extends Command {
       armAngle = newArmAngle;
     }
 
-    SmartDashboard.putNumber("Auto Shoot/Iterations", iterations);
-
-    swerve
-        .getField()
-        .getObject("Moving Goal")
-        .setPose(new Pose2d(virtualGoalLocation, new Rotation2d()));
-
-    arm.setAutoShootPosition(armAngle);
-
-    SmartDashboard.putNumber("Auto Shoot/Desired Angle", armAngle.getDegrees());
-
-    // Shooter speed
     ShooterState shooterState = AutoShootConstants.autoShootSpeedMap.get(distance);
 
-    shooter.setShooterState(shooterState);
+    currentState.virtualGoalLocation = virtualGoalLocation;
+    currentState.armAngle = armAngle;
+    currentState.shooterState = shooterState;
+    currentState.shotTime = shotTime;
+    currentState.distance = distance;
+    currentState.iterations = iterations;
+
+    return currentState;
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    Pose2d robotPose = swerve.getPose();
+
+    ChassisSpeeds fieldSpeeds = swerve.getFieldRelativeSpeeds();
+
+    ChassisSpeeds fieldAcceleration = fieldSpeeds.minus(previouSpeeds).div(0.020);
+
+    double fieldAccelX = accelXFilter.calculate(fieldAcceleration.vxMetersPerSecond);
+    double fieldAccelY = accelYFilter.calculate(fieldAcceleration.vyMetersPerSecond);
+
+    SmartDashboard.putNumber("Auto Shoot/Acceleration X", fieldAccelX);
+    SmartDashboard.putNumber("Auto Shoot/Acceleration Y", fieldAccelY);
+
+    updateCurrentState(currentState, robotPose, fieldSpeeds, fieldAccelX, fieldAccelY);
+
+    if (recalculateSetpoint) {
+      currentSetpoint.replaceAll(currentState);
+
+      recalculateSetpoint = false;
+
+      currentShotTime = currentSetpoint.shotTime;
+      timer.reset();
+
+      SmartDashboard.putNumber("Auto Shoot/Iterations", currentSetpoint.iterations);
+
+      swerve
+          .getField()
+          .getObject("Moving Goal")
+          .setPose(new Pose2d(currentSetpoint.virtualGoalLocation, new Rotation2d()));
+    }
+
+    arm.setAutoShootPosition(currentSetpoint.armAngle);
+
+    SmartDashboard.putNumber("Auto Shoot/Desired Angle", currentSetpoint.armAngle.getDegrees());
+
+    shooter.setShooterState(currentSetpoint.shooterState);
 
     // Calculate robot angle and drive speeds (copied from TeleopSwerve command)
     double forwardMetersPerSecond =
@@ -213,12 +253,16 @@ public class ShootWhileMoving extends Command {
       strafeRateLimiter.reset(0.0);
     }
 
-    Rotation2d desiredAngle =
-        robotTranslation.minus(virtualGoalLocation).getAngle().plus(desiredAngleOffset);
+    Rotation2d driveAngle =
+        robotPose
+            .getTranslation()
+            .minus(currentState.virtualGoalLocation)
+            .getAngle()
+            .plus(desiredAngleOffset);
 
     double angularSpeed =
         turnToAngleController.calculate(
-            robotPose.getRotation().getRadians(), desiredAngle.getRadians());
+            robotPose.getRotation().getRadians(), driveAngle.getRadians());
 
     angularSpeed = MathUtil.clamp(angularSpeed, -1.0, 1.0);
 
@@ -230,25 +274,37 @@ public class ShootWhileMoving extends Command {
         true,
         false);
 
-    Rotation2d armAngleError = armAngle.minus(arm.getPosition());
-    Rotation2d driveAngleError = robotPose.getRotation().minus(desiredAngle);
+    Rotation2d armAngleError = currentSetpoint.armAngle.minus(arm.getPosition());
+    Rotation2d driveAngleError = robotPose.getRotation().minus(driveAngle);
 
     SmartDashboard.putNumber("Auto Shoot/Drive Angle Error", driveAngleError.getDegrees());
 
-    boolean facingSpeaker = AutoShootMathUtil.isFacingSpeaker(robotPose, virtualGoalLocation);
+    boolean facingSpeaker =
+        AutoShootMathUtil.isFacingSpeaker(robotPose, currentState.virtualGoalLocation);
 
     SmartDashboard.putBoolean("Auto Shoot/Facing Speaker", facingSpeaker);
 
-    if (setpointDebouncer.calculate(
-            Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(speakerDistance))
-        && shooterDebouncer.calculate(shooter.nearSetpoint())
-        && facingSpeaker) {
-      intake.feedToShooter();
+    double linearSpeed = Math.hypot(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond);
 
-      if (!simShotNote && RobotBase.isSimulation()) {
-        NoteVisualizer.shoot().schedule();
+    if (timer.hasElapsed(currentShotTime) || Math.abs(linearSpeed) < Units.inchesToMeters(3.0)) {
+      if (Math.abs(armAngleError.getDegrees()) <= armAngleToleranceMap.get(currentSetpoint.distance)
+          && shooter.nearSetpoint()
+          && facingSpeaker) {
+        intake.feedToShooter();
+
+        if (!simShotNote && RobotBase.isSimulation()) {
+          NoteVisualizer.shoot().schedule();
+        }
+        simShotNote = true;
       }
-      simShotNote = true;
+      recalculateSetpoint = true;
+    } else if (arm.timeUntil(currentSetpoint.armAngle) > (currentShotTime - timer.get())) {
+      // The arm won't reach the setpoint in time
+      recalculateSetpoint = true;
+    } else if (Math.abs(driveAngleError.getDegrees()) > 40.0
+        && timer.get() >= currentShotTime / 2) {
+      // We're halfway done and we're extremely far from the target rotation
+      recalculateSetpoint = true;
     }
 
     previouSpeeds = fieldSpeeds;
@@ -263,6 +319,8 @@ public class ShootWhileMoving extends Command {
     forwardRateLimiter.reset(0.0);
     strafeRateLimiter.reset(0.0);
     turnToAngleController.reset();
+
+    timer.stop();
 
     swerve.getField().getObject("Moving Goal").setPoses();
     swerve.setIgnoreArducam(false);

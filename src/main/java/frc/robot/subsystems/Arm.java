@@ -425,6 +425,10 @@ public class Arm extends VirtualSubsystem implements Logged {
     return new TrapezoidProfile.State(getPosition().getRadians(), getVelocity());
   }
 
+  public double timeUntil(Rotation2d position) {
+    return armProfile.timeLeftUntil(position.getRadians());
+  }
+
   public void setProfileSetpoint(TrapezoidProfile.State state) {
     previousSetpoint = state;
   }

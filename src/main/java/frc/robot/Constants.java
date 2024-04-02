@@ -16,6 +16,7 @@ import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.LinearInterpolation;
 import frc.robot.util.PolynomialRegression;
@@ -354,6 +355,7 @@ public final class Constants {
   }
 
   public static final class AutoShootConstants {
+    public static final double speakerEdgeTolerance = Units.inchesToMeters(2.0);
     // (distance, angle)
     // This isn't being used, but the data could still be important at some point
     public static final Point2D[] autoShootArmAngles =
@@ -396,6 +398,9 @@ public final class Constants {
       autoShootAngleMap.put(3.98, Rotation2d.fromDegrees(29.137217802484155));
       autoShootAngleMap.put(4.1522590735236655, Rotation2d.fromDegrees(29.15150655822783));
       autoShootAngleMap.put(4.98, Rotation2d.fromDegrees(30.921454458988247));
+      if (RobotBase.isSimulation()) {
+        autoShootAngleMap.put(5.867, Rotation2d.fromDegrees(35.07));
+      }
     }
 
     public static final InterpolatingTreeMap<Double, ShooterState> autoShootSpeedMap =
@@ -418,6 +423,7 @@ public final class Constants {
           new Point2D.Double(1.7, 0.19),
           new Point2D.Double(2.70, 0.23),
           new Point2D.Double(3.35, 0.29),
+          new Point2D.Double(5.00, 0.34),
         };
 
     public static final LinearInterpolation autoShootTimeInterpolation =
@@ -478,6 +484,8 @@ public final class Constants {
     public static final double driveVelocityConversion = drivePositionConversion / 60;
 
     public static final double turnPositionConversion = 2 * Math.PI * turnGearRatio;
+
+    public static final int pigeonID = 0;
 
     public static final boolean driveMotorInverted = false;
     public static final boolean turnMotorInverted = true;

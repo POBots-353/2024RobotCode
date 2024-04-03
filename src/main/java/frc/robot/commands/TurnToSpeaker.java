@@ -88,7 +88,7 @@ public class TurnToSpeaker extends Command {
     }
     lastDetectionTime = detectionTime;
 
-    double rotation = centerSpeaker.get().getYaw();
+    double rotation = -centerSpeaker.get().getYaw();
 
     Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(lastDetectionTime);
 

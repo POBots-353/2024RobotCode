@@ -143,6 +143,8 @@ public class SwerveModule implements Logged {
         () -> driveMotor.setIdleMode(IdleMode.kBrake),
         () -> drivePID.setP(SwerveConstants.driveP),
         () -> drivePID.setOutputRange(-1.0, 1.0),
+        () -> driveEncoder.setAverageDepth(4),
+        () -> driveEncoder.setMeasurementPeriod(16),
         () -> driveEncoder.setPositionConversionFactor(SwerveConstants.drivePositionConversion),
         () -> driveEncoder.setVelocityConversionFactor(SwerveConstants.driveVelocityConversion),
         () -> driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20),

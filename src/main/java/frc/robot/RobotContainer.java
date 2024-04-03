@@ -25,13 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.LookAheadSOTM;
 import frc.robot.commands.NoteVisualizer;
+import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TurnToSpeaker;
 import frc.robot.commands.WheelRadiusCharacterization;
@@ -50,8 +49,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.AllianceUtil;
-import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -240,20 +237,6 @@ public class RobotContainer implements Logged {
             Commands.runOnce(
                     () -> {
                       // shooter.setDefaultCommand(shooter.runOnce(shooter::stopMotor));
-                    })
-                .ignoringDisable(true));
-
-    new Trigger(DriverStation::isEnabled)
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      if (AllianceUtil.isRedAlliance()) {
-                        LimelightHelpers.setPriorityTagID(
-                            VisionConstants.limelightName, FieldConstants.redSpeakerCenterID);
-                      } else {
-                        LimelightHelpers.setPriorityTagID(
-                            VisionConstants.limelightName, FieldConstants.blueSpeakerCenterID);
-                      }
                     })
                 .ignoringDisable(true));
 
@@ -524,7 +507,7 @@ public class RobotContainer implements Logged {
     autoShoot
         .and(autoAlign)
         .whileTrue(
-            new LookAheadSOTM(
+            new ShootWhileMoving(
                 driverController::getLeftY,
                 driverController::getLeftX,
                 () -> {

@@ -25,4 +25,8 @@ public class AllianceUtil {
   public static Pose2d getSpeakerPose() {
     return isRedAlliance() ? FieldConstants.speakerRedAlliance : FieldConstants.speakerBlueAlliance;
   }
+
+  public static int getCenterSpeakerID() {
+    return isRedAlliance() ? FieldConstants.redSpeakerCenterID : FieldConstants.blueSpeakerCenterID;
+  }
 }

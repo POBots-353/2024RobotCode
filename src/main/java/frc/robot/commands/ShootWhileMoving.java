@@ -74,11 +74,11 @@ public class ShootWhileMoving extends Command {
   private LinearFilter accelXFilter = LinearFilter.movingAverage(2);
   private LinearFilter accelYFilter = LinearFilter.movingAverage(2);
 
-  private final double setpointDebounceTime = 0.10;
+  private final double setpointDebounceTime = 0.05;
   private final double feedTime = 0.100;
 
   private Debouncer setpointDebouncer = new Debouncer(setpointDebounceTime);
-  private Debouncer shooterDebouncer = new Debouncer(setpointDebounceTime);
+  private Debouncer shooterDebouncer = new Debouncer(0.10);
 
   private boolean simShotNote = false;
 

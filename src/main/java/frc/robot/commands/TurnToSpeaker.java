@@ -14,17 +14,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
-import frc.robot.util.LimelightHelpers;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class TurnToSpeaker extends Command {
   private Swerve swerve;
 
-  private long lastDetectionTime = 0;
+  private double lastDetectionTime = 0.0;
 
   private Rotation2d desiredRotation = Rotation2d.fromDegrees(0.0);
   private boolean seenTag = false;
@@ -70,7 +69,8 @@ public class TurnToSpeaker extends Command {
   }
 
   private void updateDesiredRotation() {
-    if (!LimelightHelpers.getTV(VisionConstants.limelightName)) {
+    Optional<PhotonTrackedTarget> centerSpeaker = swerve.getCenterSpeakerTarget();
+    if (centerSpeaker.isEmpty()) {
       if (!seenTag) {
         Pose2d currentPose = swerve.getPose();
 
@@ -81,22 +81,16 @@ public class TurnToSpeaker extends Command {
     }
     seenTag = true;
 
-    long detectionTime =
-        LimelightHelpers.getLimelightNTTableEntry(VisionConstants.limelightName, "tx")
-            .getLastChange();
+    double detectionTime = swerve.getLimelightResults().getTimestampSeconds();
 
     if (lastDetectionTime == detectionTime) {
       return;
     }
     lastDetectionTime = detectionTime;
 
-    double rotation = LimelightHelpers.getTX(VisionConstants.limelightName);
+    double rotation = -centerSpeaker.get().getYaw();
 
-    double timestamp =
-        (lastDetectionTime / 1.0e6)
-            - (LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightName)) / 1000.0;
-
-    Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(timestamp);
+    Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(lastDetectionTime);
 
     if (rotationAtTime.isEmpty()) {
       rotationAtTime = Optional.of(swerve.getHeading());

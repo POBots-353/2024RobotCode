@@ -164,7 +164,7 @@ public final class Constants {
             Units.inchesToMeters(5.53),
             0.0,
             Units.inchesToMeters(10.35),
-            new Rotation3d(0.0, Units.degreesToRadians(-35.0), 0.0));
+            new Rotation3d(Units.degreesToRadians(180.0), Units.degreesToRadians(-35.0), 0.0));
 
     public static final class ArducamConstants {
       public static final double[] distances =
@@ -355,7 +355,7 @@ public final class Constants {
   }
 
   public static final class AutoShootConstants {
-    public static final double speakerEdgeTolerance = Units.inchesToMeters(2.0);
+    public static final double speakerEdgeTolerance = Units.inchesToMeters(4.0);
     // (distance, angle)
     // This isn't being used, but the data could still be important at some point
     public static final Point2D[] autoShootArmAngles =
@@ -390,14 +390,15 @@ public final class Constants {
       autoShootAngleMap.put(1.12, Rotation2d.fromDegrees(8.0 - 1.5));
       autoShootAngleMap.put(1.25, Rotation2d.fromDegrees(8.0 - 1.5));
       autoShootAngleMap.put(1.60, Rotation2d.fromDegrees(8.0 - 1.5));
-      autoShootAngleMap.put(2.09, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
-      autoShootAngleMap.put(2.50, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
-      autoShootAngleMap.put(3.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
+      autoShootAngleMap.put(2.09 - 0.25, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
+      autoShootAngleMap.put(2.50 - 0.25, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
+      autoShootAngleMap.put(3.0 - 0.25, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
       autoShootAngleMap.put(
-          3.53, Rotation2d.fromDegrees(27.374591864513985)); // 31.604855866583044 - 2.0 - 1.5
-      autoShootAngleMap.put(3.98, Rotation2d.fromDegrees(29.137217802484155));
-      autoShootAngleMap.put(4.1522590735236655, Rotation2d.fromDegrees(29.15150655822783));
-      autoShootAngleMap.put(4.98, Rotation2d.fromDegrees(30.921454458988247));
+          3.53 - 0.25,
+          Rotation2d.fromDegrees(27.374591864513985)); // 31.604855866583044 - 2.0 - 1.5
+      autoShootAngleMap.put(3.98 - 0.25, Rotation2d.fromDegrees(29.137217802484155));
+      autoShootAngleMap.put(4.1522590735236655 - 0.25, Rotation2d.fromDegrees(29.15150655822783));
+      autoShootAngleMap.put(4.98 - 0.25, Rotation2d.fromDegrees(30.921454458988247));
       if (RobotBase.isSimulation()) {
         autoShootAngleMap.put(5.867, Rotation2d.fromDegrees(35.07));
       }

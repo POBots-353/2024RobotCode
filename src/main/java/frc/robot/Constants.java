@@ -281,7 +281,8 @@ public final class Constants {
     public static final Rotation2d startingConfigAngle = Rotation2d.fromDegrees(72.02189922348654);
     public static final Rotation2d sourceAngle = Rotation2d.fromDegrees(62.85939169721119);
 
-    public static final Rotation2d autoSubwooferAngle = Rotation2d.fromDegrees(7.5 - 2.0 - 1.0);
+    public static final Rotation2d autoSubwooferAngle =
+        Rotation2d.fromDegrees(7.5 - 2.0 - 1.0 + 0.5);
     public static final Rotation2d autoAmpPodiumAngle = Rotation2d.fromDegrees(34.785046585654335);
     public static final Rotation2d autoFarAmpPodiumAngle =
         Rotation2d.fromDegrees(35.3 - 1.0 - 1.0 - 0.25 - 0.5); // 35.3 - 1.0 - 1.0 - 0.25 + 0.5 32.3
@@ -390,15 +391,19 @@ public final class Constants {
       autoShootAngleMap.put(1.12, Rotation2d.fromDegrees(8.0 - 1.5));
       autoShootAngleMap.put(1.25, Rotation2d.fromDegrees(8.0 - 1.5));
       autoShootAngleMap.put(1.60, Rotation2d.fromDegrees(8.0 - 1.5));
-      autoShootAngleMap.put(2.09 - 0.25, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
-      autoShootAngleMap.put(2.50 - 0.25, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
-      autoShootAngleMap.put(3.0 - 0.25, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
       autoShootAngleMap.put(
-          3.53 - 0.25,
+          2.09 - 0.25 * 0.0, Rotation2d.fromDegrees(20.732014330623144 - 2.0 - 1.5));
+      autoShootAngleMap.put(
+          2.50 - 0.25 * 0.0, Rotation2d.fromDegrees(24.935558632659113 - 2.0 - 1.5));
+      autoShootAngleMap.put(
+          3.0 - 0.25 * 0.0, Rotation2d.fromDegrees(28.465810207071904 - 2.0 - 1.5));
+      autoShootAngleMap.put(
+          3.53 - 0.25 * 0.0,
           Rotation2d.fromDegrees(27.374591864513985)); // 31.604855866583044 - 2.0 - 1.5
-      autoShootAngleMap.put(3.98 - 0.25, Rotation2d.fromDegrees(29.137217802484155));
-      autoShootAngleMap.put(4.1522590735236655 - 0.25, Rotation2d.fromDegrees(29.15150655822783));
-      autoShootAngleMap.put(4.98 - 0.25, Rotation2d.fromDegrees(30.921454458988247));
+      autoShootAngleMap.put(3.98 - 0.25 * 0.0, Rotation2d.fromDegrees(29.137217802484155));
+      autoShootAngleMap.put(
+          4.1522590735236655 - 0.25 * 0.0, Rotation2d.fromDegrees(29.15150655822783));
+      autoShootAngleMap.put(4.98 - 0.25 * 0.0, Rotation2d.fromDegrees(30.921454458988247));
       if (RobotBase.isSimulation()) {
         autoShootAngleMap.put(5.867, Rotation2d.fromDegrees(35.07));
       }
@@ -501,7 +506,7 @@ public final class Constants {
 
     public static final double driveKs = 0.22542;
     public static final double driveKv = 2.4829;
-    public static final double driveKa = 0.0 * 0.22997;
+    public static final double driveKa = 0.120; // 0.22997;
 
     public static final double turnP = 0.85;
     public static final double turnD = 0;

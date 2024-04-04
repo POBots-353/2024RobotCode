@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3707187175750732,
-      "y": 5.55
+      "x": 1.42,
+      "y": 5.540731430053711
     },
-    "rotation": 180.0
+    "rotation": 179.99469134034814
   },
   "command": {
     "type": "sequential",
@@ -16,50 +16,44 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Arm to Subwoofer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Warm Up Shooter"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot No Stop"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Center W2 C3 W1 W3.1"
+                  "pathName": "Center C3 W3 W2 W1.1"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Warm Up Shooter Differential"
+                  "name": "Auto SOTM"
                 }
               },
               {
-                "type": "deadline",
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.89
+                        "waitTime": 1.35
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot No Stop"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.7
                       }
                     },
                     {
@@ -78,7 +72,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.15
+                        "waitTime": 2.9
                       }
                     },
                     {
@@ -89,6 +83,25 @@
                     }
                   ]
                 }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Until Beam Break"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center C3 W3 W2 W1.2"
+                }
               },
               {
                 "type": "sequential",
@@ -97,7 +110,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.9
+                        "waitTime": 1.97
                       }
                     },
                     {
@@ -116,19 +129,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.8
+                        "waitTime": 2.6900000000000004
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Warm Up Shooter Differential"
+                        "name": "Shoot No Stop"
                       }
                     }
                   ]
@@ -141,13 +148,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Arm to Pickup"
+                        "waitTime": 3.0
                       }
                     },
                     {
@@ -194,17 +195,42 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center W2 C3 W1 W3.2"
+                  "pathName": "Center C3 W3 W2 W1.3"
                 }
               },
               {
-                "type": "deadline",
+                "type": "named",
+                "data": {
+                  "name": "Auto SOTM"
+                }
+              },
+              {
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.39
+                        "waitTime": 0.8500000000000001
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot No Stop"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.25
                       }
                     },
                     {
@@ -223,70 +249,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Auto SOTM"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.7
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Warm Up Shooter Differential"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.02
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Arm to Pickup"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.02
+                        "waitTime": 1.25
                       }
                     },
                     {
@@ -314,7 +277,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center W2 C3 W1 W3.3"
+                  "pathName": "Center C3 W3 W2 W1.4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto SOTM"
                 }
               },
               {
@@ -324,26 +293,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.075
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Auto SOTM"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.1
+                        "waitTime": 0.75
                       }
                     },
                     {
@@ -362,7 +312,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.45
+                        "waitTime": 1.1
                       }
                     },
                     {
@@ -381,7 +331,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.45
+                        "waitTime": 1.1
                       }
                     },
                     {
@@ -406,12 +356,6 @@
           "type": "named",
           "data": {
             "name": "Auto Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Intake"
           }
         }
       ]

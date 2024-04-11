@@ -349,7 +349,9 @@ public class Swerve extends VirtualSubsystem implements Logged {
         .ignoringDisable(true)
         .schedule();
 
+    FaultLogger.register(navx);
     FaultLogger.register(arducam);
+    FaultLogger.register(limelight);
 
     DataLogManager.log("[Swerve] Initialization Complete");
   }
@@ -371,6 +373,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
   @Log.NT
   public boolean arducamConnected() {
     return arducam.isConnected();
+  }
+
+  @Log.NT
+  public boolean limelightConnected() {
+    return limelight.isConnected();
   }
 
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {

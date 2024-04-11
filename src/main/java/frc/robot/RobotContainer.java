@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -28,7 +26,6 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.TeleopSwerve;
@@ -618,9 +615,7 @@ public class RobotContainer implements Logged {
                     }),
                 Commands.runOnce(
                     () -> {
-                      NetworkTable rootTable = NetworkTableInstance.getDefault().getTable("");
-
-                      if (!rootTable.containsSubTable(VisionConstants.limelightName)) {
+                      if (!swerve.limelightConnected()) {
                         addError("Limelight is not connected");
                       } else {
                         addInfo("Limelight is connected");

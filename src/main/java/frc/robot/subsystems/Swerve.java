@@ -143,7 +143,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private SwerveDriveOdometry simOdometry;
 
   private TimeInterpolatableBuffer<Rotation2d> rotationBuffer =
-      TimeInterpolatableBuffer.createBuffer(2.0);
+      TimeInterpolatableBuffer.createBuffer(1.5);
 
   private SwerveDriveWheelPositions previousWheelPositions =
       new SwerveDriveWheelPositions(getModulePositions());

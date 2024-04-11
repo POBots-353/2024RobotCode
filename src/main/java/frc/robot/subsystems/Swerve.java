@@ -221,6 +221,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
   private final double prematchDriveDelay = 1.0;
   private final double prematchTranslationalTolerance = 0.1;
 
+  private double simYaw = 0.0;
+
   /** Creates a new Swerve. */
   public Swerve() {
     DataLogManager.log("[Swerve] Initializing");
@@ -496,7 +498,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public Rotation2d getRawHeading() {
-    return navx.getRotation2d();
+    if (RobotBase.isReal()) {
+      return navx.getRotation2d();
+    } else {
+      return Rotation2d.fromRadians(simYaw);
+    }
   }
 
   public void setHeading(Rotation2d rotation) {
@@ -994,6 +1000,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
     frontRightModule.simulationPeriodic();
     backLeftModule.simulationPeriodic();
     backRightModule.simulationPeriodic();
+
+    simYaw += getChassisSpeeds().omegaRadiansPerSecond * 0.020;
 
     simOdometry.update(getRawHeading(), getModulePositions());
     visionSim.update(simOdometry.getPoseMeters());

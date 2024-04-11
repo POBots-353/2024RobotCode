@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     }
 
     addPeriodic(Monologue::updateAll, kDefaultPeriod);
-    addPeriodic(m_robotContainer::checkBeamBreak, 0.01);
+    addPeriodic(m_robotContainer::checkBeamBreak, 0.01, getPeriod() / 2);
     addPeriodic(FaultLogger::update, 1);
 
     // CameraServer.startAutomaticCapture();

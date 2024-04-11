@@ -163,7 +163,13 @@ public class RobotContainer implements Logged {
         new AutonomousAutoShoot(arm, shooter, swerve)
             .withTimeout(1.00)
             .andThen(intake.autoFeedToShooter().withTimeout(1.0))
-            .finallyDo(() -> shooter.stopMotor())
+            .finallyDo(
+                () -> {
+                  if (RobotBase.isSimulation()) {
+                    NoteVisualizer.shoot().schedule();
+                  }
+                  shooter.stopMotor();
+                })
             .asProxy());
 
     NamedCommands.registerCommand(

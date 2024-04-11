@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -269,6 +270,20 @@ public class RobotContainer implements Logged {
             swerve));
 
     new Trigger(intake::beamBroken).whileTrue(new SolidColor(Color.kGreen, leds));
+
+    new Trigger(intake::beamBroken)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(driverController.rumbleFor(0.25, RumbleType.kRightRumble, 1.0));
+
+    new Trigger(() -> DriverStation.getMatchTime() > 0.0 && DriverStation.getMatchTime() < 23.0)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(
+            Commands.sequence(
+                driverController.rumbleFor(0.07, RumbleType.kRightRumble, 1.0),
+                Commands.waitSeconds(0.07),
+                driverController.rumbleFor(0.07, RumbleType.kRightRumble, 1.0),
+                Commands.waitSeconds(0.07),
+                driverController.rumbleFor(0.07, RumbleType.kRightRumble, 1.0)));
   }
 
   /**

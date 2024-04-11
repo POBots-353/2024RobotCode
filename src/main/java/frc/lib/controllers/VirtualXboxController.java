@@ -1,10 +1,12 @@
 package frc.lib.controllers;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -41,6 +43,13 @@ public class VirtualXboxController extends CommandXboxController {
                       clearVirtualButtons();
                     })
                 .ignoringDisable(true));
+  }
+
+  public Command rumbleFor(double duration, RumbleType rumbleType, double value) {
+    return Commands.sequence(
+            Commands.runOnce(() -> getHID().setRumble(rumbleType, value)),
+            Commands.waitSeconds(duration))
+        .finallyDo(() -> getHID().setRumble(RumbleType.kBothRumble, 0.0));
   }
 
   @Override

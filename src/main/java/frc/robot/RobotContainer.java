@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.controllers.VirtualJoystick;
 import frc.lib.controllers.VirtualXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.NoteVisualizer;
 import frc.robot.commands.ShootWhileMoving;
 import frc.robot.commands.TeleopSwerve;
@@ -47,6 +49,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.AllianceUtil;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LogUtil;
 import frc.robot.util.PersistentSendableChooser;
 import java.util.ArrayList;
@@ -284,6 +288,17 @@ public class RobotContainer implements Logged {
                 driverController.rumbleFor(0.07, RumbleType.kRightRumble, 1.0),
                 Commands.waitSeconds(0.07),
                 driverController.rumbleFor(0.07, RumbleType.kRightRumble, 1.0)));
+
+    new Trigger(DriverStation::isEnabled)
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  LimelightHelpers.setPriorityTagID(
+                      VisionConstants.limelightName,
+                      AllianceUtil.isRedAlliance()
+                          ? FieldConstants.redSpeakerCenterID
+                          : FieldConstants.blueSpeakerCenterID);
+                }));
   }
 
   /**

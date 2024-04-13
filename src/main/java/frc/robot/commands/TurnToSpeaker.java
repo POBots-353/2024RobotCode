@@ -14,11 +14,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.AllianceUtil;
+import frc.robot.util.LimelightHelpers;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class TurnToSpeaker extends Command {
   private Swerve swerve;
@@ -69,8 +70,7 @@ public class TurnToSpeaker extends Command {
   }
 
   private void updateDesiredRotation() {
-    Optional<PhotonTrackedTarget> centerSpeaker = swerve.getCenterSpeakerTarget();
-    if (centerSpeaker.isEmpty()) {
+    if (!LimelightHelpers.getTV(VisionConstants.limelightName)) {
       if (!seenTag) {
         Pose2d currentPose = swerve.getPose();
 
@@ -81,16 +81,22 @@ public class TurnToSpeaker extends Command {
     }
     seenTag = true;
 
-    double detectionTime = swerve.getLimelightResults().getTimestampSeconds();
+    long detectionTime =
+        LimelightHelpers.getLimelightNTTableEntry(VisionConstants.limelightName, "tx")
+            .getLastChange();
 
     if (lastDetectionTime == detectionTime) {
       return;
     }
     lastDetectionTime = detectionTime;
 
-    double rotation = -centerSpeaker.get().getYaw();
+    double rotation = LimelightHelpers.getTX(VisionConstants.limelightName);
 
-    Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(lastDetectionTime);
+    double timestamp =
+        (lastDetectionTime / 1.0e6)
+            - (LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightName)) / 1000.0;
+
+    Optional<Rotation2d> rotationAtTime = swerve.getRotationAtTime(timestamp);
 
     if (rotationAtTime.isEmpty()) {
       rotationAtTime = Optional.of(swerve.getHeading());

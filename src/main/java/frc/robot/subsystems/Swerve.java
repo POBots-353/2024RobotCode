@@ -22,7 +22,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
@@ -65,6 +64,7 @@ import frc.robot.Constants.VisionConstants.LimelightConstants;
 import frc.robot.util.AStarPathfinder;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.FaultLogger;
+import frc.robot.util.LimelightHelpers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -159,23 +159,12 @@ public class Swerve extends VirtualSubsystem implements Logged {
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConstants.arducamTransform);
 
-  private PhotonCamera limelight = new PhotonCamera(VisionConstants.limelightName);
-  private PhotonPoseEstimator limelightPoseEstimator =
-      new PhotonPoseEstimator(
-          FieldConstants.aprilTagLayout,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          VisionConstants.limelightTransform);
-
   private PhotonPipelineResult latestArducamResult;
-  private PhotonPipelineResult latestLimelightResult;
-
-  private Optional<PhotonTrackedTarget> centerSpeakerTarget = Optional.empty();
 
   // Temporary fix for inaccurate poses while auto shooting
   private boolean ignoreArducam = false;
 
   private PhotonCameraSim arducamSim;
-  private PhotonCameraSim limelightSim;
   private VisionSystemSim visionSim;
 
   private List<Pose3d> detectedTargets = new ArrayList<>();
@@ -236,7 +225,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
             getModulePositions(),
             new Pose2d(0.0, 0.0, getRawHeading()));
     arducamPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    limelightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     if (RobotBase.isSimulation()) {
       simOdometry = new SwerveDriveOdometry(kinematics, getRawHeading(), getModulePositions());
@@ -257,20 +245,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
       arducamSim.enableRawStream(false);
       arducamSim.enableProcessedStream(false);
-
-      SimCameraProperties limelightProperties = new SimCameraProperties();
-      limelightProperties.setCalibration(960, 720, Rotation2d.fromDegrees(75.67));
-      limelightProperties.setCalibError(0.21, 0.10);
-      limelightProperties.setFPS(30);
-      limelightProperties.setAvgLatencyMs(36);
-      limelightProperties.setLatencyStdDevMs(15);
-      limelightProperties.setExposureTimeMs(45);
-
-      limelightSim = new PhotonCameraSim(limelight, limelightProperties);
-      visionSim.addCamera(limelightSim, VisionConstants.limelightTransform);
-
-      limelightSim.enableRawStream(false);
-      limelightSim.enableProcessedStream(false);
     }
 
     AutoBuilder.configureHolonomic(
@@ -351,7 +325,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
     FaultLogger.register(navx);
     FaultLogger.register(arducam);
-    FaultLogger.register(limelight);
 
     DataLogManager.log("[Swerve] Initialization Complete");
   }
@@ -377,7 +350,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   @Log.NT
   public boolean limelightConnected() {
-    return limelight.isConnected();
+    return true;
   }
 
   public ChassisSpeeds getFudgeFactoredSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
@@ -666,8 +639,7 @@ public class Swerve extends VirtualSubsystem implements Logged {
     odometryLock.writeLock().unlock();
   }
 
-  private Vector<N3> getLLStandardDeviations(
-      EstimatedRobotPose robotPose, double averageDistance, int tagCount) {
+  private Vector<N3> getLLStandardDeviations(double averageDistance, int tagCount) {
     double stdDevScale = 1 + (averageDistance * averageDistance / 30);
 
     // If we're semi-close to it, use polynomial regression or a super low stdandard dev
@@ -755,60 +727,35 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   private void updateLimelightPoses() {
-    if (!latestLimelightResult.hasTargets()) {
-      centerSpeakerTarget = Optional.empty();
+    LimelightHelpers.PoseEstimate3d poseEstimate;
+    if (DriverStation.isEnabled()) {
+      poseEstimate =
+          LimelightHelpers.getBotPoseEstimate3d_wpiBlue_MegaTag2(VisionConstants.limelightName);
+    } else {
+      poseEstimate = LimelightHelpers.getBotPoseEstimate3d_wpiBlue(VisionConstants.limelightName);
+    }
+
+    if (poseEstimate.tagCount == 0) {
       return;
     }
-
-    odometryLock.readLock().lock();
-    limelightPoseEstimator.setReferencePose(poseEstimator.getEstimatedPosition());
-    odometryLock.readLock().unlock();
-
-    Optional<EstimatedRobotPose> optionalVisionPose =
-        limelightPoseEstimator.update(latestLimelightResult);
-    if (optionalVisionPose.isEmpty()) {
-      return;
-    }
-
-    EstimatedRobotPose visionPose = optionalVisionPose.get();
-
-    double totalDistance = 0.0;
-    int tagCount = 0;
-
-    boolean seenCenterTag = false;
-    int centerSpeakerID = AllianceUtil.getCenterSpeakerID();
-    for (PhotonTrackedTarget target : visionPose.targetsUsed) {
-      tagCount++;
-      totalDistance += target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm();
-
-      if (target.getFiducialId() == centerSpeakerID) {
-        centerSpeakerTarget = Optional.of(target);
-        seenCenterTag = true;
-      }
-    }
-    if (!seenCenterTag) {
-      centerSpeakerTarget = Optional.empty();
-    }
-
-    double averageDistance = totalDistance / tagCount;
 
     if (!isValidPose(
-        visionPose.estimatedPose,
-        averageDistance,
-        visionPose.targetsUsed.size(),
-        visionPose.timestampSeconds)) {
-      rejectedPoses.add(visionPose.estimatedPose);
+        poseEstimate.pose,
+        poseEstimate.avgTagDist,
+        poseEstimate.tagCount,
+        poseEstimate.timestampSeconds)) {
+      rejectedPoses.add(poseEstimate.pose);
       return;
     }
 
     Vector<N3> standardDevs =
-        getLLStandardDeviations(visionPose, averageDistance, visionPose.targetsUsed.size());
+        getLLStandardDeviations(poseEstimate.avgTagDist, poseEstimate.tagCount);
 
     poseEstimates.add(
-        new PoseEstimate(visionPose.estimatedPose, visionPose.timestampSeconds, standardDevs));
+        new PoseEstimate(poseEstimate.pose, poseEstimate.timestampSeconds, standardDevs));
 
-    for (PhotonTrackedTarget target : visionPose.targetsUsed) {
-      int aprilTagID = target.getFiducialId();
+    for (LimelightHelpers.RawFiducial target : poseEstimate.rawFiducials) {
+      int aprilTagID = target.id;
 
       Optional<Pose3d> tagPose = FieldConstants.aprilTagLayout.getTagPose(aprilTagID);
       if (tagPose.isEmpty()) {
@@ -909,6 +856,15 @@ public class Swerve extends VirtualSubsystem implements Logged {
     detectedTargets.clear();
     rejectedPoses.clear();
 
+    LimelightHelpers.SetRobotOrientation(
+        VisionConstants.limelightName,
+        getPose().getRotation().getDegrees(),
+        Units.radiansToDegrees(getChassisSpeeds().omegaRadiansPerSecond),
+        0,
+        0,
+        0,
+        0);
+
     updateLimelightPoses();
     updateArducamPoses();
 
@@ -939,30 +895,16 @@ public class Swerve extends VirtualSubsystem implements Logged {
   }
 
   public double getSpeakerDistance() {
-    if (centerSpeakerTarget.isPresent()) {
-      Transform3d transform = centerSpeakerTarget.get().getBestCameraToTarget();
-
-      Pose3d pose =
-          new Pose3d()
-              .transformBy(transform.inverse())
-              .transformBy(VisionConstants.limelightTransform.inverse());
-
-      return pose.getTranslation().toTranslation2d().getNorm();
+    if (LimelightHelpers.getTV(VisionConstants.limelightName)) {
+      Pose3d pose = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.limelightName);
+      return Math.hypot(pose.getZ(), pose.getX());
     } else {
       return getPose().minus(AllianceUtil.getSpeakerPose()).getTranslation().getNorm();
     }
   }
 
-  public PhotonPipelineResult getLimelightResults() {
-    return latestLimelightResult;
-  }
-
   public PhotonPipelineResult getArducamResults() {
     return latestArducamResult;
-  }
-
-  public Optional<PhotonTrackedTarget> getCenterSpeakerTarget() {
-    return centerSpeakerTarget;
   }
 
   public double[] getWheelRadiusCharacterizationPosition() {
@@ -983,7 +925,6 @@ public class Swerve extends VirtualSubsystem implements Logged {
     backRightModule.periodic();
 
     latestArducamResult = arducam.getLatestResult();
-    latestLimelightResult = limelight.getLatestResult();
 
     updateVisionPoseEstimates();
 

@@ -728,7 +728,8 @@ public class Swerve extends VirtualSubsystem implements Logged {
 
   private void updateLimelightPoses() {
     LimelightHelpers.PoseEstimate3d poseEstimate;
-    if (DriverStation.isEnabled()) {
+    if (DriverStation.isEnabled()
+        && Math.abs(getChassisSpeeds().omegaRadiansPerSecond) < Units.degreesToRadians(60.0)) {
       poseEstimate =
           LimelightHelpers.getBotPoseEstimate3d_wpiBlue_MegaTag2(VisionConstants.limelightName);
     } else {

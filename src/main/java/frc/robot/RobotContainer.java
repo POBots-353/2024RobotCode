@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -383,6 +385,17 @@ public class RobotContainer implements Logged {
                       }
                     })
                 .ignoringDisable(true));
+
+    driverController
+        .rightBumper()
+        .and(
+            () ->
+                MathUtil.isNear(
+                    ArmConstants.sourceAngle.getRadians(),
+                    arm.getPosition().getRadians(),
+                    Units.degreesToRadians(2.5)))
+        .whileTrue(intake.autoFeedToShooter())
+        .onFalse(intake.runOnce(intake::stopIntakeMotor).ignoringDisable(true));
   }
 
   private void configureClimbingBindings() {

@@ -799,10 +799,6 @@ public class RobotContainer implements Logged {
     return false;
   }
 
-  public void updateSwerveOdometry() {
-    swerve.updateOdometry();
-  }
-
   public void checkBeamBreak() {
     intake.stopIfBeamBroken();
   }

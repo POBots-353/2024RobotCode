@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -26,7 +25,6 @@ import frc.robot.Constants.FrontLeftModule;
 import frc.robot.Constants.FrontRightModule;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.FaultLogger;
 import frc.robot.util.LogUtil;
 import java.util.HashMap;
@@ -44,7 +42,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private Notifier odometryNotifier;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -79,10 +76,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-    odometryNotifier = new Notifier(m_robotContainer::updateSwerveOdometry);
-    odometryNotifier.setName("OdometryThread");
-    odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
 
     Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
 

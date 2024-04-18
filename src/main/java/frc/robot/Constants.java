@@ -154,7 +154,7 @@ public final class Constants {
 
     public static final Transform3d arducamTransform =
         new Transform3d(
-            Units.inchesToMeters(-6.5),
+            Units.inchesToMeters(-4.5),
             Units.inchesToMeters(-13.25),
             Units.inchesToMeters(8.50),
             new Rotation3d(0.0, Units.degreesToRadians(-30.0), Units.degreesToRadians(180.0)));
@@ -529,7 +529,7 @@ public final class Constants {
 
     public static final double maxModuleSpeed = Units.feetToMeters(14.5);
 
-    public static final int odometryUpdateFrequency = 100; // 100 Hz
+    public static final int odometryUpdateFrequency = 60; // 60 Hz
 
     public static final boolean zeroWithIntakeForward = true;
   }
@@ -548,28 +548,27 @@ public final class Constants {
     public static final int driveID = 3;
     public static final int turnID = 7;
     public static final int encoderID = 11;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(86.66015625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(87.099609375);
   }
 
   public static class FrontRightModule {
     public static final int driveID = 1;
     public static final int turnID = 5;
     public static final int encoderID = 9;
-    public static final Rotation2d angleOffset =
-        Rotation2d.fromDegrees(-127.88085937499999); // -133.06640625
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-127.001953125);
   }
 
   public static class BackLeftModule {
     public static final int driveID = 2;
     public static final int turnID = 6;
     public static final int encoderID = 10;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-57.216796875);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-53.525390625);
   }
 
   public static final class BackRightModule {
     public static final int driveID = 4;
     public static final int turnID = 8;
     public static final int encoderID = 12;
-    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-78.134765625);
+    public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-77.080078125);
   }
 }

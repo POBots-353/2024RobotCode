@@ -157,6 +157,16 @@ public class Arm extends VirtualSubsystem implements Logged {
 
       Timer.delay(0.005);
     }
+
+    for (int i = 0; i < 5; i++) {
+      if (absoluteEncoder.getPositionConversionFactor() == 2 * Math.PI) {
+        break;
+      }
+
+      absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+
+      Timer.delay(0.005);
+    }
     mainMotor.setCANTimeout(0);
 
     Commands.sequence(Commands.waitSeconds(1.0), Commands.runOnce(this::resetToAbsolute))

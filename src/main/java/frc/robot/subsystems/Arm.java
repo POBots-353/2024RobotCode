@@ -98,6 +98,8 @@ public class Arm extends VirtualSubsystem implements Logged {
   private MechanismLigament2d currentAngleLigament;
   private MechanismLigament2d setpointLigament;
 
+  private Timer encoderSyncTimer = new Timer();
+
   @Log.NT
   private ArmFeedforward armFeedforward =
       new ArmFeedforward(
@@ -214,6 +216,8 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     SmartDashboard.putData("Arm/Arm Measured", angleVisualizer);
     SmartDashboard.putData("Arm/Arm Setpoint", setpointVisualizer);
+
+    encoderSyncTimer.start();
 
     DataLogManager.log("[Arm] Initialization Complete");
   }
@@ -499,6 +503,10 @@ public class Arm extends VirtualSubsystem implements Logged {
 
     if (mainMotor.get() < 0.0 && getPosition().getDegrees() < -3.0) {
       setSpeed(0.0);
+    }
+
+    if (encoderSyncTimer.advanceIfElapsed(0.25)) {
+      armEncoder.setPosition(getPosition().getRadians());
     }
   }
 

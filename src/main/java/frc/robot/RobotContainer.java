@@ -260,6 +260,8 @@ public class RobotContainer implements Logged {
 
     arm.setDefaultCommand(new ArmHold(arm));
 
+    Trigger slowMode = driverController.leftTrigger();
+
     swerve.setDefaultCommand(
         new TeleopSwerve(
             driverController::getLeftY,
@@ -267,7 +269,12 @@ public class RobotContainer implements Logged {
             driverController::getRightX,
             driverController::getRightY,
             driverController::getLeftBumper,
-            SwerveConstants.maxTranslationalSpeed,
+            () -> {
+              if (slowMode.getAsBoolean()) {
+                return SwerveConstants.slowMotionMaxTranslationalSpeed;
+              }
+              return SwerveConstants.maxTranslationalSpeed;
+            },
             SwerveConstants.maxAngularSpeed,
             swerve));
 
@@ -312,8 +319,8 @@ public class RobotContainer implements Logged {
 
   private void configureDriveBindings() {
     DataLogManager.log("Configuring drive button bindings");
-    Trigger turnToSpeaker = driverController.rightTrigger();
-    Trigger slowMode = driverController.leftTrigger();
+    // Trigger turnToSpeaker = driverController.rightTrigger();
+    // Trigger slowMode = driverController.leftTrigger();
 
     driverController
         .back()
@@ -334,18 +341,18 @@ public class RobotContainer implements Logged {
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
-    slowMode
-        .and(turnToSpeaker.negate())
-        .whileTrue(
-            new TeleopSwerve(
-                driverController::getLeftY,
-                driverController::getLeftX,
-                driverController::getRightX,
-                driverController::getRightY,
-                driverController::getLeftBumper,
-                SwerveConstants.slowMotionMaxTranslationalSpeed,
-                SwerveConstants.maxAngularSpeed,
-                swerve));
+    // slowMode
+    //     .and(turnToSpeaker.negate())
+    //     .whileTrue(
+    //         new TeleopSwerve(
+    //             driverController::getLeftY,
+    //             driverController::getLeftX,
+    //             driverController::getRightX,
+    //             driverController::getRightY,
+    //             driverController::getLeftBumper,
+    //             SwerveConstants.slowMotionMaxTranslationalSpeed,
+    //             SwerveConstants.maxAngularSpeed,
+    //             swerve));
 
     driverController
         .a()

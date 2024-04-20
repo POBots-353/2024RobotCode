@@ -22,7 +22,7 @@ public class TeleopSwerve extends Command {
   private DoubleSupplier angleY;
   private BooleanSupplier turnToAngle;
 
-  private double maxTranslationalSpeed;
+  private DoubleSupplier maxTranslationalSpeed;
   private double maxAngularSpeed;
 
   private SlewRateLimiter forwardRateLimiter =
@@ -46,7 +46,7 @@ public class TeleopSwerve extends Command {
       DoubleSupplier angleX,
       DoubleSupplier angleY,
       BooleanSupplier turnToAngle,
-      double maxTranslationalSpeed,
+      DoubleSupplier maxTranslationalSpeed,
       double maxAngularSpeed,
       Swerve swerve) {
     this.forwardSpeed = forwardSpeed;
@@ -67,6 +67,27 @@ public class TeleopSwerve extends Command {
     addRequirements(swerve);
   }
 
+  /** Creates a new TeleopSwerve. */
+  public TeleopSwerve(
+      DoubleSupplier forwardSpeed,
+      DoubleSupplier strafeSpeed,
+      DoubleSupplier angleX,
+      DoubleSupplier angleY,
+      BooleanSupplier turnToAngle,
+      double maxTranslationalSpeed,
+      double maxAngularSpeed,
+      Swerve swerve) {
+    this(
+        forwardSpeed,
+        strafeSpeed,
+        angleX,
+        angleY,
+        turnToAngle,
+        () -> maxTranslationalSpeed,
+        maxAngularSpeed,
+        swerve);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
@@ -74,8 +95,9 @@ public class TeleopSwerve extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double forwardMetersPerSecond = -forwardSpeed.getAsDouble() * maxTranslationalSpeed;
-    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed;
+    double forwardMetersPerSecond =
+        -forwardSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
+    double strafeMetersPerSecond = strafeSpeed.getAsDouble() * maxTranslationalSpeed.getAsDouble();
 
     double angleXComponent = -angleX.getAsDouble();
     double angleYComponent = -angleY.getAsDouble();

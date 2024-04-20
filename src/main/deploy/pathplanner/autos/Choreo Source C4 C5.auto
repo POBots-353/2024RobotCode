@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7489271759986877,
-      "y": 4.428860664367676
+      "x": 0.7475045919418335,
+      "y": 4.410428524017334
     },
-    "rotation": 120.80144804430064
+    "rotation": 119.95999635749482
   },
   "command": {
     "type": "sequential",
@@ -77,7 +77,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot No Stop"
           }
         },
         {
@@ -120,6 +120,12 @@
                 "data": {
                   "name": "Arm to Amp Wing"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Warm Up Shooter Differential"
+                }
               }
             ]
           }
@@ -146,7 +152,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot No Stop"
           }
         },
         {

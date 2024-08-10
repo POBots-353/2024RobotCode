@@ -157,6 +157,11 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Arm to Behind W2",
         arm.autoMoveToPosition(ArmConstants.behindWing2Angle).withTimeout(3.0).asProxy());
+    NamedCommands.registerCommand(
+        "Arm to Amp", arm.autoMoveToPosition(ArmConstants.ampAngle).withTimeout(3.0).asProxy());
+
+    NamedCommands.registerCommand(
+        "Climb", climber.run(climber::autoClimb).withTimeout(3.0).asProxy());
 
     NamedCommands.registerCommand(
         "Auto Shoot",
@@ -187,6 +192,9 @@ public class RobotContainer implements Logged {
     NamedCommands.registerCommand(
         "Warm Up Shooter Idle",
         shooter.run(() -> shooter.setShooterState(ShooterConstants.idleState)).asProxy());
+    NamedCommands.registerCommand(
+        "Warm Up Shooter Amp",
+        shooter.run(() -> shooter.setShooterState(ShooterConstants.ampState)).asProxy());
     NamedCommands.registerCommand(
         "Shoot",
         intake

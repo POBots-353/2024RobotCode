@@ -498,6 +498,9 @@ public class Arm extends VirtualSubsystem implements Logged {
     SmartDashboard.putNumber(
         "Arm/Velocity Error", Units.radiansToDegrees(previousSetpoint.velocity - getVelocity()));
 
+    SmartDashboard.putNumber("Arm/Main Temperature", mainMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Arm/Follower Temperature", followerMotor.getMotorTemperature());
+
     currentAngleLigament.setAngle(Rotation2d.fromRadians(Math.PI).minus(getPosition()));
     setpointLigament.setAngle(Rotation2d.fromRadians(Math.PI - previousSetpoint.position));
 

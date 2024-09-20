@@ -471,6 +471,7 @@ public final class Constants {
     public static final double maxTranslationalSpeed = Units.feetToMeters(14.5);
     public static final double maxAngularSpeed = Units.degreesToRadians(180);
     public static final double slowMotionMaxTranslationalSpeed = Units.feetToMeters(3.53);
+    public static final double bufferMaxTranslationalSpeed = Units.feetToMeters(1);
     public static final double turboMaxTranslationalSpeed = Units.feetToMeters(14.5);
 
     public static final double maxTranslationalAcceleration = Units.feetToMeters(18.0);

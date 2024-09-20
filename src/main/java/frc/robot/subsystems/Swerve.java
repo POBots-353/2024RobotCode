@@ -618,6 +618,18 @@ public class Swerve extends VirtualSubsystem implements Logged {
     };
   }
 
+  Pose2d currentPose = getPose();
+  double xCoordinate = currentPose.getX();
+  double yCoordinate = currentPose.getY();
+
+  public boolean isPracticeOutOfBounds() {
+    if (xCoordinate > 7.5 || xCoordinate < -7.5 || yCoordinate > 5 || yCoordinate < -5) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private boolean odometryUpdateValid(Twist2d delta) {
     Pose2d poseExponential = new Pose2d().exp(delta);
 

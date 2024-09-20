@@ -7,6 +7,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -88,6 +89,10 @@ public class RobotContainer implements Logged {
   private Alert shooterPrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
+
+  Pose2d currentPose = swerve.getPose();
+  double xCoordinate = currentPose.getX();
+  double yCoordinate = currentPose.getY();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -348,6 +353,27 @@ public class RobotContainer implements Logged {
                 .ignoringDisable(true));
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
+
+    if (xCoordinate > 7.5 || xCoordinate < -7.5 || yCoordinate > 5 || yCoordinate < -5) {
+      driverController.rumbleFor(5, RumbleType.kBothRumble, 1);
+    }
+
+    driverController.b().onTrue(
+      new TeleopSwerve(
+            driverController::getLeftY,
+            driverController::getLeftX,
+            driverController::getRightX,
+            driverController::getRightY,
+            driverController::getLeftBumper,
+            () -> {
+              if (xCoordinate > 7.5 || xCoordinate < -7.5 || yCoordinate > 5 || yCoordinate < -5) {
+                return SwerveConstants.bufferMaxTranslationalSpeed;
+              }
+              return SwerveConstants.maxTranslationalSpeed;
+            },
+            SwerveConstants.maxAngularSpeed,
+            swerve)
+    );
 
     // slowMode
     //     .and(turnToSpeaker.negate())

@@ -7,12 +7,14 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -88,6 +90,18 @@ public class RobotContainer implements Logged {
   private Alert shooterPrematchAlert = new Alert("", AlertType.INFO);
   private Alert swervePrematchAlert = new Alert("", AlertType.INFO);
   private Alert generalPrematchAlert = new Alert("", AlertType.INFO);
+
+  // New
+  Pose2d currentPose = swerve.getPose();
+  double xCoordinate = currentPose.getX();
+  double yCoordinate = currentPose.getY();
+  private final double stopLength = .3;
+  private final double MAX_X = swerve.MAX_X;
+  private final double MIN_X = swerve.MIN_X;
+  private final double MAX_Y = swerve.MAX_Y;
+  private final double MIN_Y = swerve.MIN_Y;
+  private double stopTime = 0;
+  private boolean isStopped = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -291,6 +305,11 @@ public class RobotContainer implements Logged {
     new Trigger(intake::beamBroken)
         .and(RobotModeTriggers.teleop())
         .onTrue(driverController.rumbleFor(0.25, RumbleType.kRightRumble, 1.0));
+    // New
+    new Trigger(swerve::isNearPracticeOutOfBounds)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(driverController.rumble(RumbleType.kBothRumble, .5))
+        .onFalse(driverController.stopRumble());
 
     new Trigger(() -> DriverStation.getMatchTime() > 0.0 && DriverStation.getMatchTime() < 23.0)
         .and(RobotModeTriggers.teleop())
@@ -349,6 +368,82 @@ public class RobotContainer implements Logged {
 
     driverController.x().whileTrue(swerve.run(swerve::lockModules));
 
+    // New
+    driverController
+        .b()
+        .and(driverController.a())
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      swerve.setZeroPosition();
+                      SmartDashboard.putString("Status", "Indoor Drive Competition Mode Enabled");
+                    }),
+                new TeleopSwerve(
+                    driverController::getLeftY,
+                    driverController::getLeftX,
+                    driverController::getRightX,
+                    driverController::getRightY,
+                    driverController::getLeftBumper,
+                    () -> {
+                      double currentTime = Timer.getFPGATimestamp();
+
+                      if (xCoordinate >= MAX_X - 2) {
+                        return Math.max(
+                            0.1, SwerveConstants.maxTranslationalSpeed * (MAX_X - xCoordinate) / 2);
+                      } else if (xCoordinate <= MIN_X + 2) {
+                        return Math.max(
+                            0.1, SwerveConstants.maxTranslationalSpeed * (xCoordinate - MIN_X) / 2);
+                      } else if (yCoordinate >= MAX_Y - 2) {
+                        return Math.max(
+                            0.1, SwerveConstants.maxTranslationalSpeed * (MAX_Y - yCoordinate) / 2);
+                      } else if (yCoordinate <= MIN_Y + 2) {
+                        return Math.max(
+                            0.1, SwerveConstants.maxTranslationalSpeed * (yCoordinate - MIN_Y) / 2);
+                      }
+
+                      if (xCoordinate >= MAX_X - stopLength
+                          || xCoordinate <= MIN_X + stopLength
+                          || yCoordinate >= MAX_Y - stopLength
+                          || yCoordinate <= MIN_Y + stopLength) {
+
+                        if (!isStopped) {
+                          stopTime = currentTime;
+                          isStopped = true;
+                        }
+                        return 0;
+                      }
+
+                      if (isStopped) {
+                        if (currentTime - stopTime >= 2.0) {
+                          isStopped = false;
+                        } else {
+                          return 0;
+                        }
+                      }
+
+                      return SwerveConstants.maxTranslationalSpeed;
+                    },
+                    SwerveConstants.maxAngularSpeed,
+                    swerve)));
+
+    // driverController.b().onTrue(
+    //   new TeleopSwerve(driverController::getLeftY,
+    //   driverController::getLeftX,
+    //   driverController::getRightX,
+    //   driverController::getRightY,
+    //   driverController::getLeftBumper,
+    //    () -> {
+    //     if(xCoordinate > 7.5 || xCoordinate < -7.5 || yCoordinate > 5 || yCoordinate <-5) {
+    //   driverController.rumbleFor(5, RumbleType.kBothRumble, 1.0);
+    //   return SwerveConstants.bufferMaxTranslationalSpeed;
+    //    }
+    //    return SwerveConstants.maxTranslationalSpeed;
+    //   },
+    //   SwerveConstants.maxAngularSpeed
+    //    , swerve)
+    // );
+
     // slowMode
     //     .and(turnToSpeaker.negate())
     //     .whileTrue(
@@ -364,6 +459,7 @@ public class RobotContainer implements Logged {
 
     driverController
         .a()
+        .and(driverController.b().negate())
         .onTrue(
             Commands.runOnce(
                     () ->

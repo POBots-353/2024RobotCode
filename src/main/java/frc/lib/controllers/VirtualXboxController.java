@@ -52,6 +52,15 @@ public class VirtualXboxController extends CommandXboxController {
         .finallyDo(() -> getHID().setRumble(RumbleType.kBothRumble, 0.0));
   }
 
+  // New
+  public Command rumble(RumbleType rumbleType, double value) {
+    return Commands.run(() -> getHID().setRumble(rumbleType, value));
+  }
+
+  public Command stopRumble() {
+    return Commands.run(() -> getHID().setRumble(RumbleType.kBothRumble, 0.0));
+  }
+
   @Override
   public Trigger leftBumper(EventLoop loop) {
     return super.leftBumper(loop)

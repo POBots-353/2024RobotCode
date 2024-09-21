@@ -87,6 +87,13 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Swerve extends VirtualSubsystem implements Logged {
+  // New
+  private Pose2d zeroPosition = new Pose2d(0, 0, new Rotation2d());
+  public final double MIN_X = -7.5;
+  public final double MIN_Y = -5.0;
+  public final double MAX_X = 7.5;
+  public final double MAX_Y = 5.0;
+
   public static record PoseEstimate(Pose3d estimatedPose, double timestamp, Vector<N3> standardDevs)
       implements Comparable<PoseEstimate> {
     @Override
@@ -618,6 +625,24 @@ public class Swerve extends VirtualSubsystem implements Logged {
     };
   }
 
+  // New
+  Pose2d currentPose = getPose();
+  double xCoordinate = currentPose.getX();
+  double yCoordinate = currentPose.getY();
+
+  public boolean isNearPracticeOutOfBounds() {
+    if (xCoordinate >= MAX_X - 1) {
+      return true;
+    } else if (xCoordinate <= MIN_X + 1) {
+      return true;
+    } else if (yCoordinate >= MAX_Y - 1) {
+      return true;
+    } else if (yCoordinate <= MIN_Y + 1) {
+      return true;
+    }
+    return false;
+  }
+
   private boolean odometryUpdateValid(Twist2d delta) {
     Pose2d poseExponential = new Pose2d().exp(delta);
 
@@ -1000,6 +1025,11 @@ public class Swerve extends VirtualSubsystem implements Logged {
     log(
         "Odometry Update %",
         ((double) (odometryUpdateCount - odometryRejectCount) / odometryUpdateCount) * 100.0);
+  }
+
+  // New
+  public void setZeroPosition() {
+    poseEstimator.resetPosition(getRawHeading(), getModulePositions(), zeroPosition);
   }
 
   @Override
